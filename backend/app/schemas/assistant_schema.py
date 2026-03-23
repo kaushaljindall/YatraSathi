@@ -9,3 +9,11 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
     session_id: str
+
+class TranslationRequest(BaseModel):
+    text: str
+    source_lang: str
+    target_lang: str
+
+class TranslationResponse(BaseModel):
+    translated_text: str

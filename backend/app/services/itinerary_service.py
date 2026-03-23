@@ -60,3 +60,27 @@ def generate_ai_itinerary(db: TinyDB, trip_id: int):
     doc_id = itineraries_table.insert(itinerary_data)
 
     return {"id": doc_id, "trip_id": trip_id, "days_plan": days_plan}
+
+
+def generate_direct_itinerary(destination: str, days: int, budget: str, interests: str) -> str:
+    """
+    Directly asks Groq LLM to generate a fully detailed, HTML-formatted itinerary
+    based on the provided parameters.
+    """
+    prompt = (
+        f"You are YatraSathi, an expert AI travel planner. Create a highly detailed and engaging "
+        f"{days}-day travel itinerary for {destination}. "
+        f"The user has a {budget} budget and is primarily interested in: {interests}. "
+        f"Format your entire response strictly as raw HTML. Do not include markdown blocks like ```html. "
+        f"Use headings (<h4 style='color: var(--primary); margin-bottom: 0.5rem; font-size: 1.2rem;'>), "
+        f"paragraphs (<p style='color: var(--text-muted); margin-bottom: 1.5rem;'>), "
+        f"and lists to make it look beautiful. For each day, provide a clear Morning, Afternoon, and Evening plan."
+    )
+    
+    # Try calling Groq, if not configured it returns mock response automatically from LLMClient
+    html_content = llm_client.generate(prompt)
+    
+    # Strip markdown if the LLM still returns it
+    html_content = html_content.replace('```html', '').replace('```', '')
+    
+    return html_content

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from tinydb import TinyDB
-from app.schemas.itinerary_schema import ItineraryGenerateRequest, ItineraryResponse
-from app.services.itinerary_service import generate_ai_itinerary
+from app.schemas.itinerary_schema import ItineraryGenerateRequest, ItineraryResponse, DirectItineraryRequest, DirectItineraryResponse
+from app.services.itinerary_service import generate_ai_itinerary, generate_direct_itinerary
 from app.database import get_db
 
 router = APIRouter(prefix="/itinerary", tags=["Itinerary"])
@@ -14,5 +14,14 @@ def generate_itinerary(request: ItineraryGenerateRequest, db: TinyDB = Depends(g
         if not itinerary:
             raise HTTPException(status_code=404, detail="Could not generate itinerary for the given trip.")
         return itinerary
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate_direct", response_model=DirectItineraryResponse)
+def generate_direct(request: DirectItineraryRequest):
+    """Directly generate an itinerary plan formatted in HTML using Groq LLM without relying on a saved trip_id."""
+    try:
+        html_content = generate_direct_itinerary(request.destination, request.days, request.budget, request.interests)
+        return DirectItineraryResponse(html_content=html_content)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

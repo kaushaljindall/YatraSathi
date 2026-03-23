@@ -11,6 +11,41 @@ YatraSathi is an AI-powered travel planning platform backend built with FastAPI 
 - **Conversational Travel Assistant**: Ask questions and get customized travel plans and advice.
 - **RAG Knowledge Base**: Uses FAISS vector search to retrieve travel context efficiently.
 
+## Architecture
+
+![YatraSathi Architecture Diagram](frontend/assets/YatraSathi.png)
+
+Below is the high-level system interaction architecture for YatraSathi's core planning features:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant FastAPI as Backend (FastAPI)
+    participant GroqLLM as External AI (Groq)
+
+    User->>Browser: Enters "Kyoto, 3 Days, Art"
+    User->>Browser: Clicks "Generate Pattern"
+    Browser->>Browser: Collect data, build JSON
+    Browser->>FastAPI: POST /itinerary/generate_direct (JSON Payload)
+    
+    activate FastAPI
+    FastAPI->>FastAPI: Pydantic Schema Validation
+    FastAPI->>FastAPI: Construct LangChain System Prompt
+    FastAPI->>GroqLLM: Invoke LLM Model (llama3-70b-8192)
+    
+    activate GroqLLM
+    Note over GroqLLM: Processing Geospatial rules,<br/>Weather estimations, and formatting raw HTML.
+    GroqLLM-->>FastAPI: Returns Formatted HTML String Payload
+    deactivate GroqLLM
+    
+    FastAPI-->>Browser: HTTP 200 OK { response: "<html...>" }
+    deactivate FastAPI
+    
+    Browser->>Browser: DOM Implementation (innerHTML)
+    Browser->>User: Displays stunning itinerary UI
+```
+
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) & Docker Compose
@@ -54,7 +89,8 @@ YatraSathi is an AI-powered travel planning platform backend built with FastAPI 
    *Note: Ensure you have running instances of PostgreSQL and Redis on your machine.*
 4. Start the FastAPI server:
    ```bash
-   uvicorn app.main:app --reload
+   uvicorn app.main:app --reload --port 8080
+
    ```
 
 ## API Documentation
