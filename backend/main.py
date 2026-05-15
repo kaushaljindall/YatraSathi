@@ -8,7 +8,7 @@ from config.settings import settings
 from config.database import read_db, write_db
 from routes import auth, planner, city, weather, expenses, budget, conversation, predictive, ecosystem, super_ai, trips
 from voice.voice_router import router as voice_router
-from websocket import live_updates
+from ws_handler import live_updates
 from realtime.realtime_scheduler import scheduler
 from monitoring.health_checks import router as health_router
 from monitoring.performance_tracker import performance_tracking_middleware

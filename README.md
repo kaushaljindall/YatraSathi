@@ -67,6 +67,8 @@ sequenceDiagram
 
 ### Running Locally without Docker
 
+For detailed step-by-step instructions, please see [Setup.md](Setup.md).
+
 1. Go to the backend directory:
    ```bash
    cd backend
@@ -82,15 +84,18 @@ sequenceDiagram
    ```
 3. Set your environment variables in `.env`:
    ```env
-   DATABASE_URL=postgresql://user:password@localhost:5432/yatrasathi
-   REDIS_URL=redis://localhost:6379/0
    GROQ_API_KEY=your_groq_api_key_here
+   OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
+   SECRET_KEY=your_jwt_secret
    ```
-   *Note: Ensure you have running instances of PostgreSQL and Redis on your machine.*
-4. Start the FastAPI server:
+   *(Note: The database is a local JSON file at `backend/data/database.json`, so no external DB setup is required.)*
+4. **Seed the RAG Knowledge Base** (Crucial step for City Insights & Itinerary planning):
    ```bash
-   uvicorn app.main:app --reload --port 8080
-
+   python -m data.seed_rag
+   ```
+5. Start the FastAPI server:
+   ```bash
+   python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
    ```
 
 ## API Documentation

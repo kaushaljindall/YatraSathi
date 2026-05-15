@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, Any
-from websocket.live_updates import websocket_manager
+from ws_handler.live_updates import websocket_manager
 
 logger = logging.getLogger(__name__)
 

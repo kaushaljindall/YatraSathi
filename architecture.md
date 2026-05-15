@@ -77,7 +77,7 @@ backend/
 │   ├── adaptive_planner.py    # RAG + LLM alternative generation
 │   ├── optimization_engine.py # Route/schedule reordering
 │   └── ai_orchestrator.py     # Master orchestration brain
-└── websocket/
+└── ws_handler/
     └── live_updates.py        # WebSocket connection manager + /ws/{user_id}
 ```
 
