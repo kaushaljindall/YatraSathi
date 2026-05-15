@@ -6,15 +6,26 @@ import logging
 from config.settings import settings
 from config.database import read_db, write_db
 from routes import auth, planner, city, weather, expenses, budget
+from websocket import live_updates
+from realtime.realtime_scheduler import scheduler
+import asyncio
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+async def lifespan(app: FastAPI):
+    # Start the real-time background monitor
+    task = asyncio.create_task(scheduler.start_monitoring())
+    yield
+    scheduler.is_running = False
+    task.cancel()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Scalable AI-powered smart travel assistant platform."
+    description="Scalable AI-powered smart travel assistant platform.",
+    lifespan=lifespan
 )
 
 # CORS Middleware
@@ -42,6 +53,7 @@ app.include_router(city.router, prefix=f"{settings.API_V1_STR}/city", tags=["RAG
 app.include_router(weather.router, prefix=f"{settings.API_V1_STR}/weather", tags=["Weather Intelligence"])
 app.include_router(expenses.router, prefix=f"{settings.API_V1_STR}/expenses", tags=["Expense Tracking"])
 app.include_router(budget.router, prefix=f"{settings.API_V1_STR}/budget", tags=["Budget Intelligence"])
+app.include_router(live_updates.router, tags=["Live WebSockets"])
 
 @app.get("/health")
 async def health_check():
