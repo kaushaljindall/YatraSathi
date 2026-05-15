@@ -45,17 +45,19 @@
       </div>
 
       <!-- Sign In Form -->
-      <form id="signin-form" class="auth-form active" action="dashboard.html">
+      <form id="signin-form" class="auth-form active" onsubmit="handleSignIn(event)">
         <div class="form-header">
           <h3>Welcome Back</h3>
           <p>Enter your credentials to access your dashboard.</p>
         </div>
 
+        <div id="signin-error" style="display:none;color:#ef4444;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;"></div>
+
         <div class="form-group">
           <label class="form-label">Email Address</label>
           <div class="input-with-icon">
             <i class="fa-regular fa-envelope"></i>
-            <input type="email" class="form-control" placeholder="hello@example.com" required>
+            <input type="email" id="signin-email" class="form-control" placeholder="hello@example.com" required>
           </div>
         </div>
 
@@ -63,14 +65,14 @@
           <label class="form-label">Password</label>
           <div class="input-with-icon">
             <i class="fa-solid fa-lock"></i>
-            <input type="password" class="form-control" placeholder="••••••••" required>
+            <input type="password" id="signin-password" class="form-control" placeholder="••••••••" required>
           </div>
           <div class="form-footer">
             <a href="#" class="forgot-link">Forgot password?</a>
           </div>
         </div>
 
-        <button type="button" class="btn btn-primary auth-submit" onclick="window.location.href='dashboard.html'">
+        <button type="submit" id="signin-btn" class="btn btn-primary auth-submit">
           Sign In <i class="fa-solid fa-arrow-right"></i>
         </button>
 
@@ -79,27 +81,37 @@
         </div>
 
         <div class="social-login">
-          <button type="button" class="btn btn-ghost social-btn-long" onclick="window.location.href='dashboard.html'">
+          <button type="button" class="btn btn-ghost social-btn-long" disabled title="OAuth coming soon">
             <i class="fa-brands fa-google" style="color:#ea4335;"></i> Google
           </button>
-          <button type="button" class="btn btn-ghost social-btn-long" onclick="window.location.href='dashboard.html'">
+          <button type="button" class="btn btn-ghost social-btn-long" disabled title="OAuth coming soon">
             <i class="fa-brands fa-apple"></i> Apple
           </button>
         </div>
       </form>
 
       <!-- Sign Up Form -->
-      <form id="signup-form" class="auth-form" action="dashboard.html">
+      <form id="signup-form" class="auth-form" onsubmit="handleSignUp(event)">
         <div class="form-header">
           <h3>Create an Account</h3>
           <p>Start planning your dream trips with AI today.</p>
         </div>
 
+        <div id="signup-error" style="display:none;color:#ef4444;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;"></div>
+
         <div class="form-group">
-          <label class="form-label">Full Name</label>
+          <label class="form-label">Username</label>
           <div class="input-with-icon">
             <i class="fa-regular fa-user"></i>
-            <input type="text" class="form-control" placeholder="John Doe" required>
+            <input type="text" id="signup-username" class="form-control" placeholder="johndoe" required minlength="3">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name (display)</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="text" id="signup-name" class="form-control" placeholder="John Doe">
           </div>
         </div>
 
@@ -107,7 +119,7 @@
           <label class="form-label">Email Address</label>
           <div class="input-with-icon">
             <i class="fa-regular fa-envelope"></i>
-            <input type="email" class="form-control" placeholder="hello@example.com" required>
+            <input type="email" id="signup-email" class="form-control" placeholder="hello@example.com" required>
           </div>
         </div>
 
@@ -115,11 +127,11 @@
           <label class="form-label">Password</label>
           <div class="input-with-icon">
             <i class="fa-solid fa-lock"></i>
-            <input type="password" class="form-control" placeholder="Create a strong password" required>
+            <input type="password" id="signup-password" class="form-control" placeholder="Create a strong password (min 6 chars)" required minlength="6">
           </div>
         </div>
 
-        <button type="button" class="btn btn-primary auth-submit" onclick="window.location.href='dashboard.html'">
+        <button type="submit" id="signup-btn" class="btn btn-primary auth-submit">
           Create Account <i class="fa-solid fa-arrow-right"></i>
         </button>
 
@@ -131,25 +143,83 @@
 </div>
 
 <script src="js/particles.js"></script>
+<script src="js/api.js"></script>
 <script>
+  // Redirect if already logged in
+  if (Auth.isLoggedIn()) window.location.href = 'dashboard.html';
+
   function switchTab(tabId) {
-    // Update tabs
     document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
     event.target.classList.add('active');
-
-    // Update forms
     document.querySelectorAll('.auth-form').forEach(form => {
       form.classList.remove('active');
       form.style.display = 'none';
     });
-    
     const activeForm = document.getElementById(tabId + '-form');
     activeForm.style.display = 'flex';
-    
-    // Slight delay for animation
-    setTimeout(() => {
-      activeForm.classList.add('active');
-    }, 10);
+    setTimeout(() => activeForm.classList.add('active'), 10);
+  }
+
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideError(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  }
+  function setLoading(btnId, loading, defaultText) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.innerHTML = loading
+      ? '<i class="fa-solid fa-spinner fa-spin"></i> Please wait...'
+      : defaultText;
+  }
+
+  async function handleSignIn(e) {
+    e.preventDefault();
+    hideError('signin-error');
+    const email    = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+    setLoading('signin-btn', true, 'Sign In <i class="fa-solid fa-arrow-right"></i>');
+    try {
+      await AuthAPI.login(email, password);
+      // Store a minimal user record for nav personalization
+      const username = email.split('@')[0];
+      Auth.setUser({ username, email });
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      showError('signin-error', err.message || 'Login failed. Check your credentials.');
+    } finally {
+      setLoading('signin-btn', false, 'Sign In <i class="fa-solid fa-arrow-right"></i>');
+    }
+  }
+
+  async function handleSignUp(e) {
+    e.preventDefault();
+    hideError('signup-error');
+    const username = document.getElementById('signup-username').value.trim();
+    const email    = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!username || username.length < 3) {
+      showError('signup-error', 'Username must be at least 3 characters.');
+      return;
+    }
+    setLoading('signup-btn', true, 'Create Account <i class="fa-solid fa-arrow-right"></i>');
+    try {
+      const data = await AuthAPI.signup(username, email, password);
+      window.showToast('Account created! Signing you in...', 'success', '✅');
+      // Auto-login after signup
+      await AuthAPI.login(email, password);
+      Auth.setUser({ id: data.id, username, email });
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+    } catch (err) {
+      showError('signup-error', err.message || 'Signup failed. Try a different username or email.');
+    } finally {
+      setLoading('signup-btn', false, 'Create Account <i class="fa-solid fa-arrow-right"></i>');
+    }
   }
 </script>
 </body>

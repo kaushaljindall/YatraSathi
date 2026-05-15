@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // Personalize nav
+  initNavUser();
+
   const form = document.getElementById("plannerForm");
   if (!form) return;
 
@@ -20,11 +23,24 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("startDate").valueAsDate = today;
   document.getElementById("endDate").valueAsDate = nextWeek;
 
-  const emptyState = document.getElementById("emptyState");
-  const loadingState = document.getElementById("loadingState");
-  const resultState = document.getElementById("resultState");
-  const statusText = document.getElementById("loadingStatusText");
-  const loadingBar = document.getElementById("loadingBar");
+  const emptyState   = document.getElementById("emptyState");
+  const loadingState  = document.getElementById("loadingState");
+  const resultState   = document.getElementById("resultState");
+  const statusText    = document.getElementById("loadingStatusText");
+  const loadingBar    = document.getElementById("loadingBar");
+
+  // ── Chip toggle (interests) ─────────────────────────────────
+  document.querySelectorAll('#interestChips .chip').forEach((chip) => {
+    chip.style.cursor = 'pointer';
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  // ── If opened with ?trip= load existing itinerary ──────────
+  const urlParams = new URLSearchParams(window.location.search);
+  const existingTripId = parseInt(urlParams.get('trip'));
+  if (existingTripId) {
+    loadExistingTrip(existingTripId, emptyState, resultState);
+  }
   const btn = document.getElementById("generateBtn");
 
   form.addEventListener("submit", async (e) => {
@@ -33,14 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const destination = document.getElementById("destination").value.trim();
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
-    const budgetEl = document.querySelector('input[name="budget"]:checked');
-    const budget = budgetEl ? budgetEl.value : "1000";
-    const paceVal = document.getElementById("paceSlider")?.value || 2;
-    const paceMap = { 1: "relaxed", 2: "balanced", 3: "packed" };
+    const budgetEl   = document.querySelector('input[name="budget"]:checked');
+    const budgetTier = budgetEl ? budgetEl.value : "moderate"; // "budget" | "moderate" | "luxury"
+    // Map tier to a numeric budget the backend can work with
+    const budgetMap  = { budget: 15000, moderate: 50000, luxury: 150000 };
+    const budget     = budgetMap[budgetTier] || 50000;
+    const paceVal    = document.getElementById("paceSlider")?.value || 2;
+    const paceMap    = { 1: "relaxed", 2: "balanced", 3: "packed" };
 
-    // Collect interests
-    const interests = [...document.querySelectorAll('input[name="interest"]:checked')]
-      .map((el) => el.value);
+    // Collect interests from chip UI (data-val on .chip.selected spans)
+    const interests = [...document.querySelectorAll('#interestChips .chip.selected')]
+      .map((el) => el.dataset.val).filter(Boolean);
 
     if (!destination) {
       window.showToast("Please enter a destination", "warning", "📍");
@@ -91,7 +110,28 @@ document.addEventListener("DOMContentLoaded", () => {
       if (statusText) statusText.textContent = "Complete!";
 
       await new Promise((r) => setTimeout(r, 400));
-      renderItinerary(result, destination, startDate, endDate, budget);
+
+      // ── Auto-save trip to DB ───────────────────────────────
+      let savedTripId = null;
+      try {
+        const tripResult = await TripsAPI.create({
+          destination,
+          start_date: startDate,
+          end_date:   endDate,
+          budget,
+          interests,
+          travel_style:        paceMap[paceVal] || "balanced",
+          hotel_preference:    "mid-range",
+          transport_preference: "public",
+        });
+        savedTripId = tripResult.trip_id;
+        localStorage.setItem("ys_active_trip", savedTripId);
+        window.showToast("Trip saved to your dashboard!", "success", "💾");
+      } catch {
+        window.showToast("Itinerary generated but couldn't save trip (login again if needed)", "warning", "⚠️");
+      }
+
+      renderItinerary(result, destination, startDate, endDate, budget, savedTripId);
       window.showToast("AI itinerary generated successfully!", "success", "🧠");
 
     } catch (err) {
@@ -117,28 +157,36 @@ document.addEventListener("DOMContentLoaded", () => {
     return dates.join(",");
   }
 
-  function renderItinerary(result, dest, startDate, endDate, budget) {
+  function renderItinerary(result, dest, startDate, endDate, budget, tripId) {
     loadingState?.classList.add("hidden");
     resultState?.classList.remove("hidden");
 
-    document.getElementById("resDest").textContent = dest;
-
+    document.getElementById("resDest").textContent    = dest;
     const d1 = new Date(startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    const d2 = new Date(endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    document.getElementById("resDates").textContent = `${d1} – ${d2}`;
+    const d2 = new Date(endDate).toLocaleDateString("en-US",   { month: "short", day: "numeric" });
+    document.getElementById("resDates").textContent  = `${d1} – ${d2}`;
     document.getElementById("resBudget").textContent = `₹${Number(budget).toLocaleString()}`;
 
-    // Show estimated cost from backend
     const costEl = document.getElementById("resEstimatedCost");
     if (costEl && result.estimated_cost) {
       costEl.textContent = `Est. Spend: ₹${Number(result.estimated_cost).toLocaleString()}`;
     }
 
     const container = document.getElementById("itineraryContainer");
-    const rawText = result.itinerary || "";
+    container.innerHTML = renderMarkdownItinerary(result.itinerary || "", result.destination, result.duration_days);
 
-    // Render markdown-like AI output as structured HTML
-    container.innerHTML = renderMarkdownItinerary(rawText, result.destination, result.duration_days);
+    // Wire "Save to Dashboard" button
+    const saveBtn = document.querySelector('.result-actions .btn-primary');
+    if (saveBtn) {
+      saveBtn.onclick = () => window.location.href = 'dashboard.html';
+    }
+
+    // Wire "Track Budget" button (second action button)
+    const budgetBtn = document.querySelector('.result-actions .btn-outline-primary');
+    if (budgetBtn && tripId) {
+      budgetBtn.innerHTML = '<i class="fa-solid fa-wallet"></i> Track Budget';
+      budgetBtn.onclick = () => window.location.href = `budget.html?trip=${tripId}`;
+    }
   }
 
   function renderMarkdownItinerary(text, destination, durationDays) {
@@ -214,3 +262,51 @@ document.addEventListener("DOMContentLoaded", () => {
     return html || `<div class="itinerary-day"><div class="day-timeline"><div class="timeline-item"><div class="ti-dot"></div><div class="ti-desc">${text.replace(/\n/g, "<br>")}</div></div></div></div>`;
   }
 });
+
+/* ── Load an existing saved trip by ID ───────────────────────── */
+async function loadExistingTrip(tripId, emptyState, resultState) {
+  try {
+    const result = await TripsAPI.get(tripId);
+    const trip   = result.trip;
+
+    if (!trip) return;
+
+    // Pre-fill destination
+    const destInput = document.getElementById("destination");
+    if (destInput) destInput.value = trip.destination;
+
+    const itinerary = trip.itinerary;
+    if (itinerary) {
+      emptyState?.classList.add("hidden");
+      resultState?.classList.remove("hidden");
+
+      const destEl = document.getElementById("resDest");
+      if (destEl) destEl.textContent = trip.destination;
+
+      const d1 = new Date(trip.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const d2 = new Date(trip.end_date).toLocaleDateString("en-US",   { month: "short", day: "numeric" });
+      const datesEl = document.getElementById("resDates");
+      if (datesEl) datesEl.textContent = `${d1} – ${d2}`;
+
+      const budgetEl = document.getElementById("resBudget");
+      if (budgetEl) budgetEl.textContent = `₹${Number(trip.budget).toLocaleString()}`;
+
+      const container = document.getElementById("itineraryContainer");
+      if (container) {
+        container.innerHTML = itinerary.itinerary_text
+          ? itinerary.itinerary_text.replace(/\n/g, "<br>")
+          : "<p style='color:#94a3b8'>Itinerary saved — regenerate above to refresh.</p>";
+      }
+
+      // Wire budget button
+      const budgetBtn = document.querySelector(".result-actions .btn-outline-primary");
+      if (budgetBtn) {
+        budgetBtn.innerHTML = '<i class="fa-solid fa-wallet"></i> Track Budget';
+        budgetBtn.onclick   = () => window.location.href = `budget.html?trip=${tripId}`;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load existing trip:", err.message);
+  }
+}
+

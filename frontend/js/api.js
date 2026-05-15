@@ -6,12 +6,27 @@
 
 const API_BASE = "http://127.0.0.1:8000/api/v1";
 
-/* ── Token Management ─────────────────────────────────────────── */
+/* ── Token & User Management ──────────────────────────────────── */
 const Auth = {
-  getToken: () => localStorage.getItem("ys_token"),
-  setToken: (t) => localStorage.setItem("ys_token", t),
-  clearToken: () => localStorage.removeItem("ys_token"),
-  isLoggedIn: () => !!localStorage.getItem("ys_token"),
+  getToken:    () => localStorage.getItem("ys_token"),
+  setToken:    (t) => localStorage.setItem("ys_token", t),
+  clearToken:  () => localStorage.removeItem("ys_token"),
+  isLoggedIn:  () => !!localStorage.getItem("ys_token"),
+
+  getUser:     () => {
+    try { return JSON.parse(localStorage.getItem("ys_user") || "null"); } catch { return null; }
+  },
+  setUser:     (u) => localStorage.setItem("ys_user", JSON.stringify(u)),
+  clearUser:   () => localStorage.removeItem("ys_user"),
+
+  getUserId() {
+    try {
+      const token = this.getToken();
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.sub;
+    } catch { return null; }
+  },
 };
 
 /* ── Core Fetch Wrapper ───────────────────────────────────────── */
@@ -23,13 +38,11 @@ async function apiFetch(path, options = {}) {
     ...(options.headers || {}),
   };
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers,
-  });
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
   if (res.status === 401) {
     Auth.clearToken();
+    Auth.clearUser();
     window.location.href = "auth.html";
     throw new Error("Session expired. Please log in again.");
   }
@@ -45,24 +58,37 @@ async function apiFetch(path, options = {}) {
 
 /* ── Auth Endpoints ───────────────────────────────────────────── */
 const AuthAPI = {
+  /**
+   * Login: backend UserCreate requires username, email, password.
+   * We derive a username from the email prefix for login (email-only form).
+   */
   async login(email, password) {
+    const username = email.split("@")[0]; // derive username from email for login
     const data = await apiFetch("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, email, password }),
     });
-    if (data.access_token) Auth.setToken(data.access_token);
+    if (data.access_token) {
+      Auth.setToken(data.access_token);
+    }
     return data;
   },
 
   async signup(username, email, password) {
-    return apiFetch("/auth/signup", {
+    const data = await apiFetch("/auth/signup", {
       method: "POST",
       body: JSON.stringify({ username, email, password }),
     });
+    // Store user info after signup
+    if (data.id) {
+      Auth.setUser({ id: data.id, username: data.username, email: data.email });
+    }
+    return data;
   },
 
   logout() {
     Auth.clearToken();
+    Auth.clearUser();
     window.location.href = "auth.html";
   },
 };
@@ -75,18 +101,9 @@ const TripsAPI = {
       body: JSON.stringify(tripData),
     });
   },
-
-  async listMine() {
-    return apiFetch("/trips/my-trips");
-  },
-
-  async get(tripId) {
-    return apiFetch(`/trips/${tripId}`);
-  },
-
-  async delete(tripId) {
-    return apiFetch(`/trips/${tripId}`, { method: "DELETE" });
-  },
+  async listMine()       { return apiFetch("/trips/my-trips"); },
+  async get(tripId)      { return apiFetch(`/trips/${tripId}`); },
+  async delete(tripId)   { return apiFetch(`/trips/${tripId}`, { method: "DELETE" }); },
 };
 
 /* ── Planner Endpoints ────────────────────────────────────────── */
@@ -111,23 +128,18 @@ const CityAPI = {
 
 /* ── Weather Endpoints ────────────────────────────────────────── */
 const WeatherAPI = {
-  async get(lat, lon) {
-    return apiFetch(`/weather/?lat=${lat}&lon=${lon}`);
-  },
+  async get(lat, lon) { return apiFetch(`/weather/?lat=${lat}&lon=${lon}`); },
 };
 
 /* ── Expense & Budget Endpoints ───────────────────────────────── */
 const ExpensesAPI = {
-  async add(tripId, category, amount) {
+  async add(tripId, category, amount, description = "") {
     return apiFetch("/expenses/add", {
       method: "POST",
-      body: JSON.stringify({ trip_id: tripId, category, amount }),
+      body: JSON.stringify({ trip_id: tripId, category, amount, description }),
     });
   },
-
-  async getForTrip(tripId) {
-    return apiFetch(`/expenses/trip/${tripId}`);
-  },
+  async getForTrip(tripId) { return apiFetch(`/expenses/trip/${tripId}`); },
 };
 
 const BudgetAPI = {
@@ -162,34 +174,15 @@ class YatraWebSocket {
     const token = Auth.getToken();
     const wsBase = API_BASE.replace("http", "ws").replace("/api/v1", "");
     const url = `${wsBase}/ws/${userId}${token ? "?token=" + token : ""}`;
-
     this.ws = new WebSocket(url);
 
-    this.ws.onopen = () => {
-      console.log("[WS] Connected to YatraSaathi live updates");
-      this._emit("connected", { userId });
-    };
-
+    this.ws.onopen    = () => { console.log("[WS] Connected"); this._emit("connected", { userId }); };
     this.ws.onmessage = (evt) => {
-      try {
-        const msg = JSON.parse(evt.data);
-        this._emit(msg.type, msg);
-        this._emit("*", msg);
-      } catch {
-        console.warn("[WS] Invalid JSON:", evt.data);
-      }
+      try { const msg = JSON.parse(evt.data); this._emit(msg.type, msg); this._emit("*", msg); }
+      catch { console.warn("[WS] Invalid JSON:", evt.data); }
     };
-
-    this.ws.onclose = (e) => {
-      console.warn("[WS] Disconnected:", e.reason);
-      this._emit("disconnected", { code: e.code });
-      // Auto-reconnect after 5 seconds
-      setTimeout(() => this.connect(userId), 5000);
-    };
-
-    this.ws.onerror = (err) => {
-      console.error("[WS] Error:", err);
-    };
+    this.ws.onclose   = (e) => { console.warn("[WS] Disconnected:", e.reason); this._emit("disconnected", { code: e.code }); setTimeout(() => this.connect(userId), 5000); };
+    this.ws.onerror   = (err) => console.error("[WS] Error:", err);
   }
 
   send(type, payload = {}) {
@@ -205,16 +198,40 @@ class YatraWebSocket {
     this.listeners[eventType].push(callback);
   }
 
-  _emit(eventType, data) {
-    (this.listeners[eventType] || []).forEach((cb) => cb(data));
-  }
-
-  disconnect() {
-    if (this.ws) this.ws.close();
-  }
+  _emit(eventType, data) { (this.listeners[eventType] || []).forEach((cb) => cb(data)); }
+  disconnect() { if (this.ws) this.ws.close(); }
 }
 
 const yatraWS = new YatraWebSocket();
+
+/* ── Nav Personalization ────────────────────────────────────────── */
+/**
+ * Call on every authenticated page to update the nav avatar with the
+ * real user's initials and show a logout button.
+ */
+function initNavUser() {
+  const user = Auth.getUser();
+  const name = user?.username || "Traveler";
+  const initials = name.slice(0, 2).toUpperCase();
+
+  // Update all nav avatars
+  document.querySelectorAll(".nav-avatar").forEach((img) => {
+    img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
+    img.title = name;
+  });
+
+  // Inject logout button if not already present
+  const navActions = document.querySelector(".nav-actions");
+  if (navActions && !document.getElementById("logoutBtn")) {
+    const logoutBtn = document.createElement("button");
+    logoutBtn.id = "logoutBtn";
+    logoutBtn.className = "btn btn-ghost btn-sm";
+    logoutBtn.style.cssText = "font-size:13px;padding:6px 14px;";
+    logoutBtn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i> Logout`;
+    logoutBtn.onclick = () => AuthAPI.logout();
+    navActions.insertBefore(logoutBtn, navActions.querySelector(".nav-hamburger"));
+  }
+}
 
 /* ── Utility: Toast Notifications ─────────────────────────────── */
 window.showToast = function (message, type = "info", icon = "") {
@@ -227,30 +244,26 @@ window.showToast = function (message, type = "info", icon = "") {
     document.body.appendChild(container);
   }
 
-  const colors = {
-    success: "#10b981",
-    error: "#ef4444",
-    warning: "#f59e0b",
-    info: "#3b82f6",
-  };
-
+  const colors = { success: "#10b981", error: "#ef4444", warning: "#f59e0b", info: "#3b82f6" };
   const toast = document.createElement("div");
   toast.style.cssText = `
-    background: rgba(15,23,42,0.97);
-    border: 1px solid ${colors[type] || colors.info};
-    color: #f1f5f9;
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    max-width: 320px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    animation: slideIn 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    background:rgba(15,23,42,0.97);
+    border:1px solid ${colors[type] || colors.info};
+    color:#f1f5f9;
+    padding:12px 18px;
+    border-radius:10px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    max-width:320px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    animation:slideIn 0.3s ease;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
   `;
   toast.innerHTML = `${icon ? `<span>${icon}</span>` : ""}<span>${message}</span>`;
+  toast.onclick = () => toast.remove();
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -258,10 +271,10 @@ window.showToast = function (message, type = "info", icon = "") {
     toast.style.transform = "translateX(20px)";
     toast.style.transition = "all 0.3s";
     setTimeout(() => toast.remove(), 300);
-  }, 4000);
+  }, 4500);
 };
 
 /* Export for module use if needed */
 if (typeof module !== "undefined") {
-  module.exports = { Auth, AuthAPI, TripsAPI, PlannerAPI, CityAPI, WeatherAPI, ExpensesAPI, BudgetAPI, ChatAPI, yatraWS };
+  module.exports = { Auth, AuthAPI, TripsAPI, PlannerAPI, CityAPI, WeatherAPI, ExpensesAPI, BudgetAPI, ChatAPI, yatraWS, initNavUser };
 }

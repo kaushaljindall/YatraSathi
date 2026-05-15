@@ -45,67 +45,120 @@
 <div class="page-wrapper" style="padding-top: 100px;">
   <div class="container budget-layout">
     
+    <!-- Page Header -->
     <div class="budget-header-wrapper" style="display:flex;align-items:center;justify-content:space-between;gap:2rem;margin-bottom:3rem;flex-wrap:wrap;">
       <div class="budget-header reveal" style="flex:1;min-width:300px;margin-bottom:0;">
         <div class="section-badge" style="color:var(--clr-emerald);background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2)">
           <i class="fa-solid fa-chart-pie"></i> AI Financial Tracking
         </div>
         <h1 class="section-title">Budget <span class="text-gradient" style="background:linear-gradient(135deg, #10b981, #06b6d4);-webkit-background-clip:text">Intelligence</span></h1>
-        <p class="section-subtitle">Real-time expense monitoring, price comparison, and AI-driven saving recommendations for your Kyoto Trip.</p>
+        <p class="section-subtitle" id="budgetSubtitle">Real-time expense monitoring, AI-driven saving recommendations.</p>
       </div>
       <div class="budget-visual reveal reveal-delay-1" style="flex:1;min-width:300px;text-align:right;">
-        <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=600&auto=format&fit=crop" alt="Finance Tracking Concept" style="max-width:100%;width:350px;border-radius:var(--r-xl);box-shadow:var(--shadow-card);border:4px solid #fff;transform:rotate(2deg);transition:transform 0.4s ease;" onmouseover="this.style.transform='rotate(0deg) scale(1.05)'" onmouseout="this.style.transform='rotate(2deg) scale(1)'" />
+        <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=600&auto=format&fit=crop" alt="Finance Tracking" style="max-width:100%;width:350px;border-radius:var(--r-xl);box-shadow:var(--shadow-card);border:4px solid rgba(255,255,255,0.08);transform:rotate(2deg);transition:transform 0.4s ease;" onmouseover="this.style.transform='rotate(0deg) scale(1.05)'" onmouseout="this.style.transform='rotate(2deg) scale(1)'" />
       </div>
+    </div>
+
+    <!-- ── Trip Selector (if no trip in URL) ─────── -->
+    <div id="tripSelectorBanner" class="glass reveal" style="display:none;padding:16px 20px;border-radius:12px;margin-bottom:2rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <i class="fa-solid fa-circle-info" style="color:var(--clr-primary)"></i>
+      <span style="color:#94a3b8;flex:1;">Select a trip to view its budget analytics:</span>
+      <select id="tripSelector" class="form-control" style="max-width:300px;background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;">
+        <option value="">Loading trips...</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="onTripSelect()">
+        <i class="fa-solid fa-check"></i> Load
+      </button>
     </div>
 
     <div class="budget-grid">
       
-      <!-- Meter Card -->
+      <!-- ── Budget Overview Card ──────────────────── -->
       <div class="budget-card glass reveal reveal-delay-1">
         <h3>Total Budget Overview</h3>
+        <div style="margin-bottom:0.5rem;">
+          <span style="font-size:0.8rem;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Trip</span>
+          <div id="budgetDestination" style="color:#f1f5f9;font-weight:600;font-size:1rem;margin-top:2px;">—</div>
+          <div id="budgetDuration"    style="color:#64748b;font-size:0.8rem;margin-top:2px;">—</div>
+        </div>
         <div class="budget-meter-container">
           <div class="meter-text">
-            <span class="meter-spent">₹45,000</span>
-            <span class="meter-total">/ ₹60,000</span>
+            <span class="meter-spent" id="budgetSpent">₹0</span>
+            <span class="meter-total"> / <span id="budgetTotal">₹0</span></span>
           </div>
-          <div class="progress-bar" style="height:12px;margin-bottom:1rem">
-            <div class="progress-fill" style="width:75%;background:linear-gradient(90deg, #10b981, #f59e0b)"></div>
+          <div class="progress-bar" style="height:12px;margin-bottom:0.5rem">
+            <div class="progress-fill" id="budgetProgressBar" style="width:0%;background:linear-gradient(90deg,#10b981,#f59e0b);transition:width 1s ease;"></div>
           </div>
-          <div class="meter-status" style="color:var(--clr-amber)">
-            <i class="fa-solid fa-triangle-exclamation"></i> Approaching luxury threshold
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div id="burnRateStatus" style="font-size:13px;color:#94a3b8;">Calculating burn rate...</div>
+            <div style="font-size:13px;color:#64748b;"><span id="budgetPercent">0%</span> used</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.06);">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#64748b;font-size:13px;">Remaining</span>
+            <span id="budgetRemaining" style="color:#10b981;font-weight:600;">₹0</span>
           </div>
         </div>
       </div>
 
-      <!-- AI Savings Card -->
+      <!-- ── AI Budget Advice Card ──────────────────── -->
       <div class="budget-card glass reveal reveal-delay-2" style="border-color:rgba(16,185,129,0.3)">
-        <h3><i class="fa-solid fa-robot" style="color:var(--clr-emerald)"></i> AI Projected Savings</h3>
-        <div class="savings-amount text-gradient" style="background:linear-gradient(135deg, #10b981, #06b6d4);-webkit-background-clip:text">
-          ₹12,400
+        <h3><i class="fa-solid fa-robot" style="color:var(--clr-emerald)"></i> AI Budget Advisor</h3>
+        <div id="aiAdvice" style="color:#94a3b8;font-size:0.875rem;line-height:1.7;min-height:80px;">
+          <i class="fa-solid fa-spinner fa-spin" style="margin-right:8px;color:#8b5cf6;"></i>
+          Analyzing your spending patterns...
         </div>
-        <p style="color:var(--text-300);font-size:0.875rem;margin-bottom:1rem">
-          Saved through optimized routing, advance booking alerts, and alternate dining suggestions.
-        </p>
-        <button class="btn btn-outline-primary" style="width:100%;border-color:var(--clr-emerald);color:var(--clr-emerald)">View Savings Log</button>
       </div>
 
-      <!-- Chart Card -->
-      <div class="budget-card glass reveal reveal-delay-3" style="grid-column: 1 / -1">
+      <!-- ── Add Expense Form ───────────────────────── -->
+      <div class="budget-card glass reveal reveal-delay-3">
+        <h3><i class="fa-solid fa-plus-circle" style="color:var(--clr-primary)"></i> Log Expense</h3>
+        <form id="addExpenseForm" style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <label class="form-label" style="font-size:12px;color:#64748b;margin-bottom:4px;display:block;">Category</label>
+            <select id="expenseCategory" class="form-control" style="background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;width:100%;">
+              <option value="food">🍽️ Food & Dining</option>
+              <option value="transport">🚗 Transport</option>
+              <option value="accommodation">🏨 Accommodation</option>
+              <option value="activity">🎯 Activities</option>
+              <option value="shopping">🛍️ Shopping</option>
+              <option value="other">💳 Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" style="font-size:12px;color:#64748b;margin-bottom:4px;display:block;">Amount (₹)</label>
+            <input type="number" id="expenseAmount" class="form-control" placeholder="e.g. 1200" min="1" step="0.01" required style="background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;width:100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size:12px;color:#64748b;margin-bottom:4px;display:block;">Description (optional)</label>
+            <input type="text" id="expenseDesc" class="form-control" placeholder="e.g. Dinner at local restaurant" style="background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;width:100%;">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            <i class="fa-solid fa-plus"></i> Add Expense
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Expense Breakdown Chart ────────────────── -->
+      <div class="budget-card glass reveal" style="grid-column: 1 / -1">
         <h3>Expense Breakdown</h3>
-        <div class="chart-container">
+        <div class="chart-container" style="position:relative;height:300px;">
           <canvas id="budgetChart"></canvas>
         </div>
       </div>
 
-      <!-- Expense List -->
+      <!-- ── Expense List ───────────────────────────── -->
       <div class="budget-card glass reveal" style="grid-column: 1 / -1">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-          <h3>Predicted Expenses</h3>
-          <button class="btn btn-ghost btn-sm"><i class="fa-solid fa-plus"></i> Add Manual Expense</button>
+          <h3>Transaction History</h3>
+          <span id="expenseCount" style="color:#64748b;font-size:13px;">0 transactions</span>
         </div>
-        
         <div class="expense-list" id="expenseList">
-          <div style="color:#94a3b8;text-align:center;padding:20px;">Loading expenses...</div>
+          <div style="color:#94a3b8;text-align:center;padding:20px;">
+            <i class="fa-solid fa-receipt" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:8px;"></i>
+            No expenses yet. Log your first expense above.
+          </div>
         </div>
       </div>
 

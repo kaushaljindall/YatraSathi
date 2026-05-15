@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  initNavUser();
+
   let currentCity = "";
   let activeCategory = "all";
 
