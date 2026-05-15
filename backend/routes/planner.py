@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 import httpx
 import logging
-
 from auth.dependencies import get_current_user
 from schemas.trip import ItineraryGenerateRequest
 from config.settings import settings
+from ai.itinerary_ai import itinerary_ai
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -18,40 +18,24 @@ async def generate_trip(
     Generates an optimized AI itinerary using Groq LLM, integrating weather and RAG insights.
     """
     try:
-        # TODO: Inject weather service and RAG insights
-        system_prompt = "You are YatraSaathi, an elite AI travel assistant."
-        user_prompt = f"Plan a trip to {request.destination} for {request.dates} on a {request.budget} budget. Interests: {', '.join(request.interests)}. Style: {request.travel_style}."
+        # Convert preferences to list for AI
+        preferences = request.interests + [request.travel_style, request.hotel_preference, request.transport_preference]
         
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {settings.GROQ_API_KEY}"},
-                json={
-                    "model": "llama3-8b-8192",
-                    "messages": [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ],
-                    "temperature": 0.7
-                },
-                timeout=30.0
-            )
-            
-        if response.status_code != 200:
-            logger.error(f"Groq API Error: {response.text}")
-            raise HTTPException(status_code=502, detail="Failed to communicate with AI service")
-            
-        ai_data = response.json()
-        itinerary_text = ai_data["choices"][0]["message"]["content"]
+        # Clean budget parsing
+        budget = float(request.budget) if request.budget.replace('.','',1).isdigit() else 1000.0
         
-        # In a real app, we parse this into structured JSON models
-        # and save it to the database linked to the user
+        itinerary_text = await itinerary_ai.generate(
+            destination=request.destination,
+            duration=len(request.dates.split(",")) if "," in request.dates else 3,
+            budget=budget,
+            preferences=preferences
+        )
         
         return {
             "success": True,
             "destination": request.destination,
             "itinerary": itinerary_text,
-            "estimated_cost": "Calculated by Budget Service"
+            "estimated_cost": "Calculated by AI Engine"
         }
         
     except Exception as e:
