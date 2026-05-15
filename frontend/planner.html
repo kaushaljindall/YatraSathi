@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planner — YatraSaathi AI</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/planner.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<div class="bg-canvas">
+  <canvas id="particleCanvas"></canvas>
+</div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-3" style="background:radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%);"></div>
+<div class="grid-overlay"></div>
+
+<!-- ── Navigation ──────────────────────────────── -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      YatraSaathi
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="planner.html" class="nav-link active">Planner</a>
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="budget.html" class="nav-link">Budget Intelligence</a>
+      <a href="city.html" class="nav-link">City Insights</a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="user-profile-btn">
+        <img src="https://ui-avatars.com/api/?name=Traveler&background=3b82f6&color=fff" alt="User" class="nav-avatar">
+      </div>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrapper" style="padding-top: 100px;">
+  <div class="container planner-layout">
+    
+    <!-- ── Sidebar Form ────────────────────────────── -->
+    <aside class="planner-sidebar glass">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title"><i class="fa-solid fa-wand-magic-sparkles text-gradient"></i> AI Trip Builder</h2>
+        <p class="sidebar-subtitle">Configure parameters for Groq LLM</p>
+      </div>
+
+      <form id="plannerForm" class="planner-form">
+        <div class="form-section">
+          <h3 class="form-section-title">Core Details</h3>
+          
+          <div class="form-group">
+            <label class="form-label">Destination</label>
+            <div class="input-icon-wrapper">
+              <i class="fa-solid fa-location-dot input-icon"></i>
+              <input type="text" class="form-control" id="destination" placeholder="Where do you want to go?" required value="Kyoto, Japan">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Start Date</label>
+              <input type="date" class="form-control" id="startDate" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Date</label>
+              <input type="date" class="form-control" id="endDate" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Preferences</h3>
+          
+          <div class="form-group">
+            <label class="form-label">Budget Level</label>
+            <div class="budget-selector">
+              <label class="budget-option">
+                <input type="radio" name="budget" value="budget" checked>
+                <div class="budget-card">
+                  <i class="fa-solid fa-piggy-bank"></i>
+                  <span>Budget</span>
+                </div>
+              </label>
+              <label class="budget-option">
+                <input type="radio" name="budget" value="moderate">
+                <div class="budget-card">
+                  <i class="fa-solid fa-wallet"></i>
+                  <span>Moderate</span>
+                </div>
+              </label>
+              <label class="budget-option">
+                <input type="radio" name="budget" value="luxury">
+                <div class="budget-card">
+                  <i class="fa-solid fa-gem"></i>
+                  <span>Luxury</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Interests & Vibe</label>
+            <div class="chips-row" id="interestChips">
+              <span class="chip selected" data-val="culture">Culture</span>
+              <span class="chip selected" data-val="food">Food</span>
+              <span class="chip" data-val="nature">Nature</span>
+              <span class="chip" data-val="nightlife">Nightlife</span>
+              <span class="chip" data-val="shopping">Shopping</span>
+              <span class="chip" data-val="history">History</span>
+              <span class="chip" data-val="relaxation">Relaxation</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Advanced Configuration</h3>
+          
+          <div class="form-group">
+            <label class="form-label">Pace</label>
+            <input type="range" class="range-slider" min="1" max="3" value="2" id="paceSlider">
+            <div class="range-labels">
+              <span>Relaxed</span>
+              <span>Moderate</span>
+              <span>Packed</span>
+            </div>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label class="custom-checkbox">
+              <input type="checkbox" id="includeWeather" checked>
+              <span class="checkmark"></span>
+              <span class="cb-label">Apply real-time weather constraints</span>
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" id="optimizeRoutes" checked>
+              <span class="checkmark"></span>
+              <span class="cb-label">Use geospatial route optimization</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg generate-btn" id="generateBtn">
+          <span class="btn-text">Generate Intelligent Itinerary</span>
+          <i class="fa-solid fa-arrow-right btn-icon"></i>
+        </button>
+      </form>
+    </aside>
+
+    <!-- ── Main Content Area ──────────────────────── -->
+    <main class="planner-main">
+      <!-- Empty State -->
+      <div class="empty-state glass" id="emptyState">
+        <div class="empty-icon">
+          <div class="orb empty-orb"></div>
+          <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <h2>Ready to explore?</h2>
+        <p>Fill out your preferences in the sidebar and let Groq LLM craft your perfect journey.</p>
+        
+        <div class="feature-hints">
+          <div class="hint">
+            <i class="fa-solid fa-bolt text-gradient"></i> Fast Generation
+          </div>
+          <div class="hint">
+            <i class="fa-solid fa-route" style="color:var(--clr-teal)"></i> Optimized Routes
+          </div>
+          <div class="hint">
+            <i class="fa-solid fa-cloud" style="color:var(--clr-emerald)"></i> Weather Aware
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state glass hidden" id="loadingState">
+        <div class="ai-processing-visual">
+          <div class="pulse-ring pr-1"></div>
+          <div class="pulse-ring pr-2"></div>
+          <div class="ai-core"><i class="fa-solid fa-microchip"></i></div>
+        </div>
+        <h2 class="typing-text">Initializing AI Engine...</h2>
+        <p class="loading-status" id="loadingStatusText">Connecting to Groq API</p>
+        
+        <div class="loading-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="loadingBar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result State -->
+      <div class="result-state hidden" id="resultState">
+        <div class="result-header glass">
+          <div class="result-title-row">
+            <div>
+              <div class="section-badge"><i class="fa-solid fa-check-double"></i> AI Generated</div>
+              <h1 class="result-dest" id="resDest">Kyoto, Japan</h1>
+              <p class="result-meta"><i class="fa-solid fa-calendar"></i> <span id="resDates">Oct 12 - Oct 15</span> • <i class="fa-solid fa-wallet"></i> <span id="resBudget" style="text-transform:capitalize">Moderate</span> • <i class="fa-solid fa-shoe-prints"></i> <span id="resPace">Moderate</span> Pace</p>
+            </div>
+            <div class="result-actions">
+              <button class="btn btn-outline-primary"><i class="fa-solid fa-share-nodes"></i> Share</button>
+              <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Save to Dashboard</button>
+            </div>
+          </div>
+          
+          <div class="trip-summary-cards">
+            <div class="summary-card">
+              <div class="sc-icon" style="color:var(--clr-primary);background:rgba(59,130,246,0.1)"><i class="fa-solid fa-sun"></i></div>
+              <div class="sc-info">
+                <span class="sc-label">Expected Weather</span>
+                <span class="sc-val">22°C, Mostly Sunny</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="sc-icon" style="color:var(--clr-emerald);background:rgba(16,185,129,0.1)"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <div class="sc-info">
+                <span class="sc-label">Est. Cost</span>
+                <span class="sc-val">₹45,000</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="sc-icon" style="color:var(--clr-purple);background:rgba(139,92,246,0.1)"><i class="fa-solid fa-map"></i></div>
+              <div class="sc-info">
+                <span class="sc-label">Distance Covered</span>
+                <span class="sc-val">42 km total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="itinerary-timeline" id="itineraryContainer">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<script src="js/particles.js"></script>
+<script src="js/main.js"></script>
+<script src="js/planner.js"></script>
+</body>
+</html>

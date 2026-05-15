@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Intelligence — YatraSaathi AI</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/budget.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="bg-canvas">
+  <canvas id="particleCanvas"></canvas>
+</div>
+<div class="bg-glow" style="background:radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%); width: 600px; height: 600px; top: -100px; right: -100px;"></div>
+
+<!-- ── Navigation ──────────────────────────────── -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      YatraSaathi
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="planner.html" class="nav-link">Planner</a>
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="budget.html" class="nav-link active">Budget Intelligence</a>
+      <a href="city.html" class="nav-link">City Insights</a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="user-profile-btn">
+        <img src="https://ui-avatars.com/api/?name=Traveler&background=3b82f6&color=fff" alt="User" class="nav-avatar">
+      </div>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrapper" style="padding-top: 100px;">
+  <div class="container budget-layout">
+    
+    <div class="budget-header reveal">
+      <div class="section-badge" style="color:var(--clr-emerald);background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2)">
+        <i class="fa-solid fa-chart-pie"></i> AI Financial Tracking
+      </div>
+      <h1 class="section-title">Budget <span class="text-gradient" style="background:linear-gradient(135deg, #10b981, #06b6d4);-webkit-background-clip:text">Intelligence</span></h1>
+      <p class="section-subtitle">Real-time expense monitoring, price comparison, and AI-driven saving recommendations for your Kyoto Trip.</p>
+    </div>
+
+    <div class="budget-grid">
+      
+      <!-- Meter Card -->
+      <div class="budget-card glass reveal reveal-delay-1">
+        <h3>Total Budget Overview</h3>
+        <div class="budget-meter-container">
+          <div class="meter-text">
+            <span class="meter-spent">₹45,000</span>
+            <span class="meter-total">/ ₹60,000</span>
+          </div>
+          <div class="progress-bar" style="height:12px;margin-bottom:1rem">
+            <div class="progress-fill" style="width:75%;background:linear-gradient(90deg, #10b981, #f59e0b)"></div>
+          </div>
+          <div class="meter-status" style="color:var(--clr-amber)">
+            <i class="fa-solid fa-triangle-exclamation"></i> Approaching luxury threshold
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Savings Card -->
+      <div class="budget-card glass reveal reveal-delay-2" style="border-color:rgba(16,185,129,0.3)">
+        <h3><i class="fa-solid fa-robot" style="color:var(--clr-emerald)"></i> AI Projected Savings</h3>
+        <div class="savings-amount text-gradient" style="background:linear-gradient(135deg, #10b981, #06b6d4);-webkit-background-clip:text">
+          ₹12,400
+        </div>
+        <p style="color:var(--text-300);font-size:0.875rem;margin-bottom:1rem">
+          Saved through optimized routing, advance booking alerts, and alternate dining suggestions.
+        </p>
+        <button class="btn btn-outline-primary" style="width:100%;border-color:var(--clr-emerald);color:var(--clr-emerald)">View Savings Log</button>
+      </div>
+
+      <!-- Chart Card -->
+      <div class="budget-card glass reveal reveal-delay-3" style="grid-column: 1 / -1">
+        <h3>Expense Breakdown</h3>
+        <div class="chart-container">
+          <canvas id="budgetChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Expense List -->
+      <div class="budget-card glass reveal" style="grid-column: 1 / -1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+          <h3>Predicted Expenses</h3>
+          <button class="btn btn-ghost btn-sm"><i class="fa-solid fa-plus"></i> Add Manual Expense</button>
+        </div>
+        
+        <div class="expense-list">
+          <div class="expense-item">
+            <div class="ex-icon" style="background:rgba(59,130,246,0.1);color:var(--clr-primary)"><i class="fa-solid fa-plane"></i></div>
+            <div class="ex-details">
+              <h4>Flights (Roundtrip)</h4>
+              <span>Delhi to Kyoto (Kansai Intl)</span>
+            </div>
+            <div class="ex-amount">₹28,000</div>
+          </div>
+
+          <div class="expense-item">
+            <div class="ex-icon" style="background:rgba(139,92,246,0.1);color:var(--clr-purple)"><i class="fa-solid fa-hotel"></i></div>
+            <div class="ex-details">
+              <h4>Accommodation</h4>
+              <span>4 Nights at Downtown Kyoto</span>
+            </div>
+            <div class="ex-amount">₹12,000</div>
+          </div>
+
+          <div class="expense-item warning-glow">
+            <div class="ex-icon" style="background:rgba(245,158,11,0.1);color:var(--clr-amber)"><i class="fa-solid fa-utensils"></i></div>
+            <div class="ex-details">
+              <h4>Food & Dining</h4>
+              <span>AI predicts higher cost based on style</span>
+            </div>
+            <div class="ex-amount">₹8,500 <i class="fa-solid fa-arrow-trend-up" style="color:var(--clr-amber);font-size:0.75rem"></i></div>
+          </div>
+
+          <div class="expense-item">
+            <div class="ex-icon" style="background:rgba(16,185,129,0.1);color:var(--clr-emerald)"><i class="fa-solid fa-train"></i></div>
+            <div class="ex-details">
+              <h4>Local Transport</h4>
+              <span>JR Pass & Subway (AI Optimized)</span>
+            </div>
+            <div class="ex-amount">₹3,500</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/particles.js"></script>
+<script src="js/main.js"></script>
+<script src="js/budget.js"></script>
+</body>
+</html>

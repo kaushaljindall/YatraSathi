@@ -1,260 +1,532 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YatraSathi | AI Travel Companion</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#00f2fe',
-                        accent: '#facc15',
-                        dark: '#07090f',
-                        surface: '#111827',
-                    },
-                    fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YatraSaathi — AI-Powered Smart Travel Planning</title>
+  <meta name="description" content="YatraSaathi is an AI-powered travel assistant that plans intelligent trips, manages budgets, and delivers city insights using cutting-edge RAG technology." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-    <!-- Background Grid -->
-    <div class="bg-grid"></div>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <i class="fa-solid fa-map-location-dot"></i> YatraSathi
-            </a>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#assistant">AI Assistant</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <a href="auth.html" class="btn btn-outline glow-effect">Start Planning</a>
-            <div class="menu-toggle" id="mobile-menu">
-                <i class="fa-solid fa-bars"></i>
-            </div>
+<!-- Background -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<div class="bg-glow bg-glow-3"></div>
+<div class="grid-overlay"></div>
+
+<!-- Particles Canvas -->
+<canvas id="particleCanvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></canvas>
+
+<!-- ── Navigation ──────────────────────────────── -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      YatraSaathi
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="planner.html" class="nav-link">Planner</a>
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="budget.html" class="nav-link">Budget Intelligence</a>
+      <a href="city.html" class="nav-link">City Insights</a>
+    </div>
+
+    <div class="nav-actions">
+      <a href="planner.html" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Start Planning
+      </a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="nav-mobile" id="mobileNav">
+  <a href="index.html" class="nav-link active">Home</a>
+  <a href="planner.html" class="nav-link">Planner</a>
+  <a href="dashboard.html" class="nav-link">Dashboard</a>
+  <a href="budget.html" class="nav-link">Budget Intelligence</a>
+  <a href="city.html" class="nav-link">City Insights</a>
+  <a href="planner.html" class="btn btn-primary" style="margin-top:.75rem;width:100%;justify-content:center;">
+    <i class="fa-solid fa-wand-magic-sparkles"></i> Start Planning
+  </a>
+</div>
+
+<!-- ── Hero ───────────────────────────────────── -->
+<section class="hero" id="home">
+  <div class="hero-inner container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="glow-dot"></span>
+        AI Travel Intelligence — Powered by Groq LLM
+      </div>
+
+      <h1 class="hero-title">
+        Your AI-Powered<br>
+        <span class="text-gradient">Smart Travel</span><br>
+        Companion
+      </h1>
+
+      <p class="hero-subtitle">
+        Plan unforgettable journeys with AI itinerary generation, real-time weather intelligence, RAG-based city insights, and budget-aware recommendations — all in one platform.
+      </p>
+
+      <div class="hero-actions">
+        <a href="planner.html" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-rocket"></i>
+          Plan My Trip
+        </a>
+        <a href="dashboard.html" class="btn btn-ghost btn-lg">
+          <i class="fa-solid fa-chart-line"></i>
+          View Demo Dashboard
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="50000">0</span><span>+</span>
+          <span class="hero-stat-label">Trips Planned</span>
         </div>
-    </nav>
-
-    <!-- Landing Section -->
-    <section id="home" class="hero-section flex items-center justify-between mx-auto max-w-7xl px-6 py-24 min-h-screen relative z-10">
-        <div class="hero-content flex-1 pr-12">
-            <h3 class="greeting text-accent font-bold tracking-wide uppercase text-sm mb-4">Hi Traveler 👋</h3>
-            <h1 class="main-heading text-5xl md:text-7xl font-extrabold leading-tight mb-8">Meet <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#00f2fe] to-[#facc15]">YatraSathi</span><br>Your AI Travel Companion</h1>
-            <p class="description text-lg md:text-xl text-slate-300 max-w-2xl mb-10 leading-relaxed">
-                YatraSathi generates smart, personalized travel itineraries using advanced AI, real-time weather data, and geospatial route optimization to make your journeys unforgettable.
-            </p>
-            <div class="hero-buttons flex items-center gap-6">
-                <a href="auth.html" class="btn btn-primary glow-effect px-8 py-4 text-lg rounded-xl shadow-[0_0_20px_rgba(0,242,254,0.3)] hover:scale-105 transition-transform duration-300">Plan My Trip</a>
-                <a href="#features" class="btn btn-secondary px-8 py-4 text-lg rounded-xl hover:bg-slate-800 transition-colors duration-300 ring-1 ring-slate-700">Explore Features</a>
-            </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="120">0</span><span>+</span>
+          <span class="hero-stat-label">Cities Covered</span>
         </div>
-        <div class="hero-visual">
-            <div class="floating-cards">
-                <div class="floating-icon icon-1"><i class="fa-solid fa-map"></i></div>
-                <div class="floating-icon icon-2"><i class="fa-solid fa-plane"></i></div>
-                <div class="floating-icon icon-3"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="floating-icon icon-4"><i class="fa-solid fa-calendar-days"></i></div>
-                <div class="floating-icon icon-5"><i class="fa-solid fa-hotel"></i></div>
-                
-                <div class="glass-card main-interface">
-                    <div class="interface-header">
-                        <i class="fa-solid fa-robot"></i> <span>YatraSathi AI</span>
-                    </div>
-                    <div class="interface-body">
-                        <div class="chat-bubble ai">Hello! I've optimized your route for Paris.</div>
-                        <div class="chat-bubble user">Looks amazing! Add the Eiffel Tower at sunset.</div>
-                        <div class="interface-typing">
-                            <span></span><span></span><span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="98">0</span><span>%</span>
+          <span class="hero-stat-label">User Satisfaction</span>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <!-- Features Section -->
-    <section id="features" class="max-w-7xl mx-auto px-6 py-28 relative z-10">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Why choose <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">YatraSathi</span>?</h2>
-            <p class="text-slate-400 text-lg max-w-2xl mx-auto">Discover a suite of AI-powered tools designed to perfectly orchestrate every moment of your journey.</p>
+    <div class="hero-visual">
+      <!-- Animated Globe -->
+      <div class="globe-wrapper">
+        <div class="globe">
+          <div class="globe-ring ring-1"></div>
+          <div class="globe-ring ring-2"></div>
+          <div class="globe-ring ring-3"></div>
+          <div class="globe-core">
+            <i class="fa-solid fa-earth-asia"></i>
+          </div>
+          <!-- Orbit dots -->
+          <div class="orbit-dot od-1"></div>
+          <div class="orbit-dot od-2"></div>
+          <div class="orbit-dot od-3"></div>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Card 1 -->
-            <div class="group relative bg-[#111827]/60 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(0,242,254,0.3)] hover:border-primary/30 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6 ring-1 ring-primary/20 group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3">Smart Itineraries</h3>
-                <p class="text-slate-400 leading-relaxed">Instantly generate personalized, day-by-day travel plans based on your unique interests and budget constraints.</p>
-            </div>
 
-            <!-- Card 2 -->
-            <div class="group relative bg-[#111827]/60 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(250,204,21,0.2)] hover:border-accent/30 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-2xl mb-6 ring-1 ring-accent/20 group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-route"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3">Route Optimization</h3>
-                <p class="text-slate-400 leading-relaxed">Save precious travel time with mathematically optimized geographic routes. Spend more time exploring.</p>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="group relative bg-[#111827]/60 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(255,107,107,0.2)] hover:border-[#ff6b6b]/30 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#ff6b6b]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="w-14 h-14 rounded-xl bg-[#ff6b6b]/10 flex items-center justify-center text-[#ff6b6b] text-2xl mb-6 ring-1 ring-[#ff6b6b]/20 group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-cloud-sun"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3">Weather Aware</h3>
-                <p class="text-slate-400 leading-relaxed">Get dynamic daily itinerary adjustments based on highly accurate real-time weather forecasts.</p>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="group relative bg-[#111827]/60 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(46,213,115,0.2)] hover:border-[#2ed573]/30 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#2ed573]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="w-14 h-14 rounded-xl bg-[#2ed573]/10 flex items-center justify-center text-[#2ed573] text-2xl mb-6 ring-1 ring-[#2ed573]/20 group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-hotel"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3">Smart Hotels</h3>
-                <p class="text-slate-400 leading-relaxed">Discover the best places to stay, curated specifically to match your geographical route and budget.</p>
-            </div>
-
-            <!-- Card 5 -->
-            <div class="group relative bg-[#111827]/60 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(162,155,254,0.3)] hover:border-[#a29bfe]/30 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#a29bfe]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="w-14 h-14 rounded-xl bg-[#a29bfe]/10 flex items-center justify-center text-[#a29bfe] text-2xl mb-6 ring-1 ring-[#a29bfe]/20 group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-language"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3">Real-time Translator</h3>
-                <p class="text-slate-400 leading-relaxed">Chat with locals flawlessly using our integrated, real-time AI voice translation service on your dashboard.</p>
-            </div>
-
-            <!-- Card 6 -->
-            <div class="group relative bg-[#111827]/60 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(253,121,168,0.2)] hover:border-[#fd79a8]/30 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#fd79a8]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="w-14 h-14 rounded-xl bg-[#fd79a8]/10 flex items-center justify-center text-[#fd79a8] text-2xl mb-6 ring-1 ring-[#fd79a8]/20 group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-heart"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3">Hyper-Personalized</h3>
-                <p class="text-slate-400 leading-relaxed">From culinary tours to historical monuments, your trip timeline is tailored to exactly what you love.</p>
-            </div>
+        <!-- Floating Cards -->
+        <div class="hero-card hc-weather">
+          <div class="hc-icon"><i class="fa-solid fa-sun"></i></div>
+          <div>
+            <div class="hc-title">Tokyo Weather</div>
+            <div class="hc-val">24°C · Sunny</div>
+          </div>
         </div>
-    </section>
 
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="max-w-7xl mx-auto px-6 py-28 relative z-10">
-        <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-20">How It <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Works</span></h2>
-        
-        <div class="relative max-w-4xl mx-auto">
-            <!-- Timeline Line -->
-            <div class="absolute left-[38px] top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-accent to-transparent rounded-full hidden md:block"></div>
-            
-            <div class="space-y-12">
-                <!-- Step 1 -->
-                <div class="relative flex flex-col md:flex-row items-start gap-8 group">
-                    <div class="w-20 h-20 rounded-full bg-dark border-4 border-primary flex items-center justify-center text-2xl font-bold text-primary shadow-[0_0_20px_rgba(0,242,254,0.3)] shrink-0 z-10 group-hover:scale-110 transition-transform duration-300">1</div>
-                    <div class="bg-[#111827]/80 backdrop-blur-md border border-white/5 rounded-2xl p-8 flex-1 group-hover:border-primary/40 transition-colors duration-300 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <h3 class="text-2xl font-bold text-white mb-3">Tell Us Your Dreams</h3>
-                        <p class="text-slate-400 text-lg">Enter your destination, budget, desired length, and what you're passionate about exploring.</p>
-                    </div>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="relative flex flex-col md:flex-row items-start gap-8 group">
-                    <div class="w-20 h-20 rounded-full bg-dark border-4 border-accent flex items-center justify-center text-2xl font-bold text-accent shadow-[0_0_20px_rgba(250,204,21,0.3)] shrink-0 z-10 group-hover:scale-110 transition-transform duration-300">2</div>
-                    <div class="bg-[#111827]/80 backdrop-blur-md border border-white/5 rounded-2xl p-8 flex-1 group-hover:border-accent/40 transition-colors duration-300 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-r from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <h3 class="text-2xl font-bold text-white mb-3">AI Deep Analysis</h3>
-                        <p class="text-slate-400 text-lg">Our Groq LLM rapidly analyzes thousands of attractions, real-time weather constraints, and geospatial data.</p>
-                    </div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="relative flex flex-col md:flex-row items-start gap-8 group">
-                    <div class="w-20 h-20 rounded-full bg-dark border-4 border-[#2ed573] flex items-center justify-center text-2xl font-bold text-[#2ed573] shadow-[0_0_20px_rgba(46,213,115,0.3)] shrink-0 z-10 group-hover:scale-110 transition-transform duration-300">3</div>
-                    <div class="bg-[#111827]/80 backdrop-blur-md border border-white/5 rounded-2xl p-8 flex-1 group-hover:border-[#2ed573]/40 transition-colors duration-300 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-r from-[#2ed573]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <h3 class="text-2xl font-bold text-white mb-3">Get Your Master Plan</h3>
-                        <p class="text-slate-400 text-lg">Instantly receive a meticulously formatted, optimized day-by-day travel itinerary ready for action.</p>
-                    </div>
-                </div>
-            </div>
+        <div class="hero-card hc-ai">
+          <div class="hc-icon ai-icon"><i class="fa-solid fa-robot"></i></div>
+          <div>
+            <div class="hc-title">AI Planning</div>
+            <div class="hc-val typing-text">Generating itinerary...</div>
+          </div>
         </div>
-    </section>
 
-    <!-- AI Assistant Section -->
-    <section id="assistant" class="max-w-7xl mx-auto px-6 py-28 relative z-10">
-        <div class="bg-gradient-to-br from-[#111827]/90 to-[#07090f]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 md:p-14 flex flex-col lg:flex-row items-center gap-16 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden">
-            <!-- decorative background glows -->
-            <div class="absolute -top-32 left-10 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
-
-            <div class="flex-1 w-full relative z-10">
-                <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Conversational <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">AI Companion</span></h2>
-                <p class="text-slate-400 text-lg mb-8 leading-relaxed">Plan your trip simply by chatting. Need to change a date? Want to find a vegan restaurant nearby? Activate the real-time AI voice translator and ask YatraSathi instantly.</p>
-                <ul class="space-y-4">
-                    <li class="flex items-center gap-4 text-white text-lg font-medium"><i class="fa-solid fa-check text-accent bg-accent/20 p-2 rounded-full"></i> Context-aware smart routing</li>
-                    <li class="flex items-center gap-4 text-white text-lg font-medium"><i class="fa-solid fa-check text-accent bg-accent/20 p-2 rounded-full"></i> Real-time voice translation</li>
-                    <li class="flex items-center gap-4 text-white text-lg font-medium"><i class="fa-solid fa-check text-accent bg-accent/20 p-2 rounded-full"></i> Instant local attraction knowledge</li>
-                </ul>
-            </div>
-            
-            <div class="w-full lg:w-[450px] bg-dark/60 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative z-10 flex flex-col h-[400px]">
-                <div class="bg-white/5 p-4 flex items-center gap-4 border-b border-white/10">
-                    <img src="https://ui-avatars.com/api/?name=Yatra+Sathi&background=00f2fe&color=fff&rounded=true" alt="AI Avatar" class="w-10 h-10 rounded-full ring-2 ring-primary">
-                    <div>
-                        <h4 class="font-bold text-white text-sm">YatraSathi Assistant</h4>
-                        <span class="text-xs text-[#2ed573] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#2ed573] animate-pulse"></span> Online Mode</span>
-                    </div>
-                </div>
-                <div class="p-6 flex-1 overflow-y-auto flex flex-col gap-4">
-                    <div class="self-end bg-white/10 text-white p-4 rounded-2xl rounded-tr-sm max-w-[85%] text-sm shadow-md">Plan a 3-day budget trip to Tokyo focusing on tech and food.</div>
-                    <div class="self-start bg-primary/10 border border-primary/20 text-white p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm shadow-md">Absolutely! Generating a high-energy Tokyo itinerary visiting Akihabara, Tsukiji Outer Market, and hidden ramen gems...</div>
-                    <div class="self-end bg-white/10 text-white p-4 rounded-2xl rounded-tr-sm max-w-[85%] text-sm shadow-md">Can we add a bullet train ride?</div>
-                </div>
-            </div>
+        <div class="hero-card hc-budget">
+          <div class="hc-icon budget-icon"><i class="fa-solid fa-wallet"></i></div>
+          <div>
+            <div class="hc-title">Budget Saved</div>
+            <div class="hc-val">₹12,400</div>
+          </div>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer id="contact" class="border-t border-white/10 bg-dark/80 backdrop-blur-lg pt-16 pb-8 mt-20 relative z-10">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
-            <div>
-                <a href="#" class="text-2xl font-extrabold text-white flex items-center gap-3">
-                    <i class="fa-solid fa-map-location-dot text-primary"></i> YatraSathi
-                </a>
-                <p class="text-slate-400 mt-2 text-sm">Next-Generation AI Powered Travel Intelligence.</p>
+        <div class="hero-card hc-route">
+          <div style="width:100%">
+            <div class="hc-title" style="margin-bottom:.5rem">Route Optimized</div>
+            <div class="route-dots">
+              <span class="rd">🗼</span>
+              <div class="route-line-anim"></div>
+              <span class="rd">⛩</span>
+              <div class="route-line-anim"></div>
+              <span class="rd">🏯</span>
             </div>
-            <div class="flex items-center gap-6">
-                <a href="#" class="text-slate-400 hover:text-primary transition-colors text-lg"><i class="fa-brands fa-github"></i></a>
-                <a href="#" class="text-slate-400 hover:text-primary transition-colors text-lg"><i class="fa-brands fa-linkedin"></i></a>
-                <a href="mailto:hello@yatrasathi.com" class="text-slate-400 hover:text-primary transition-colors text-lg"><i class="fa-solid fa-envelope"></i></a>
-            </div>
+          </div>
         </div>
-        <div class="border-t border-white/10 pt-8 text-center text-slate-500 text-sm">
-            <p>&copy; 2026 YatraSathi. All rights reserved.</p>
-        </div>
-    </footer>
 
-    <script src="script.js"></script>
+        <!-- Floating icons -->
+        <div class="float-icon fi-1"><i class="fa-solid fa-plane"></i></div>
+        <div class="float-icon fi-2"><i class="fa-solid fa-map-pin"></i></div>
+        <div class="float-icon fi-3"><i class="fa-solid fa-camera"></i></div>
+        <div class="float-icon fi-4"><i class="fa-solid fa-utensils"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span>Scroll to explore</span>
+  </div>
+</section>
+
+<!-- ── Features ───────────────────────────────── -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge"><i class="fa-solid fa-sparkles"></i> AI Capabilities</div>
+      <h2 class="section-title">Everything you need for<br><span class="text-gradient">intelligent travel</span></h2>
+      <p class="section-subtitle">YatraSaathi combines cutting-edge AI with real-world travel intelligence to plan your perfect journey.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card glass glass-hover reveal reveal-delay-1" data-color="blue">
+        <div class="feature-icon-wrap" style="--ic:#3b82f6">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <h3>AI Itinerary Generation</h3>
+        <p>Groq LLM creates day-by-day travel plans with geospatially optimized routes, tailored to your interests and travel style.</p>
+        <div class="feature-tag">LLM-Powered</div>
+      </div>
+
+      <div class="feature-card glass glass-hover reveal reveal-delay-2" data-color="teal">
+        <div class="feature-icon-wrap" style="--ic:#06b6d4">
+          <i class="fa-solid fa-cloud-sun-rain"></i>
+        </div>
+        <h3>Weather-Aware Planning</h3>
+        <p>Real-time weather data is integrated directly into your itinerary. Never get caught in the rain without a backup plan.</p>
+        <div class="feature-tag" style="background:rgba(6,182,212,0.1);color:#06b6d4;border-color:rgba(6,182,212,0.3)">Weather API</div>
+      </div>
+
+      <div class="feature-card glass glass-hover reveal reveal-delay-3" data-color="purple">
+        <div class="feature-icon-wrap" style="--ic:#8b5cf6">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <h3>RAG City Insights</h3>
+        <p>FAISS vector search retrieves hyper-relevant local knowledge — hidden gems, cultural tips, and real traveler wisdom.</p>
+        <div class="feature-tag" style="background:rgba(139,92,246,0.1);color:#8b5cf6;border-color:rgba(139,92,246,0.3)">RAG Powered</div>
+      </div>
+
+      <div class="feature-card glass glass-hover reveal reveal-delay-1" data-color="green">
+        <div class="feature-icon-wrap" style="--ic:#10b981">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3>Budget Intelligence</h3>
+        <p>Smart budget tracking with overspending alerts, price comparisons, and AI-driven cost-saving recommendations.</p>
+        <div class="feature-tag" style="background:rgba(16,185,129,0.1);color:#10b981;border-color:rgba(16,185,129,0.3)">AI Finance</div>
+      </div>
+
+      <div class="feature-card glass glass-hover reveal reveal-delay-2" data-color="amber">
+        <div class="feature-icon-wrap" style="--ic:#f59e0b">
+          <i class="fa-solid fa-route"></i>
+        </div>
+        <h3>Route Optimization</h3>
+        <p>Geospatial clustering and mathematical route optimization minimize travel time and transportation costs.</p>
+        <div class="feature-tag" style="background:rgba(245,158,11,0.1);color:#f59e0b;border-color:rgba(245,158,11,0.3)">Geo-Optimized</div>
+      </div>
+
+      <div class="feature-card glass glass-hover reveal reveal-delay-3" data-color="rose">
+        <div class="feature-icon-wrap" style="--ic:#f43f5e">
+          <i class="fa-solid fa-comments"></i>
+        </div>
+        <h3>Conversational AI</h3>
+        <p>Chat naturally with your AI travel companion. Ask questions, modify your trip, and get instant recommendations.</p>
+        <div class="feature-tag" style="background:rgba(244,63,94,0.1);color:#f43f5e;border-color:rgba(244,63,94,0.3)">NLP Chat</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Interactive Demo ────────────────────────── -->
+<section class="section" id="demo">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge"><i class="fa-solid fa-play"></i> Live Preview</div>
+      <h2 class="section-title">See the AI in <span class="text-gradient">action</span></h2>
+      <p class="section-subtitle">Try our planner instantly — no sign-up required.</p>
+    </div>
+
+    <div class="demo-wrapper glass reveal">
+      <div class="demo-form-side">
+        <h3 class="demo-form-title">Quick Trip Planner</h3>
+
+        <div class="form-group">
+          <label class="form-label"><i class="fa-solid fa-map-pin"></i> Destination</label>
+          <input type="text" class="form-control" id="demoDestination" placeholder="e.g. Kyoto, Japan" />
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-calendar"></i> Duration</label>
+            <select class="form-control" id="demoDays">
+              <option value="3">3 Days</option>
+              <option value="5" selected>5 Days</option>
+              <option value="7">7 Days</option>
+              <option value="10">10 Days</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-wallet"></i> Budget</label>
+            <select class="form-control" id="demoBudget">
+              <option value="budget">Budget</option>
+              <option value="moderate" selected>Moderate</option>
+              <option value="luxury">Luxury</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"><i class="fa-solid fa-heart"></i> Travel Style</label>
+          <div class="chips-row" id="styleChips">
+            <span class="chip selected" data-val="culture">🏛 Culture</span>
+            <span class="chip" data-val="food">🍜 Food</span>
+            <span class="chip" data-val="adventure">⛰ Adventure</span>
+            <span class="chip" data-val="art">🎨 Art</span>
+            <span class="chip" data-val="nature">🌿 Nature</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg demo-btn" id="demoGenerate" style="width:100%">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          Generate AI Itinerary
+        </button>
+      </div>
+
+      <div class="demo-result-side">
+        <div class="demo-result-header">
+          <span class="demo-result-title" id="demoResultTitle">Your AI-Generated Itinerary</span>
+          <span class="demo-status" id="demoStatus">
+            <span class="glow-dot"></span> Ready
+          </span>
+        </div>
+
+        <div class="demo-result-body" id="demoResultBody">
+          <div class="demo-placeholder">
+            <div class="demo-placeholder-icon">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <p>Enter your destination and click <strong>Generate AI Itinerary</strong> to see the magic happen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AI Workflow ─────────────────────────────── -->
+<section class="section" id="workflow">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge"><i class="fa-solid fa-diagram-project"></i> How It Works</div>
+      <h2 class="section-title">Intelligence behind <span class="text-gradient">every journey</span></h2>
+    </div>
+
+    <div class="workflow-grid">
+      <div class="workflow-step glass reveal reveal-delay-1">
+        <div class="ws-number">01</div>
+        <div class="ws-icon"><i class="fa-solid fa-user-pen"></i></div>
+        <h3>You Share Your Vision</h3>
+        <p>Destination, dates, budget, interests — tell us what you love.</p>
+        <div class="ws-connector"></div>
+      </div>
+
+      <div class="workflow-step glass reveal reveal-delay-2">
+        <div class="ws-number">02</div>
+        <div class="ws-icon" style="background:rgba(6,182,212,0.1);color:#06b6d4"><i class="fa-solid fa-brain"></i></div>
+        <h3>AI Deep Analysis</h3>
+        <p>Groq LLM + FAISS vector search analyze thousands of data points in milliseconds.</p>
+        <div class="ws-connector"></div>
+      </div>
+
+      <div class="workflow-step glass reveal reveal-delay-3">
+        <div class="ws-number">03</div>
+        <div class="ws-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6"><i class="fa-solid fa-route"></i></div>
+        <h3>Smart Optimization</h3>
+        <p>Geospatial clustering and weather data combine to create an optimal route plan.</p>
+        <div class="ws-connector"></div>
+      </div>
+
+      <div class="workflow-step glass reveal reveal-delay-4">
+        <div class="ws-number">04</div>
+        <div class="ws-icon" style="background:rgba(16,185,129,0.1);color:#10b981"><i class="fa-solid fa-check-circle"></i></div>
+        <h3>Your Perfect Trip</h3>
+        <p>Receive a fully formatted, actionable day-by-day itinerary ready for adventure.</p>
+      </div>
+    </div>
+
+    <!-- Connection line -->
+    <div class="workflow-line"></div>
+  </div>
+</section>
+
+<!-- ── Testimonials ────────────────────────────── -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge"><i class="fa-solid fa-star"></i> Testimonials</div>
+      <h2 class="section-title">Loved by <span class="text-gradient">smart travelers</span></h2>
+    </div>
+
+    <div class="testimonials-track-wrapper">
+      <div class="testimonials-track" id="testimonialsTrack">
+        <!-- Cards duplicated for infinite loop -->
+        <div class="testimonial-card glass">
+          <div class="tc-stars">★★★★★</div>
+          <p>"YatraSaathi planned my entire Kyoto trip in 30 seconds. The AI knew exactly which temples to visit in sequence — saving me hours of research."</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">AR</div>
+            <div><strong>Arjun R.</strong><br><span>Solo Traveler, Delhi</span></div>
+          </div>
+        </div>
+
+        <div class="testimonial-card glass">
+          <div class="tc-stars">★★★★★</div>
+          <p>"The budget intelligence feature saved us ₹8,000 by suggesting the right time to book hotels. Incredible AI that actually understands travel economics."</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background:linear-gradient(135deg,#8b5cf6,#f43f5e)">SM</div>
+            <div><strong>Shreya M.</strong><br><span>Couple Travel, Mumbai</span></div>
+          </div>
+        </div>
+
+        <div class="testimonial-card glass">
+          <div class="tc-stars">★★★★★</div>
+          <p>"The city insights page revealed places in Bangkok I never would have found. Hidden street food gems and local secrets — this is true AI-powered exploration."</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">VK</div>
+            <div><strong>Vikram K.</strong><br><span>Adventure Traveler, Bangalore</span></div>
+          </div>
+        </div>
+
+        <div class="testimonial-card glass">
+          <div class="tc-stars">★★★★★</div>
+          <p>"As a first-time solo traveler to Europe, YatraSaathi felt like having a knowledgeable friend by my side. The weather integration was a lifesaver in Paris."</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background:linear-gradient(135deg,#f59e0b,#f43f5e)">NP</div>
+            <div><strong>Neha P.</strong><br><span>First-time Traveler, Pune</span></div>
+          </div>
+        </div>
+
+        <div class="testimonial-card glass">
+          <div class="tc-stars">★★★★★</div>
+          <p>"Planned a 10-day Japan itinerary for our family of 5. The route optimization made sure we never backtracked. Kids loved the recommendations too!"</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background:linear-gradient(135deg,#06b6d4,#8b5cf6)">RS</div>
+            <div><strong>Rajan S.</strong><br><span>Family Trip, Chennai</span></div>
+          </div>
+        </div>
+
+        <div class="testimonial-card glass">
+          <div class="tc-stars">★★★★★</div>
+          <p>"The conversational AI is mind-blowing. I just said 'more food options near day 2 morning' and it instantly updated my itinerary. Pure magic."</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background:linear-gradient(135deg,#f43f5e,#f59e0b)">TG</div>
+            <div><strong>Tanya G.</strong><br><span>Food Explorer, Hyderabad</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA Banner ──────────────────────────────── -->
+<section class="section" id="cta">
+  <div class="container">
+    <div class="cta-banner glass reveal">
+      <div class="cta-orb cta-orb-1"></div>
+      <div class="cta-orb cta-orb-2"></div>
+      <div class="cta-content">
+        <div class="section-badge" style="margin-bottom:1.5rem"><i class="fa-solid fa-rocket"></i> Get Started Free</div>
+        <h2 class="cta-title">Ready for your <span class="text-gradient">AI-powered adventure?</span></h2>
+        <p class="cta-sub">Join thousands of smart travelers who trust YatraSaathi to plan extraordinary journeys.</p>
+        <div class="cta-actions">
+          <a href="planner.html" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Plan My Trip Now
+          </a>
+          <a href="city.html" class="btn btn-ghost btn-lg">
+            <i class="fa-solid fa-compass"></i> Explore Cities
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="margin-bottom:1rem;display:inline-flex">
+          <div class="nav-logo-icon">✈</div>
+          YatraSaathi
+        </a>
+        <p>AI-powered intelligent travel planning. Plan smarter. Travel better.</p>
+        <div class="footer-social">
+          <a href="#" class="social-btn"><i class="fa-brands fa-github"></i></a>
+          <a href="#" class="social-btn"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#" class="social-btn"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="planner.html">Trip Planner</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="budget.html">Budget Intelligence</a></li>
+          <li><a href="city.html">City Insights</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Technology</h4>
+        <ul>
+          <li><a href="#">Groq LLM</a></li>
+          <li><a href="#">FAISS RAG</a></li>
+          <li><a href="#">FastAPI Backend</a></li>
+          <li><a href="#">Real-time Weather</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Newsletter</h4>
+        <p style="color:var(--text-300);font-size:.875rem;margin-bottom:1rem">Get travel tips and AI updates straight to your inbox.</p>
+        <div class="footer-newsletter">
+          <input type="email" class="form-control" placeholder="your@email.com" style="border-radius:var(--r-lg) 0 0 var(--r-lg);border-right:none" />
+          <button class="btn btn-primary" style="border-radius:0 var(--r-lg) var(--r-lg) 0;flex-shrink:0">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="footer-bottom">
+      <span>© 2026 YatraSaathi. Built with ❤️ and AI.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/main.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>
