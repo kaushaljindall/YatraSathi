@@ -39,4 +39,4 @@ logs/
 #frontend-react 
 ./frontend-react
 
-./backend/data/*
+./backend/data/*"./backend/data/database.json" 
