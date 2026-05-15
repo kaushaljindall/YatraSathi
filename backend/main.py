@@ -5,7 +5,8 @@ import logging
 
 from config.settings import settings
 from config.database import read_db, write_db
-from routes import auth, planner, city, weather, expenses, budget
+from routes import auth, planner, city, weather, expenses, budget, conversation
+from voice.voice_router import router as voice_router
 from websocket import live_updates
 from realtime.realtime_scheduler import scheduler
 import asyncio
@@ -54,6 +55,8 @@ app.include_router(weather.router, prefix=f"{settings.API_V1_STR}/weather", tags
 app.include_router(expenses.router, prefix=f"{settings.API_V1_STR}/expenses", tags=["Expense Tracking"])
 app.include_router(budget.router, prefix=f"{settings.API_V1_STR}/budget", tags=["Budget Intelligence"])
 app.include_router(live_updates.router, tags=["Live WebSockets"])
+app.include_router(conversation.router, prefix=f"{settings.API_V1_STR}", tags=["Conversational AI & Agents"])
+app.include_router(voice_router, prefix=f"{settings.API_V1_STR}/voice", tags=["Voice Intelligence"])
 
 @app.get("/health")
 async def health_check():
