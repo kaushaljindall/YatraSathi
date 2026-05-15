@@ -6,7 +6,7 @@ import asyncio
 
 from config.settings import settings
 from config.database import read_db, write_db
-from routes import auth, planner, city, weather, expenses, budget, conversation, predictive, ecosystem
+from routes import auth, planner, city, weather, expenses, budget, conversation, predictive, ecosystem, super_ai
 from voice.voice_router import router as voice_router
 from websocket import live_updates
 from realtime.realtime_scheduler import scheduler
@@ -79,6 +79,7 @@ app.include_router(conversation.router,  prefix=f"{V1}",           tags=["Conver
 app.include_router(voice_router,         prefix=f"{V1}/voice",     tags=["Voice Intelligence"])
 app.include_router(predictive.router,    prefix=f"{V1}",           tags=["Predictive Intelligence"])
 app.include_router(ecosystem.router,     prefix=f"{V1}",           tags=["Multimodal & Ecosystem (Phase 8)"])
+app.include_router(super_ai.router,      prefix=f"{V1}",           tags=["Super AI OS (Phase 9)"])
 app.include_router(health_router,                                   tags=["Health & Monitoring"])
 app.include_router(live_updates.router,                             tags=["Live WebSockets"])
 

@@ -1,0 +1,122 @@
+---
+# ──────────────────────────────────────────────────────────────────────────────
+# YatraSaathi — Kubernetes Deployment Manifest
+# Production-grade configuration for cloud-native deployment.
+# Compatible with AWS EKS, Google GKE, Azure AKS.
+# ──────────────────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatrasaathi-api
+  labels:
+    app: yatrasaathi
+    tier: backend
+spec:
+  replicas: 3                       # Start with 3 pods; HPA scales up to 20
+  selector:
+    matchLabels:
+      app: yatrasaathi
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: yatrasaathi
+        tier: backend
+    spec:
+      containers:
+        - name: yatrasaathi-api
+          image: yatrasaathi/backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: yatrasaathi-secrets
+                  key: SECRET_KEY
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: yatrasaathi-secrets
+                  key: GROQ_API_KEY
+            - name: OPENWEATHERMAP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: yatrasaathi-secrets
+                  key: OPENWEATHERMAP_API_KEY
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          volumeMounts:
+            - name: app-data
+              mountPath: /app/data
+      volumes:
+        - name: app-data
+          persistentVolumeClaim:
+            claimName: yatrasaathi-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatrasaathi-service
+spec:
+  selector:
+    app: yatrasaathi
+    tier: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
+
+---
+# Horizontal Pod Autoscaler — scales 3→20 pods based on CPU
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: yatrasaathi-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: yatrasaathi-api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+---
+# Persistent Volume Claim for JSON DB + FAISS index
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yatrasaathi-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
