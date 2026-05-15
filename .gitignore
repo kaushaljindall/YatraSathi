@@ -38,3 +38,5 @@ logs/
 
 #frontend-react 
 ./frontend-react
+
+./backend/data/*

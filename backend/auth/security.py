@@ -21,3 +21,11 @@ def create_access_token(subject: Union[str, Any], expires_delta: Optional[timede
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
+
+def decode_token(token: str) -> Optional[dict]:
+    """Decodes a JWT token and returns the payload, or None if invalid."""
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return payload
+    except Exception:
+        return None

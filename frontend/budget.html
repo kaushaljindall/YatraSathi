@@ -104,42 +104,8 @@
           <button class="btn btn-ghost btn-sm"><i class="fa-solid fa-plus"></i> Add Manual Expense</button>
         </div>
         
-        <div class="expense-list">
-          <div class="expense-item">
-            <div class="ex-icon" style="background:rgba(59,130,246,0.1);color:var(--clr-primary)"><i class="fa-solid fa-plane"></i></div>
-            <div class="ex-details">
-              <h4>Flights (Roundtrip)</h4>
-              <span>Delhi to Kyoto (Kansai Intl)</span>
-            </div>
-            <div class="ex-amount">₹28,000</div>
-          </div>
-
-          <div class="expense-item">
-            <div class="ex-icon" style="background:rgba(139,92,246,0.1);color:var(--clr-purple)"><i class="fa-solid fa-hotel"></i></div>
-            <div class="ex-details">
-              <h4>Accommodation</h4>
-              <span>4 Nights at Downtown Kyoto</span>
-            </div>
-            <div class="ex-amount">₹12,000</div>
-          </div>
-
-          <div class="expense-item warning-glow">
-            <div class="ex-icon" style="background:rgba(245,158,11,0.1);color:var(--clr-amber)"><i class="fa-solid fa-utensils"></i></div>
-            <div class="ex-details">
-              <h4>Food & Dining</h4>
-              <span>AI predicts higher cost based on style</span>
-            </div>
-            <div class="ex-amount">₹8,500 <i class="fa-solid fa-arrow-trend-up" style="color:var(--clr-amber);font-size:0.75rem"></i></div>
-          </div>
-
-          <div class="expense-item">
-            <div class="ex-icon" style="background:rgba(16,185,129,0.1);color:var(--clr-emerald)"><i class="fa-solid fa-train"></i></div>
-            <div class="ex-details">
-              <h4>Local Transport</h4>
-              <span>JR Pass & Subway (AI Optimized)</span>
-            </div>
-            <div class="ex-amount">₹3,500</div>
-          </div>
+        <div class="expense-list" id="expenseList">
+          <div style="color:#94a3b8;text-align:center;padding:20px;">Loading expenses...</div>
         </div>
       </div>
 
@@ -149,6 +115,7 @@
 
 <script src="js/particles.js"></script>
 <script src="js/main.js"></script>
+<script src="js/api.js"></script>
 <script src="js/budget.js"></script>
 </body>
 </html>

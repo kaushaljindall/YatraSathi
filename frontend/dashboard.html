@@ -110,43 +110,14 @@
 
     <div class="dash-main-grid">
       
-      <!-- ── Itinerary Summary ─────────────────────── -->
+      <!-- ── My Trips (loaded from API) ─────────────── -->
       <div class="dash-panel glass reveal">
         <div class="panel-header">
-          <h3><i class="fa-solid fa-calendar-day text-gradient"></i> Daily Breakdown</h3>
-          <a href="planner.html" class="btn btn-ghost btn-sm">Full View</a>
+          <h3><i class="fa-solid fa-map-location-dot text-gradient"></i> My Trips</h3>
+          <a href="planner.html" class="btn btn-ghost btn-sm">Plan New Trip</a>
         </div>
-        <div class="panel-body">
-          <div class="mini-timeline">
-            <div class="mt-item">
-              <div class="mt-dot"></div>
-              <div class="mt-content">
-                <h4>Day 1: Arrival & Acclimation</h4>
-                <p>Hotel check-in, Old Town walk, Authentic dinner</p>
-              </div>
-            </div>
-            <div class="mt-item">
-              <div class="mt-dot"></div>
-              <div class="mt-content">
-                <h4>Day 2: Cultural Immersion</h4>
-                <p>Major temples, Botanical Gardens, Tea ceremony</p>
-              </div>
-            </div>
-            <div class="mt-item">
-              <div class="mt-dot"></div>
-              <div class="mt-content">
-                <h4>Day 3: Adventure & Views</h4>
-                <p>Mountain hike, Local market exploration</p>
-              </div>
-            </div>
-            <div class="mt-item">
-              <div class="mt-dot"></div>
-              <div class="mt-content">
-                <h4>Day 4: Departure</h4>
-                <p>Souvenir shopping, Transfer to airport</p>
-              </div>
-            </div>
-          </div>
+        <div class="panel-body" id="tripsContainer">
+          <div style="color:#94a3b8;text-align:center;padding:20px;">Loading trips...</div>
         </div>
       </div>
 
@@ -160,14 +131,7 @@
           <div class="chat-messages" id="chatArea">
             <div class="chat-msg ai">
               <img src="https://ui-avatars.com/api/?name=AI&background=8b5cf6&color=fff" alt="AI">
-              <div class="msg-bubble">Hello! I'm your YatraSaathi assistant. Need changes to your Kyoto trip, or want translation help?</div>
-            </div>
-            <div class="chat-msg user">
-              <div class="msg-bubble">Is it going to rain on Day 2?</div>
-            </div>
-            <div class="chat-msg ai">
-              <img src="https://ui-avatars.com/api/?name=AI&background=8b5cf6&color=fff" alt="AI">
-              <div class="msg-bubble">Looking at the real-time weather API, Day 2 has a 0% chance of rain with clear skies and 24°C. Perfect for your Botanical Garden visit!</div>
+              <div class="msg-bubble">Hello! I'm your YatraSaathi AI assistant powered by Groq. Ask me anything about your trips, destinations, budget, or travel tips!</div>
             </div>
           </div>
           <div class="chat-input-area">
@@ -215,6 +179,7 @@
 
 <script src="js/particles.js"></script>
 <script src="js/main.js"></script>
+<script src="js/api.js"></script>
 <script src="js/dashboard.js"></script>
 </body>
 </html>

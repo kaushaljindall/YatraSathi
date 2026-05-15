@@ -6,7 +6,7 @@ import asyncio
 
 from config.settings import settings
 from config.database import read_db, write_db
-from routes import auth, planner, city, weather, expenses, budget, conversation, predictive, ecosystem, super_ai
+from routes import auth, planner, city, weather, expenses, budget, conversation, predictive, ecosystem, super_ai, trips
 from voice.voice_router import router as voice_router
 from websocket import live_updates
 from realtime.realtime_scheduler import scheduler
@@ -70,6 +70,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 V1 = settings.API_V1_STR
 
 app.include_router(auth.router,          prefix=f"{V1}/auth",      tags=["Authentication"])
+app.include_router(trips.router,         prefix=f"{V1}/trips",     tags=["Trip Management"])
 app.include_router(planner.router,       prefix=f"{V1}/planner",   tags=["AI Trip Planner"])
 app.include_router(city.router,          prefix=f"{V1}/city",      tags=["RAG City Insights"])
 app.include_router(weather.router,       prefix=f"{V1}/weather",   tags=["Weather Intelligence"])
