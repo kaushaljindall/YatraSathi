@@ -6,7 +6,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
   if (!Auth.isLoggedIn()) {
-    window.location.href = "/auth.html";
+    window.location.href = "auth.html";
     return;
   }
 
@@ -248,7 +248,7 @@ function renderNoTripState() {
         <i class="fa-solid fa-wallet" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:16px;"></i>
         <h3 style="color:#f1f5f9;margin-bottom:8px;">No Active Trip</h3>
         <p>Select a trip from your dashboard or plan a new one.</p>
-        <a href="/planner.html" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#8b5cf6;color:#fff;border-radius:8px;text-decoration:none;">Plan a Trip →</a>
+        <a href="planner.html" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#8b5cf6;color:#fff;border-radius:8px;text-decoration:none;">Plan a Trip →</a>
       </div>`;
   }
 }

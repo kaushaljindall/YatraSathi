@@ -11,7 +11,7 @@ class EmbeddingService:
         self.model_name = settings.EMBEDDINGS_MODEL
         logger.info(f"Loading embedding model: {self.model_name}")
         self.model = SentenceTransformer(self.model_name)
-        self.dimension = self.model.get_sentence_embedding_dimension()
+        self.dimension = self.model.get_embedding_dimension()
 
     def embed_query(self, query: str) -> np.ndarray:
         """Generates L2-normalized embedding for a single query."""

@@ -6,7 +6,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
   if (!Auth.isLoggedIn()) {
-    window.location.href = "/auth.html";
+    window.location.href = "auth.html";
     return;
   }
 
@@ -135,7 +135,7 @@ async function loadUserTrips() {
       container.innerHTML = `
         <div style="text-align:center;padding:30px;color:#94a3b8;">
           <i class="fa-solid fa-map-location-dot" style="font-size:2rem;margin-bottom:12px;display:block;opacity:0.4"></i>
-          No trips yet. <a href="/planner.html" style="color:#8b5cf6;">Plan your first trip →</a>
+          No trips yet. <a href="planner.html" style="color:#8b5cf6;">Plan your first trip →</a>
         </div>`;
       return;
     }
@@ -166,7 +166,7 @@ async function loadUserTrips() {
     container.querySelectorAll(".trip-card").forEach((card) => {
       card.addEventListener("click", () => {
         const tripId = card.dataset.tripId;
-        window.location.href = `/planner.html?trip=${tripId}`;
+        window.location.href = `planner.html?trip=${tripId}`;
       });
     });
 

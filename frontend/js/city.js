@@ -6,7 +6,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!Auth.isLoggedIn()) {
-    window.location.href = "/auth.html";
+    window.location.href = "auth.html";
     return;
   }
 

@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from rag.vector_store import vector_store
 
 class HybridSearch:

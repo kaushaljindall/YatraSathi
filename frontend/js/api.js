@@ -30,7 +30,7 @@ async function apiFetch(path, options = {}) {
 
   if (res.status === 401) {
     Auth.clearToken();
-    window.location.href = "/auth.html";
+    window.location.href = "auth.html";
     throw new Error("Session expired. Please log in again.");
   }
 
@@ -63,7 +63,7 @@ const AuthAPI = {
 
   logout() {
     Auth.clearToken();
-    window.location.href = "/auth.html";
+    window.location.href = "auth.html";
   },
 };
 
