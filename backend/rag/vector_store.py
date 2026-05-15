@@ -1,53 +1,68 @@
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
 import pickle
 import os
+import logging
+from typing import List, Dict, Any, Tuple
+from rag.embeddings import embedding_service
 from config.settings import settings
 
-class RAGSystem:
-    def __init__(self):
-        self.model = SentenceTransformer(settings.EMBEDDINGS_MODEL)
-        self.index_path = settings.FAISS_INDEX_PATH
-        self.dimension = self.model.get_sentence_embedding_dimension()
+logger = logging.getLogger(__name__)
+
+class FAISSStore:
+    def __init__(self, index_path: str = settings.FAISS_INDEX_PATH):
+        self.index_path = index_path
+        self.metadata_path = index_path + "_metadata.pkl"
+        self.dimension = embedding_service.dimension
         
-        # Load or create index
-        if os.path.exists(self.index_path):
+        # In-memory mapping of vectors to metadata
+        self.metadata_store: List[Dict[str, Any]] = []
+        
+        self._load_or_create_index()
+
+    def _load_or_create_index(self):
+        if os.path.exists(self.index_path) and os.path.exists(self.metadata_path):
             self.index = faiss.read_index(self.index_path)
-            # Load chunks mapping (in a real app, this would be in the DB)
-            with open(self.index_path + "_chunks.pkl", "rb") as f:
-                self.chunks = pickle.load(f)
+            with open(self.metadata_path, "rb") as f:
+                self.metadata_store = pickle.load(f)
+            logger.info(f"Loaded FAISS index with {self.index.ntotal} vectors.")
         else:
-            self.index = faiss.IndexFlatL2(self.dimension)
-            self.chunks = []
+            self.index = faiss.IndexFlatIP(self.dimension) # Inner product since vectors are normalized (Cosine Sim)
+            self.metadata_store = []
+            os.makedirs(os.path.dirname(self.index_path), exist_ok=True)
+            logger.info("Initialized new FAISS index.")
+
+    def add_documents(self, documents: List[Dict[str, Any]]):
+        """Adds embedded chunks with metadata to the index."""
+        if not documents:
+            return
             
-    def add_documents(self, documents: list[str]):
-        """Embed and add documents to the FAISS index."""
-        embeddings = self.model.encode(documents)
-        faiss.normalize_L2(embeddings)
-        self.index.add(np.array(embeddings).astype('float32'))
-        self.chunks.extend(documents)
+        texts = [doc["content"] for doc in documents]
+        embeddings = embedding_service.embed_batch(texts)
         
-        # Save to disk
-        os.makedirs(os.path.dirname(self.index_path), exist_ok=True)
-        faiss.write_index(self.index, self.index_path)
-        with open(self.index_path + "_chunks.pkl", "wb") as f:
-            pickle.dump(self.chunks, f)
-            
-    def retrieve(self, query: str, top_k: int = 3) -> list[str]:
-        """Retrieve relevant context for a query."""
-        if not self.chunks:
+        self.index.add(embeddings)
+        self.metadata_store.extend(documents)
+        self.save_index()
+
+    def search(self, query: str, top_k: int = 5) -> List[Tuple[float, Dict[str, Any]]]:
+        """Performs semantic search and returns (score, chunk_metadata)."""
+        if self.index.ntotal == 0:
             return []
             
-        query_embedding = self.model.encode([query])
-        faiss.normalize_L2(query_embedding)
-        
-        distances, indices = self.index.search(np.array(query_embedding).astype('float32'), top_k)
+        query_embedding = embedding_service.embed_query(query).reshape(1, -1)
+        distances, indices = self.index.search(query_embedding, top_k)
         
         results = []
-        for idx in indices[0]:
-            if idx != -1 and idx < len(self.chunks):
-                results.append(self.chunks[idx])
+        for i in range(len(indices[0])):
+            idx = indices[0][i]
+            if idx != -1 and idx < len(self.metadata_store):
+                results.append((float(distances[0][i]), self.metadata_store[idx]))
+                
         return results
 
-rag_system = RAGSystem()
+    def save_index(self):
+        faiss.write_index(self.index, self.index_path)
+        with open(self.metadata_path, "wb") as f:
+            pickle.dump(self.metadata_store, f)
+
+vector_store = FAISSStore()
