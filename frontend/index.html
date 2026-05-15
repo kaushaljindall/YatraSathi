@@ -39,7 +39,8 @@
     </div>
 
     <div class="nav-actions">
-      <a href="planner.html" class="btn btn-primary btn-sm">
+      <a href="auth.html" class="btn btn-ghost btn-sm" style="margin-right:0.5rem">Sign In</a>
+      <a href="auth.html" class="btn btn-primary btn-sm">
         <i class="fa-solid fa-wand-magic-sparkles"></i> Start Planning
       </a>
       <button class="nav-hamburger" id="hamburger" aria-label="Menu">
@@ -56,7 +57,7 @@
   <a href="dashboard.html" class="nav-link">Dashboard</a>
   <a href="budget.html" class="nav-link">Budget Intelligence</a>
   <a href="city.html" class="nav-link">City Insights</a>
-  <a href="planner.html" class="btn btn-primary" style="margin-top:.75rem;width:100%;justify-content:center;">
+  <a href="auth.html" class="btn btn-primary" style="margin-top:.75rem;width:100%;justify-content:center;">
     <i class="fa-solid fa-wand-magic-sparkles"></i> Start Planning
   </a>
 </div>
@@ -65,10 +66,10 @@
 <section class="hero" id="home">
   <div class="hero-inner container">
     <div class="hero-content">
-      <div class="hero-badge">
+      <!-- <div class="hero-badge">
         <span class="glow-dot"></span>
-        AI Travel Intelligence — Powered by Groq LLM
-      </div>
+        AI Travel Intelligence
+      </div> -->
 
       <h1 class="hero-title">
         Your AI-Powered<br>
@@ -81,13 +82,13 @@
       </p>
 
       <div class="hero-actions">
-        <a href="planner.html" class="btn btn-primary btn-lg">
+        <a href="auth.html" class="btn btn-primary btn-lg">
           <i class="fa-solid fa-rocket"></i>
           Plan My Trip
         </a>
-        <a href="dashboard.html" class="btn btn-ghost btn-lg">
-          <i class="fa-solid fa-chart-line"></i>
-          View Demo Dashboard
+        <a href="auth.html" class="btn btn-ghost btn-lg">
+          <i class="fa-solid fa-user"></i>
+          Sign In / Create Account
         </a>
       </div>
 
@@ -330,41 +331,37 @@
       <h2 class="section-title">Intelligence behind <span class="text-gradient">every journey</span></h2>
     </div>
 
-    <div class="workflow-grid">
-      <div class="workflow-step glass reveal reveal-delay-1">
-        <div class="ws-number">01</div>
-        <div class="ws-icon"><i class="fa-solid fa-user-pen"></i></div>
-        <h3>You Share Your Vision</h3>
-        <p>Destination, dates, budget, interests — tell us what you love.</p>
-        <div class="ws-connector"></div>
+    <div class="workflow-layout" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center">
+      <div class="workflow-visual reveal">
+        <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800&auto=format&fit=crop" alt="Intelligent travel planning map" style="width:100%;border-radius:var(--r-xl);box-shadow:var(--shadow-card);border:4px solid #fff;transition:transform 0.5s ease" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
       </div>
+      
+      <div class="workflow-grid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:1.5rem">
+        <div class="workflow-step glass reveal reveal-delay-1" style="text-align:left;padding:1.5rem">
+          <div class="ws-icon" style="margin:0 0 1rem 0;width:48px;height:48px;font-size:1.125rem"><i class="fa-solid fa-user-pen"></i></div>
+          <h3 style="font-size:1.125rem">Share Your Vision</h3>
+          <p style="font-size:0.875rem">Destination, dates, budget, interests — tell us what you love.</p>
+        </div>
 
-      <div class="workflow-step glass reveal reveal-delay-2">
-        <div class="ws-number">02</div>
-        <div class="ws-icon" style="background:rgba(6,182,212,0.1);color:#06b6d4"><i class="fa-solid fa-brain"></i></div>
-        <h3>AI Deep Analysis</h3>
-        <p>Groq LLM + FAISS vector search analyze thousands of data points in milliseconds.</p>
-        <div class="ws-connector"></div>
-      </div>
+        <div class="workflow-step glass reveal reveal-delay-2" style="text-align:left;padding:1.5rem">
+          <div class="ws-icon" style="background:rgba(6,182,212,0.1);color:#06b6d4;margin:0 0 1rem 0;width:48px;height:48px;font-size:1.125rem"><i class="fa-solid fa-brain"></i></div>
+          <h3 style="font-size:1.125rem">AI Deep Analysis</h3>
+          <p style="font-size:0.875rem">Groq LLM + FAISS analyze thousands of data points instantly.</p>
+        </div>
 
-      <div class="workflow-step glass reveal reveal-delay-3">
-        <div class="ws-number">03</div>
-        <div class="ws-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6"><i class="fa-solid fa-route"></i></div>
-        <h3>Smart Optimization</h3>
-        <p>Geospatial clustering and weather data combine to create an optimal route plan.</p>
-        <div class="ws-connector"></div>
-      </div>
+        <div class="workflow-step glass reveal reveal-delay-3" style="text-align:left;padding:1.5rem">
+          <div class="ws-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;margin:0 0 1rem 0;width:48px;height:48px;font-size:1.125rem"><i class="fa-solid fa-route"></i></div>
+          <h3 style="font-size:1.125rem">Smart Optimization</h3>
+          <p style="font-size:0.875rem">Geospatial clustering and weather data combine for an optimal route.</p>
+        </div>
 
-      <div class="workflow-step glass reveal reveal-delay-4">
-        <div class="ws-number">04</div>
-        <div class="ws-icon" style="background:rgba(16,185,129,0.1);color:#10b981"><i class="fa-solid fa-check-circle"></i></div>
-        <h3>Your Perfect Trip</h3>
-        <p>Receive a fully formatted, actionable day-by-day itinerary ready for adventure.</p>
+        <div class="workflow-step glass reveal reveal-delay-4" style="text-align:left;padding:1.5rem">
+          <div class="ws-icon" style="background:rgba(16,185,129,0.1);color:#10b981;margin:0 0 1rem 0;width:48px;height:48px;font-size:1.125rem"><i class="fa-solid fa-check-circle"></i></div>
+          <h3 style="font-size:1.125rem">Your Perfect Trip</h3>
+          <p style="font-size:0.875rem">Receive an actionable, day-by-day itinerary ready for adventure.</p>
+        </div>
       </div>
     </div>
-
-    <!-- Connection line -->
-    <div class="workflow-line"></div>
   </div>
 </section>
 
@@ -443,17 +440,22 @@
     <div class="cta-banner glass reveal">
       <div class="cta-orb cta-orb-1"></div>
       <div class="cta-orb cta-orb-2"></div>
-      <div class="cta-content">
-        <div class="section-badge" style="margin-bottom:1.5rem"><i class="fa-solid fa-rocket"></i> Get Started Free</div>
-        <h2 class="cta-title">Ready for your <span class="text-gradient">AI-powered adventure?</span></h2>
-        <p class="cta-sub">Join thousands of smart travelers who trust YatraSaathi to plan extraordinary journeys.</p>
-        <div class="cta-actions">
-          <a href="planner.html" class="btn btn-primary btn-lg">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Plan My Trip Now
-          </a>
-          <a href="city.html" class="btn btn-ghost btn-lg">
-            <i class="fa-solid fa-compass"></i> Explore Cities
-          </a>
+      <div class="cta-layout">
+        <div class="cta-content">
+          <div class="section-badge" style="margin-bottom:1.5rem"><i class="fa-solid fa-rocket"></i> Get Started Free</div>
+          <h2 class="cta-title">Ready for your <span class="text-gradient">AI-powered adventure?</span></h2>
+          <p class="cta-sub">Join thousands of smart travelers who trust YatraSaathi to plan extraordinary journeys with our intelligent AI system.</p>
+          <div class="cta-actions">
+            <a href="auth.html" class="btn btn-primary btn-lg">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Plan My Trip Now
+            </a>
+            <a href="city.html" class="btn btn-ghost btn-lg">
+              <i class="fa-solid fa-compass"></i> Explore Cities
+            </a>
+          </div>
+        </div>
+        <div class="cta-visual">
+          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop" alt="Airplane soaring through clouds" class="cta-img" />
         </div>
       </div>
     </div>

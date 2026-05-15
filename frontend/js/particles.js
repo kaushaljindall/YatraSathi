@@ -11,7 +11,7 @@
     maxSize: 2.5,
     speed: 0.3,
     lineDistance: 120,
-    lineOpacity: 0.08,
+    lineOpacity: 0.25,
   };
 
   function resize() {
