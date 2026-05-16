@@ -86,10 +86,26 @@
       renderStats(trips);
       renderTrips(trips);
       renderInsights(trips);
+
+      // Update the upcoming trip banner and widget stats on home page
+      if (typeof window._updateBanner === 'function') window._updateBanner(trips);
+
+      // Update widget stat tiles
+      const fmt = (n) => n >= 100000 ? '₹' + (n/100000).toFixed(1) + 'L' : '₹' + n.toLocaleString('en-IN');
+      let totalDaysW = 0, totalBudgetW = 0;
+      const citiesW = new Set();
+      trips.forEach(t => { totalDaysW += (t.duration_days||0); totalBudgetW += (t.budget||0); if(t.destination) citiesW.add(t.destination); });
+      const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setEl('statTrips', String(trips.length).padStart(2,'0'));
+      setEl('statBudget', fmt(totalBudgetW));
+      setEl('statDays', String(totalDaysW).padStart(2,'0'));
+      setEl('statCities', citiesW.size + ' cities explored');
+
     } catch (e) {
       console.error("Failed to load dashboard data:", e);
     }
   }
+
 
   function renderStats(trips) {
     const statsContainer = document.querySelector('.stats-banner');
@@ -131,8 +147,9 @@
   }
 
   async function renderTrips(trips) {
-    const grid = document.querySelector('.plans-grid');
+    const grid = document.getElementById('plansGrid') || document.querySelector('.plans-grid');
     if (!grid) return;
+
     
     const addNewCardHTML = `
       <a href="planner.html" class="plan-card add-new-plan">
