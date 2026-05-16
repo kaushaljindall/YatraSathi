@@ -6,111 +6,134 @@
   <title>Planner — YatraSaathi AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/planner.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/planner_v2.css" />
 </head>
 <body>
 
-<div class="bg-canvas">
-  <canvas id="particleCanvas"></canvas>
-</div>
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-3" style="background:radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%);"></div>
-<div class="grid-overlay"></div>
+<div class="blob-bg"></div>
 
-<!-- ── Navigation ──────────────────────────────── -->
-<nav class="nav" id="mainNav">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon"><i class="fa-solid fa-plane-up"></i></div>
-      YatraSaathi
-    </a>
-
-    <div class="nav-links">
-      <a href="dashboard.html" class="nav-link">Home</a>
-      <a href="planner.html" class="nav-link active">Planner</a>
-      <a href="budget.html" class="nav-link">Budget Intelligence</a>
-      <a href="city.html" class="nav-link">City Insights</a>
+<!-- Navigation -->
+<header class="header" id="site-header">
+  <div class="container nav-container">
+    <div class="logo">
+      <a href="home.html" style="display: block; height: 100%;">
+        <img src="assets/logos/mainlogo.svg" alt="YatraSaathi Logo" id="site-logo" onerror="this.onerror=null; this.src=''; this.alt='YatraSaathi';" style="height: 100%;" />
+      </a>
     </div>
 
-    <div class="nav-actions">
-      <div class="user-profile-btn">
-        <img src="https://ui-avatars.com/api/?name=Traveler&background=3b82f6&color=fff" alt="User" class="nav-avatar">
+    <!-- Dock Navbar -->
+    <div class="dock-outer" id="dock-nav">
+      <nav class="dock-panel" role="toolbar" aria-label="Application dock">
+        <a href="home.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-house"></i></div>
+          <div class="dock-label">Home</div>
+        </a>
+        <a href="planner.html" class="dock-item active" style="background-color: #fff; box-shadow: 0 5px 15px rgba(24,30,75,0.06);">
+          <div class="dock-icon"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--clr-primary);"></i></div>
+          <div class="dock-label">Planner</div>
+        </a>
+        <a href="city.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-building"></i></div>
+          <div class="dock-label">City Insights</div>
+        </a>
+        <div class="dock-divider"></div>
+        <div class="dock-item" style="cursor: default;">
+          <div class="dock-icon"><img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:28px; height:28px; border-radius:50%;"></div>
+          <div class="dock-label">Profile</div>
+        </div>
+        <a href="#" class="dock-item" onclick="AuthAPI.logout()">
+          <div class="dock-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+          <div class="dock-label">Logout</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Scroll Navbar -->
+    <nav class="scroll-nav" id="scroll-nav">
+      <div class="scroll-nav-links">
+        <a href="home.html" class="scroll-nav-link">
+          <i class="fa-solid fa-house"></i> Home
+        </a>
+        <a href="planner.html" class="scroll-nav-link active">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Planner
+        </a>
+        <a href="city.html" class="scroll-nav-link">
+          <i class="fa-solid fa-building"></i> City Insights
+        </a>
       </div>
-      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+      <div class="scroll-nav-actions" style="display:flex; align-items:center; gap:15px;">
+        <img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:36px; height:36px; border-radius:50%;">
+        <button onclick="AuthAPI.logout()" class="logout-btn" style="color: #DF6951; font-weight: 600; cursor: pointer; background: none; border: none; font-size: 14px; font-family: 'Poppins', sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </nav>
   </div>
-</nav>
-
-<div class="page-wrapper" style="padding-top: 100px;">
-  <div class="container planner-layout">
-    
-    <!-- ── Sidebar Form ────────────────────────────── -->
-    <aside class="planner-sidebar glass">
-      <div class="sidebar-header">
-        <h2 class="sidebar-title"><i class="fa-solid fa-wand-magic-sparkles text-gradient"></i> AI Trip Builder</h2>
-        <p class="sidebar-subtitle">Configure parameters for Groq LLM</p>
+</header>
+<section class="planner-section">
+  <!-- Horizontal Top Form -->
+  <div class="planner-top-bar">
+    <div class="planner-container">
+      <div class="planner-header-text">
+        <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #DF6951;"></i> AI Trip Builder</h2>
+        <p>Configure your next adventure.</p>
       </div>
 
-      <form id="plannerForm" class="planner-form">
-        <div class="form-section">
-          <h3 class="form-section-title">Core Details</h3>
-          
-          <div class="form-group">
+      <form id="plannerForm" class="horizontal-planner-form">
+        <!-- Row 1 -->
+        <div class="form-row main-row">
+          <div class="form-group flex-1">
             <label class="form-label">Destination</label>
             <div class="input-icon-wrapper">
               <i class="fa-solid fa-location-dot input-icon"></i>
               <input type="text" class="form-control" id="destination" placeholder="Where do you want to go?" required value="Kyoto, Japan">
             </div>
           </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Start Date</label>
-              <input type="date" class="form-control" id="startDate" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">End Date</label>
-              <input type="date" class="form-control" id="endDate" required>
-            </div>
+          <div class="form-group" style="width: 180px;">
+            <label class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="startDate" required>
+          </div>
+          <div class="form-group" style="width: 180px;">
+            <label class="form-label">End Date</label>
+            <input type="date" class="form-control" id="endDate" required>
+          </div>
+          <div class="form-group" style="width: 250px;">
+            <label class="form-label" style="opacity: 0;">Generate</label>
+            <button type="submit" class="generate-btn" id="generateBtn">
+              <span>Generate Itinerary</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
           </div>
         </div>
 
-        <div class="form-section">
-          <h3 class="form-section-title">Preferences</h3>
-          
+        <!-- Row 2 -->
+        <div class="form-row prefs-row">
           <div class="form-group">
             <label class="form-label">Budget Level</label>
             <div class="budget-selector">
               <label class="budget-option">
                 <input type="radio" name="budget" value="budget" checked>
                 <div class="budget-card">
-                  <i class="fa-solid fa-piggy-bank"></i>
-                  <span>Budget</span>
+                  <i class="fa-solid fa-piggy-bank"></i> Budget
                 </div>
               </label>
               <label class="budget-option">
                 <input type="radio" name="budget" value="moderate">
                 <div class="budget-card">
-                  <i class="fa-solid fa-wallet"></i>
-                  <span>Moderate</span>
+                  <i class="fa-solid fa-wallet"></i> Moderate
                 </div>
               </label>
               <label class="budget-option">
                 <input type="radio" name="budget" value="luxury">
                 <div class="budget-card">
-                  <i class="fa-solid fa-gem"></i>
-                  <span>Luxury</span>
+                  <i class="fa-solid fa-gem"></i> Luxury
                 </div>
               </label>
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group flex-1" style="padding-left: 20px;">
             <label class="form-label">Interests & Vibe</label>
             <div class="chips-row" id="interestChips">
               <span class="chip selected" data-val="culture">Culture</span>
@@ -119,117 +142,88 @@
               <span class="chip" data-val="nightlife">Nightlife</span>
               <span class="chip" data-val="shopping">Shopping</span>
               <span class="chip" data-val="history">History</span>
-              <span class="chip" data-val="relaxation">Relaxation</span>
             </div>
           </div>
-        </div>
 
-        <div class="form-section">
-          <h3 class="form-section-title">Advanced Configuration</h3>
-          
-          <div class="form-group">
+          <div class="form-group" style="width: 250px;">
             <label class="form-label">Pace</label>
             <input type="range" class="range-slider" min="1" max="3" value="2" id="paceSlider">
             <div class="range-labels">
-              <span>Relaxed</span>
-              <span>Moderate</span>
-              <span>Packed</span>
+              <span>Relaxed</span><span>Moderate</span><span>Packed</span>
             </div>
           </div>
-
-          <div class="form-group checkbox-group">
-            <label class="custom-checkbox">
-              <input type="checkbox" id="includeWeather" checked>
-              <span class="checkmark"></span>
-              <span class="cb-label">Apply real-time weather constraints</span>
-            </label>
-            <label class="custom-checkbox">
-              <input type="checkbox" id="optimizeRoutes" checked>
-              <span class="checkmark"></span>
-              <span class="cb-label">Use geospatial route optimization</span>
-            </label>
-          </div>
         </div>
-
-        <button type="submit" class="btn btn-primary btn-lg generate-btn" id="generateBtn">
-          <span class="btn-text">Generate Intelligent Itinerary</span>
-          <i class="fa-solid fa-arrow-right btn-icon"></i>
-        </button>
       </form>
-    </aside>
+    </div>
+  </div>
 
-    <!-- ── Main Content Area ──────────────────────── -->
-    <main class="planner-main">
+  <div class="planner-container">
+    <!-- Main Content Area -->
+    <main class="planner-main-full">
       <!-- Empty State -->
-      <div class="empty-state glass" id="emptyState">
-        <div class="empty-visual" style="margin-bottom: 2rem;">
-          <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?q=80&w=600&auto=format&fit=crop" alt="Travel map planning" style="max-width: 250px; border-radius: var(--r-2xl); box-shadow: 0 10px 30px rgba(0,0,0,0.1);" />
-        </div>
-        <h2>Ready to explore?</h2>
-        <p>Fill out your preferences in the sidebar and let Groq LLM craft your perfect journey.</p>
-        
-        <div class="feature-hints">
-          <div class="hint">
-            <i class="fa-solid fa-bolt text-gradient"></i> Fast Generation
-          </div>
-          <div class="hint">
-            <i class="fa-solid fa-route" style="color:var(--clr-teal)"></i> Optimized Routes
-          </div>
-          <div class="hint">
-            <i class="fa-solid fa-cloud" style="color:var(--clr-emerald)"></i> Weather Aware
+      <div class="empty-state-horizontal" id="emptyState">
+        <div class="empty-hero"></div>
+        <div class="empty-hero-content">
+          <h2>Ready to explore?</h2>
+          <p>Fill out your preferences and let our AI craft your perfect, personalized journey across the globe.</p>
+          <div class="feature-hints">
+            <div class="hint"><i class="fa-solid fa-bolt" style="color: #F1A501;"></i> Fast Generation</div>
+            <div class="hint"><i class="fa-solid fa-route" style="color: #4152CB;"></i> Optimized Routes</div>
+            <div class="hint"><i class="fa-solid fa-cloud" style="color: #1EB589;"></i> Weather Aware</div>
           </div>
         </div>
       </div>
 
       <!-- Loading State -->
-      <div class="loading-state glass hidden" id="loadingState">
-        <div class="ai-processing-visual">
-          <div class="pulse-ring pr-1"></div>
-          <div class="pulse-ring pr-2"></div>
-          <div class="ai-core"><i class="fa-solid fa-microchip"></i></div>
+      <div class="loading-state hidden" id="loadingState">
+        <div class="ai-pulse-visual">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
         </div>
-        <h2 class="typing-text">Initializing AI Engine...</h2>
-        <p class="loading-status" id="loadingStatusText">Connecting to Groq API</p>
+        <h2>Crafting your journey...</h2>
+        <p id="loadingStatusText" style="margin-bottom: 20px;">Analyzing millions of data points</p>
         
-        <div class="loading-progress">
-          <div class="progress-bar">
-            <div class="progress-fill" id="loadingBar" style="width: 0%"></div>
-          </div>
+        <!-- Progress Bar -->
+        <div style="width: 100%; max-width: 400px; height: 8px; background: #FAFAFB; border-radius: 10px; margin: 0 auto; overflow: hidden; border: 1px solid #E5E7EB;">
+          <div id="loadingBar" style="width: 0%; height: 100%; background: #DF6951; border-radius: 10px; transition: width 0.5s ease;"></div>
         </div>
       </div>
 
       <!-- Result State -->
       <div class="result-state hidden" id="resultState">
-        <div class="result-header glass">
+        <!-- Result Header -->
+        <div class="result-header">
           <div class="result-title-row">
             <div>
-              <div class="section-badge"><i class="fa-solid fa-check-double"></i> AI Generated</div>
-              <h1 class="result-dest" id="resDest">Kyoto, Japan</h1>
-              <p class="result-meta"><i class="fa-solid fa-calendar"></i> <span id="resDates">Oct 12 - Oct 15</span> • <i class="fa-solid fa-wallet"></i> <span id="resBudget" style="text-transform:capitalize">Moderate</span> • <i class="fa-solid fa-shoe-prints"></i> <span id="resPace">Moderate</span> Pace</p>
+              <span class="section-badge">AI Generated Itinerary</span>
+              <h2 class="result-dest" id="resDest">Kyoto, Japan</h2>
+              <div class="result-meta">
+                <span><i class="fa-regular fa-calendar" style="color: #DF6951;"></i> <span id="resDates">Oct 12 - Oct 16</span></span>
+                <span><i class="fa-solid fa-wallet" style="color: #F1A501;"></i> <span id="resBudget">Moderate</span></span>
+              </div>
             </div>
-            <div class="result-actions">
-              <button class="btn btn-outline-primary"><i class="fa-solid fa-share-nodes"></i> Share</button>
-              <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Save to Dashboard</button>
+            <div class="result-actions" style="display: flex; gap: 15px;">
+              <button class="btn-outline-primary" style="background: transparent; border: 2px solid #DF6951; color: #DF6951; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif;"><i class="fa-solid fa-wallet"></i> Track Budget</button>
+              <button class="btn-primary" style="background: #DF6951; border: none; color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; box-shadow: 0 5px 15px rgba(223,105,81,0.2);"><i class="fa-solid fa-bookmark"></i> Save to Dashboard</button>
             </div>
           </div>
           
           <div class="trip-summary-cards">
             <div class="summary-card">
-              <div class="sc-icon" style="color:var(--clr-primary);background:rgba(59,130,246,0.1)"><i class="fa-solid fa-sun"></i></div>
+              <div class="sc-icon" style="color: #F1A501; background: rgba(241,165,1,0.1);"><i class="fa-solid fa-sun"></i></div>
               <div class="sc-info">
                 <span class="sc-label">Expected Weather</span>
-                <span class="sc-val">22°C, Mostly Sunny</span>
+                <span class="sc-val">22°C, Sunny</span>
               </div>
             </div>
             <div class="summary-card">
-              <div class="sc-icon" style="color:var(--clr-emerald);background:rgba(16,185,129,0.1)"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <div class="sc-icon" style="color: #1EB589; background: rgba(30,185,137,0.1);"><i class="fa-solid fa-money-bill-wave"></i></div>
               <div class="sc-info">
                 <span class="sc-label">Est. Cost</span>
-                <span class="sc-val" id="resEstimatedCost">Calculating...</span>
+                <span class="sc-val" id="resEstimatedCost">₹45,000</span>
               </div>
             </div>
             <div class="summary-card">
-              <div class="sc-icon" style="color:var(--clr-purple);background:rgba(139,92,246,0.1)"><i class="fa-solid fa-map"></i></div>
+              <div class="sc-icon" style="color: #4152CB; background: rgba(65,82,203,0.1);"><i class="fa-solid fa-map"></i></div>
               <div class="sc-info">
                 <span class="sc-label">Distance Covered</span>
                 <span class="sc-val">42 km total</span>
@@ -245,11 +239,62 @@
     </main>
 
   </div>
-</div>
+</section>
 
-<script src="js/particles.js"></script>
-<script src="js/main.js"></script>
+<!-- Footer -->
+<footer class="footer">
+  <div class="container footer-container">
+    <div class="footer-brand">
+      <img src="assets/logos/mainlogo.svg" alt="YatraSaathi Logo" class="footer-logo" onerror="this.onerror=null; this.src=''; this.alt='YatraSaathi';" />
+      <p class="footer-tagline">Your AI-Powered Travel Companion</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h3>Company</h3>
+        <a href="#">About</a>
+        <a href="#">Careers</a>
+      </div>
+      <div class="footer-col">
+        <h3>Contact</h3>
+        <a href="#">Help/FAQ</a>
+        <a href="#">Press</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script src="js/api.js"></script>
 <script src="js/planner.js"></script>
+<script>
+  // Morphing Navbar Logic (same as home)
+  document.addEventListener('DOMContentLoaded', () => {
+    const header    = document.getElementById('site-header');
+    const dockNav   = document.getElementById('dock-nav');
+    const scrollNav = document.getElementById('scroll-nav');
+    const THRESHOLD = 80;
+
+    const updateNav = () => {
+      if (window.scrollY > THRESHOLD) {
+        header.classList.add('scrolled');
+        dockNav.classList.add('nav-hidden');
+        scrollNav.classList.add('nav-visible');
+      } else {
+        header.classList.remove('scrolled');
+        dockNav.classList.remove('nav-hidden');
+        scrollNav.classList.remove('nav-visible');
+      }
+    };
+
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
+    
+    // Auth Guard
+    if (!Auth.isLoggedIn()) {
+      window.location.href = 'auth.html';
+    } else {
+      initNavUser();
+    }
+  });
+</script>
 </body>
 </html>
