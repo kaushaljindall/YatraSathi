@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Wire "Save to Dashboard" button
     const saveBtn = document.querySelector('.result-actions .btn-primary');
     if (saveBtn) {
-      saveBtn.onclick = () => window.location.href = 'dashboard.html';
+      saveBtn.onclick = () => window.location.href = 'home.html';
     }
 
     // Wire "Track Budget" button (second action button)

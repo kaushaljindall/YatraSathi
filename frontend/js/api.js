@@ -124,7 +124,15 @@ const CityAPI = {
       body: JSON.stringify({ city, query }),
     });
   },
+
+  /** Scrape a real Wikipedia image for a city — no auth required */
+  async getImage(city) {
+    return apiFetch(`/city/city-image?city=${encodeURIComponent(city)}`, {
+      method: "GET",
+    });
+  },
 };
+
 
 /* ── Weather Endpoints ────────────────────────────────────────── */
 const WeatherAPI = {

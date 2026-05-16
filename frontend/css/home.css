@@ -348,3 +348,35 @@
       .user-hero-image { position: relative; width: 100%; height: 200px; margin-top: 20px; }
       .user-hero-image::before { background: linear-gradient(to bottom, #fff 0%, transparent 100%); }
     }
+
+    /* ── Trip Card Skeleton shimmer ── */
+    @keyframes shimmer {
+      0%   { background-position: -800px 0; }
+      100% { background-position: 800px 0; }
+    }
+    .plan-card-img[style*="shimmer"] {
+      background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%) !important;
+      background-size: 800px 100% !important;
+      animation: shimmer 1.5s infinite linear !important;
+    }
+
+    /* ── Plan card body ── */
+    .plan-card-body {
+      padding: 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .plan-card-body h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #181E4B;
+      margin: 4px 0 0;
+    }
+    .plan-meta {
+      font-size: 12px;
+      color: #DF6951;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }

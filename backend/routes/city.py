@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 import logging
 
 from auth.dependencies import get_current_user
@@ -54,3 +54,25 @@ async def get_city_insights(
     except Exception as e:
         logger.error(f"City insights failed: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/city-image")
+async def get_city_image(
+    city: str = Query(..., description="City name to fetch image for")
+):
+    """
+    Lightweight endpoint: scrapes a high-quality city image via Wikipedia
+    and returns the URL. No auth required — used by the home page trip cards.
+    """
+    from ai.image_scraper import get_image_for_query
+    try:
+        url = await get_image_for_query(city)
+        return {"success": True, "city": city, "image_url": url}
+    except Exception as e:
+        logger.error(f"City image fetch failed for '{city}': {e}")
+        return {
+            "success": False,
+            "city": city,
+            "image_url": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop"
+        }
+

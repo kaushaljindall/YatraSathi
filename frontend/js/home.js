@@ -130,7 +130,7 @@
     `;
   }
 
-  function renderTrips(trips) {
+  async function renderTrips(trips) {
     const grid = document.querySelector('.plans-grid');
     if (!grid) return;
     
@@ -148,39 +148,92 @@
       grid.innerHTML = addNewCardHTML;
       return;
     }
-    
-    let html = '';
-    
-    trips.forEach(trip => {
-      const imgUrl = `https://source.unsplash.com/800x600/?${encodeURIComponent(trip.destination)},travel,landmark`;
+
+    // Budget tier helpers
+    const budgetTier = (b) => {
+      if (b <= 20000) return { label: 'Budget', color: '#1EB589', icon: 'fa-piggy-bank' };
+      if (b <= 75000) return { label: 'Moderate', color: '#F1A501', icon: 'fa-wallet' };
+      return { label: 'Luxury', color: '#8B5CF6', icon: 'fa-gem' };
+    };
+
+    // Render skeleton cards first (instant UI response)
+    let skeletonHTML = trips.map((trip, i) => `
+      <div class="plan-card" id="trip-card-${i}" style="min-height:300px;">
+        <div class="plan-card-img" style="background: linear-gradient(135deg,#e5e7eb,#f3f4f6); height:180px; animation: shimmer 1.5s infinite;">
+          <div class="plan-badge">${trip.status === 'completed' ? 'Completed' : 'Upcoming'}</div>
+        </div>
+        <div class="plan-card-body" style="padding:18px;">
+          <div class="plan-meta" style="color:#8C92B1;font-size:13px;margin-bottom:6px;">Loading...</div>
+          <h3 style="color:#181E4B;font-size:16px;font-weight:700;">${trip.destination} Trip</h3>
+        </div>
+      </div>`).join('');
+    grid.innerHTML = skeletonHTML + addNewCardHTML;
+
+    // Fetch scraped Wikipedia images concurrently for all trips
+    const imagePromises = trips.map(async (trip) => {
+      try {
+        const data = await CityAPI.getImage(trip.destination);
+        return data.image_url || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop';
+      } catch {
+        return 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop';
+      }
+    });
+
+    const images = await Promise.all(imagePromises);
+
+    // Build final rich cards
+    let finalHTML = '';
+    trips.forEach((trip, i) => {
+      const imgUrl    = images[i];
       const startDate = new Date(trip.start_date);
-      const endDate = new Date(trip.end_date);
-      const formatOption = { month: 'short', day: 'numeric' };
-      const dateStr = `${startDate.toLocaleDateString('en-US', formatOption)} - ${endDate.toLocaleDateString('en-US', formatOption)}`;
+      const endDate   = new Date(trip.end_date);
+      const fmt       = { month: 'short', day: 'numeric' };
+      const dateStr   = `${startDate.toLocaleDateString('en-US', fmt)} – ${endDate.toLocaleDateString('en-US', fmt)}`;
+      const tier      = budgetTier(trip.budget || 0);
+      const perDay    = trip.duration_days > 0 ? Math.round((trip.budget || 0) / trip.duration_days) : 0;
       const badgeClass = trip.status === 'completed' ? 'past' : '';
-      const badgeText = trip.status === 'completed' ? 'Completed' : 'Upcoming';
-      
-      html += `
-        <a href="dashboard.html?id=${trip.trip_id}" class="plan-card">
+      const badgeText  = trip.status === 'completed' ? 'Completed' : 'Upcoming';
+      const interests  = (trip.interests || []).slice(0, 2).map(tag =>
+        `<span style="background:rgba(65,82,203,0.08);color:#4152CB;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${tag}</span>`
+      ).join('');
+
+      finalHTML += `
+        <a href="home.html" class="plan-card">
           <div class="plan-card-img">
-            <img src="${imgUrl}" alt="${trip.destination}" onerror="this.src='https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop'">
+            <img src="${imgUrl}" alt="${trip.destination}"
+              onerror="this.src='https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop'">
             <div class="plan-badge ${badgeClass}">${badgeText}</div>
           </div>
           <div class="plan-card-body">
             <div class="plan-meta">${dateStr} • ${trip.duration_days} Days</div>
             <h3>${trip.destination} Trip</h3>
-            <p style="text-transform: capitalize;">Style: ${trip.travel_style} • Transport: ${trip.transport_preference}</p>
-            <div class="plan-footer">
-              <span class="plan-price">Est: ₹${(trip.budget || 0).toLocaleString('en-IN')}</span>
+            ${interests ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">${interests}</div>` : ''}
+            
+            <!-- Budget breakdown row -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #F0F0F5;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:${tier.color}18;color:${tier.color};display:flex;align-items:center;justify-content:center;font-size:12px;">
+                  <i class="fa-solid ${tier.icon}"></i>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:#8C92B1;line-height:1;">${tier.label} Budget</div>
+                  <div style="font-size:13px;font-weight:700;color:#181E4B;">₹${(trip.budget||0).toLocaleString('en-IN')}</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:11px;color:#8C92B1;line-height:1;">Per Day</div>
+                <div style="font-size:13px;font-weight:600;color:${tier.color};">₹${perDay.toLocaleString('en-IN')}</div>
+              </div>
               <div class="btn-view"><i class="fa-solid fa-arrow-right"></i></div>
             </div>
           </div>
         </a>
       `;
     });
-    
-    grid.innerHTML = html + addNewCardHTML;
+
+    grid.innerHTML = finalHTML + addNewCardHTML;
   }
+
   
   async function renderInsights(trips) {
     const insightsContainer = document.querySelector('.insights-grid');
