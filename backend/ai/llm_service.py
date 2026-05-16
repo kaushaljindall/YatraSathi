@@ -24,14 +24,14 @@ class LLMService:
                     self.base_url,
                     headers={"Authorization": f"Bearer {self.api_key}"},
                     json={
-                        "model": self.model,
+                        "model": "llama-3.1-8b-instant",
                         "messages": [
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": user_query}
                         ],
                         "temperature": temperature
                     },
-                    timeout=30.0
+                    timeout=60.0
                 )
                 
             response.raise_for_status()

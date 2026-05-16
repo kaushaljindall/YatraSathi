@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/planner_v2.css" />
+  <link rel="stylesheet" href="css/planner_v2.css?v=7" />
 </head>
 <body>
 
@@ -81,7 +81,7 @@
       </div>
 
       <form id="plannerForm" class="horizontal-planner-form">
-        <!-- Row 1 -->
+        <!-- Row 1 (The Pill) -->
         <div class="form-row main-row">
           <div class="form-group flex-1">
             <label class="form-label">Destination</label>
@@ -90,16 +90,15 @@
               <input type="text" class="form-control" id="destination" placeholder="Where do you want to go?" required value="Kyoto, Japan">
             </div>
           </div>
-          <div class="form-group" style="width: 180px;">
+          <div class="form-group" style="width: 170px;">
             <label class="form-label">Start Date</label>
             <input type="date" class="form-control" id="startDate" required>
           </div>
-          <div class="form-group" style="width: 180px;">
+          <div class="form-group" style="width: 170px;">
             <label class="form-label">End Date</label>
             <input type="date" class="form-control" id="endDate" required>
           </div>
-          <div class="form-group" style="width: 250px;">
-            <label class="form-label" style="opacity: 0;">Generate</label>
+          <div class="form-group btn-wrapper">
             <button type="submit" class="generate-btn" id="generateBtn">
               <span>Generate Itinerary</span>
               <i class="fa-solid fa-arrow-right"></i>
@@ -133,9 +132,9 @@
             </div>
           </div>
 
-          <div class="form-group flex-1" style="padding-left: 20px;">
-            <label class="form-label">Interests & Vibe</label>
-            <div class="chips-row" id="interestChips">
+          <div class="form-group" style="flex: 1; align-items: center;">
+            <label class="form-label" style="text-align: center;">Interests & Vibe</label>
+            <div class="chips-row" id="interestChips" style="justify-content: center;">
               <span class="chip selected" data-val="culture">Culture</span>
               <span class="chip selected" data-val="food">Food</span>
               <span class="chip" data-val="nature">Nature</span>

@@ -202,13 +202,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return `
         <div class="itinerary-day">
           <div class="day-header">
-            <div class="day-num">📋</div>
-            <div class="day-title">Your ${durationDays}-Day Plan for ${destination}</div>
+            <h3>Your ${durationDays}-Day Plan for ${destination}</h3>
           </div>
-          <div class="day-timeline">
-            <div class="timeline-item">
-              <div class="ti-dot"></div>
-              <div class="ti-desc">${text.replace(/\n/g, "<br>")}</div>
+          <div class="activity-card">
+            <div class="activity-time"><i class="fa-solid fa-clock"></i></div>
+            <div class="activity-details">
+              <p>${text.replace(/\n/g, "<br>")}</p>
             </div>
           </div>
         </div>`;
@@ -240,11 +239,10 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!title) return "";
 
           return `
-            <div class="timeline-item" style="animation-delay:${idx * 0.08}s">
-              <div class="ti-dot"></div>
-              <div class="ti-header">
-                <div class="ti-title">${title}</div>
-                ${timeStr ? `<div class="ti-time">${timeStr}</div>` : ""}
+            <div class="activity-card" style="animation-delay:${idx * 0.08}s; animation: fadeInUp 0.5s ease backwards;">
+              <div class="activity-time">${timeStr || "Anytime"}</div>
+              <div class="activity-details">
+                <h4>${title}</h4>
               </div>
             </div>`;
         })
@@ -253,14 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
       html += `
         <div class="itinerary-day">
           <div class="day-header">
-            <div class="day-num">Day ${dayNum}</div>
-            <div class="day-title">${destination} – Day ${dayNum}</div>
+            <h3>Day ${dayNum} – ${destination}</h3>
           </div>
-          <div class="day-timeline">${activities || "<p style='color:#94a3b8;padding:12px'>See full plan above.</p>"}</div>
+          ${activities || "<p style='color:#94a3b8;padding:12px'>See full plan above.</p>"}
         </div>`;
     }
 
-    return html || `<div class="itinerary-day"><div class="day-timeline"><div class="timeline-item"><div class="ti-dot"></div><div class="ti-desc">${text.replace(/\n/g, "<br>")}</div></div></div></div>`;
+    return html || `<div class="itinerary-day"><div class="activity-card"><div class="activity-details"><p>${text.replace(/\n/g, "<br>")}</p></div></div></div>`;
   }
 });
 
