@@ -27,9 +27,21 @@ async def get_city_insights(
         )
 
         import json
+        from ai.image_scraper import get_image_for_query
+        import asyncio
         try:
             insights_data = json.loads(result["recommendation"])
-        except Exception:
+            
+            # Fetch real images for attractions concurrently
+            attractions = insights_data.get("attractions", [])
+            if attractions:
+                tasks = [get_image_for_query(f"{a['name']} {result['city']}") for a in attractions]
+                image_urls = await asyncio.gather(*tasks)
+                for idx, a in enumerate(attractions):
+                    a["img"] = image_urls[idx]
+                    
+        except Exception as e:
+            logger.error(f"Error parsing/fetching images: {e}")
             insights_data = {"error": "Failed to parse insights", "raw": result["recommendation"]}
 
         return {
