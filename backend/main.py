@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
 import asyncio
+import os
+
+# Prevent FAISS / OpenMP from hanging during multiprocessing/uvicorn reload
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from config.settings import settings
 from config.database import read_db, write_db

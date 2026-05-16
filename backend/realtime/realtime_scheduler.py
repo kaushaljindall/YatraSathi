@@ -68,6 +68,8 @@ class RealtimeScheduler:
                                 "current_loc": trip.get("destination", ""),
                                 "next_loc": trip.get("destination", ""),
                                 "time": "current",
+                                "lat": trip.get("lat", 28.6139),  # Default to New Delhi
+                                "lon": trip.get("lon", 77.2090),
                             }
                         })
                 except (KeyError, ValueError):

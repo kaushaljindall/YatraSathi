@@ -123,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
           travel_style:        paceMap[paceVal] || "balanced",
           hotel_preference:    "mid-range",
           transport_preference: "public",
+          itinerary_text:      result.itinerary,
         });
         savedTripId = tripResult.trip_id;
         localStorage.setItem("ys_active_trip", savedTripId);

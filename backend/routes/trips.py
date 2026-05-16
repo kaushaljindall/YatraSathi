@@ -22,6 +22,7 @@ class TripCreate(BaseModel):
     travel_style: str = "balanced"
     hotel_preference: str = "mid-range"
     transport_preference: str = "public"
+    itinerary_text: Optional[str] = None
 
 
 @router.post("/create")
@@ -58,6 +59,20 @@ async def create_trip(
         }
 
         db_data["trips"].append(new_trip)
+        
+        if trip.itinerary_text:
+            itinerary_record = {
+                "itinerary_id": trip_id + 1,
+                "trip_id": trip_id,
+                "user_id": current_user["id"],
+                "destination": trip.destination,
+                "duration_days": duration_days,
+                "itinerary_text": trip.itinerary_text,
+                "estimated_cost": round(trip.budget * 0.85, 2),
+                "generated_at": datetime.utcnow().isoformat()
+            }
+            db_data["itineraries"].append(itinerary_record)
+
         await write_db(db_data)
 
         return {"success": True, "trip_id": trip_id, "trip": new_trip}
