@@ -40,9 +40,19 @@
           <div class="dock-icon"><i class="fa-solid fa-wallet"></i></div>
           <div class="dock-label">Budget</div>
         </a>
-        <a href="city.html" class="dock-item active">
-          <div class="dock-icon"><i class="fa-solid fa-building"></i></div>
+        <a href="city.html" class="dock-item active" style="background-color: #fff; box-shadow: 0 5px 15px rgba(24,30,75,0.06);">
+          <div class="dock-icon"><i class="fa-solid fa-building" style="color: var(--clr-primary);"></i></div>
           <div class="dock-label">Insights</div>
+        </a>
+
+        <div class="dock-divider"></div>
+        <div class="dock-item" style="cursor: default;">
+          <div class="dock-icon"><img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:28px; height:28px; border-radius:50%;"></div>
+          <div class="dock-label">Profile</div>
+        </div>
+        <a href="#" class="dock-item" onclick="AuthAPI.logout()">
+          <div class="dock-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+          <div class="dock-label">Logout</div>
         </a>
       </nav>
     </div>

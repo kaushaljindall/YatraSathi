@@ -42,25 +42,36 @@ def fetch_image_sync(query: str) -> str:
                 
         # First try the OpenGraph meta tag (usually the best quality)
         og_image = soup.find('meta', property='og:image')
-        if og_image and og_image.get('content'):
+        if og_image and og_image.get('content') and not og_image['content'].endswith('.svg'):
             return og_image['content']
             
-        # Fallback: look for the first decent sized image (infobox or thumbnail)
-        img_tag = soup.select_one('.infobox img, .thumbimage, .mw-file-element')
-        if img_tag and img_tag.get('src'):
-            src = img_tag['src']
-            if src.startswith('//'):
-                src = 'https:' + src
-            
-            # Wikipedia thumbs look like: .../thumb/a/a2/Name.jpg/220px-Name.jpg
-            # Convert thumb to full res by removing /thumb/ and the trailing resolution part
-            if '/thumb/' in src:
-                parts = src.split('/')
-                # Remove the last part (e.g., 220px-...)
-                if parts[-1].endswith('.jpg') or parts[-1].endswith('.png'):
-                    parts.pop()
-                src = '/'.join(parts).replace('/thumb/', '/')
-            return src
+        # Fallback: look for the first decent sized photo
+        for img_tag in soup.select('.infobox img, .thumbimage, .mw-file-element, img'):
+            src = img_tag.get('src', '')
+            if not src:
+                continue
+                
+            # Skip icons, maps, and UI elements
+            src_lower = src.lower()
+            if '.svg' in src_lower or 'icon' in src_lower or 'logo' in src_lower or 'ambox' in src_lower or 'map' in src_lower:
+                continue
+                
+            # We want a real photo
+            if '.jpg' in src_lower or '.jpeg' in src_lower or '.png' in src_lower:
+                if src.startswith('//'):
+                    src = 'https:' + src
+                elif src.startswith('/'):
+                    src = 'https://en.wikipedia.org' + src
+                
+                # Wikipedia thumbs look like: .../thumb/a/a2/Name.jpg/220px-Name.jpg
+                # Convert thumb to full res by removing /thumb/ and the trailing resolution part
+                if '/thumb/' in src:
+                    parts = src.split('/')
+                    # Remove the last part (e.g., 220px-...)
+                    if parts[-1].endswith('.jpg') or parts[-1].endswith('.png') or parts[-1].endswith('.jpeg'):
+                        parts.pop()
+                    src = '/'.join(parts).replace('/thumb/', '/')
+                return src
                 
     except Exception as e:
         logger.error(f"BeautifulSoup Wiki scrape failed for '{query}': {e}")
