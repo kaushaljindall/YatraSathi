@@ -213,18 +213,18 @@ function renderExpenseChart(expenses, totalBudget) {
   }
 
   const colors = [
-    "rgba(59,130,246,0.85)",
-    "rgba(139,92,246,0.85)",
-    "rgba(245,158,11,0.85)",
-    "rgba(16,185,129,0.85)",
+    "rgba(223,105,81,0.85)",
+    "rgba(65,82,203,0.85)",
+    "rgba(241,165,1,0.85)",
+    "rgba(30,181,137,0.85)",
     "rgba(6,182,212,0.85)",
     "rgba(239,68,68,0.85)",
     "rgba(249,115,22,0.85)",
     "rgba(236,72,153,0.85)",
   ];
 
-  Chart.defaults.color      = "#94a3b8";
-  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.color      = "#8C92B1";
+  Chart.defaults.font.family = "'Poppins', sans-serif";
 
   if (chartInstance) chartInstance.destroy();
 
@@ -235,9 +235,9 @@ function renderExpenseChart(expenses, totalBudget) {
       datasets: [{
         data,
         backgroundColor: colors.slice(0, labels.length),
-        borderColor:     "#0a1628",
-        borderWidth:     2,
-        hoverOffset:     10,
+        borderColor:     "#fff",
+        borderWidth:     3,
+        hoverOffset:     12,
       }],
     },
     options: {
@@ -250,11 +250,11 @@ function renderExpenseChart(expenses, totalBudget) {
           labels: { padding: 20, usePointStyle: true, pointStyle: "circle" },
         },
         tooltip: {
-          backgroundColor: "rgba(15,23,42,0.97)",
-          titleFont:       { size: 13, family: "'Space Grotesk', sans-serif" },
+          backgroundColor: "rgba(24,30,75,0.97)",
+          titleFont:       { size: 13, family: "'Poppins', sans-serif" },
           bodyFont:        { size: 13 },
-          padding:         12,
-          borderColor:     "rgba(255,255,255,0.1)",
+          padding:         14,
+          borderColor:     "rgba(223,105,81,0.3)",
           borderWidth:     1,
           callbacks: {
             label: (ctx) => ` ₹${ctx.raw.toLocaleString()} — ${((ctx.raw / data.reduce((a, b) => a + b, 0)) * 100).toFixed(1)}%`,
@@ -290,21 +290,19 @@ function renderExpenseList(expenses) {
       const scamBadge = e.scam_alert
         ? `<span style="background:#7f1d1d;color:#fca5a5;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;">⚠️ Suspicious</span>`
         : "";
-      const statusColor = e.pricing_status === "tourist_trap" ? "#ef4444"
-        : e.pricing_status === "expensive" ? "#f59e0b"
-        : e.pricing_status === "fair"      ? "#10b981"
-        : "#64748b";
+  const statusColor = e.pricing_status === "tourist_trap" ? "#ef4444"
+        : e.pricing_status === "expensive" ? "#F1A501"
+        : e.pricing_status === "fair"      ? "#1EB589"
+        : "#8C92B1";
 
       return `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span style="font-size:1.4rem">${icon}</span>
-            <div>
-              <div style="color:#f1f5f9;font-size:14px;">${e.description || e.category} ${scamBadge}</div>
-              <div style="color:#64748b;font-size:12px;">${date} · <span style="color:${statusColor}">${e.pricing_status || "fair"}</span></div>
-            </div>
+        <div class="expense-item">
+          <div class="expense-icon">${icon}</div>
+          <div class="expense-info">
+            <div class="expense-name">${e.description || e.category} ${scamBadge}</div>
+            <div class="expense-cat">${date} · <span style="color:${statusColor}">${e.pricing_status || "fair"}</span></div>
           </div>
-          <div style="color:#f1f5f9;font-weight:600;">₹${Number(e.amount).toLocaleString()}</div>
+          <div class="expense-amount">₹${Number(e.amount).toLocaleString()}</div>
         </div>`;
     })
     .join("");
@@ -314,7 +312,7 @@ function renderExpenseList(expenses) {
 function renderAIAdvice(budgetData) {
   const el = document.getElementById("aiAdvice");
   if (!el || !budgetData?.ai_advice) return;
-  el.innerHTML = `<div style="color:#c4b5fd;line-height:1.7;font-size:0.875rem;">${budgetData.ai_advice.replace(/\n/g, "<br>")}</div>`;
+  el.innerHTML = `<div style="color:#5E6282;line-height:1.8;font-size:0.9rem;">${budgetData.ai_advice.replace(/\n/g, "<br>")}</div>`;
 }
 
 function renderBurnRate(burnRate) {
@@ -331,14 +329,14 @@ function renderBurnRate(burnRate) {
 
 /* ── No-trip fallback ───────────────────────────────────────── */
 function renderNoTripState() {
-  const main = document.querySelector(".budget-layout");
+  const main = document.querySelector(".budget-grid");
   if (main) {
     main.innerHTML = `
-      <div style="text-align:center;padding:80px 20px;color:#94a3b8;">
-        <i class="fa-solid fa-wallet" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:16px;"></i>
-        <h3 style="color:#f1f5f9;margin-bottom:8px;">No Trips Found</h3>
-        <p>Plan a trip first to track your budget.</p>
-        <a href="planner.html" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#8b5cf6;color:#fff;border-radius:8px;text-decoration:none;">Plan a Trip →</a>
+      <div style="text-align:center;padding:80px 20px;color:#8C92B1;grid-column:1/-1;">
+        <i class="fa-solid fa-wallet" style="font-size:3rem;opacity:0.2;display:block;margin-bottom:16px;color:#181E4B;"></i>
+        <h3 style="color:#181E4B;margin-bottom:8px;font-family:'Volkhov',serif;">No Trips Found</h3>
+        <p>Plan a trip first to start tracking your budget.</p>
+        <a href="planner.html" style="display:inline-block;margin-top:16px;padding:14px 30px;background:#DF6951;color:#fff;border-radius:14px;text-decoration:none;font-weight:600;font-family:'Poppins',sans-serif;">Plan a Trip →</a>
       </div>`;
   }
 }

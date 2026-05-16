@@ -4,123 +4,144 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Budget Intelligence — YatraSaathi AI</title>
+  <meta name="description" content="Track your travel expenses in real-time with AI-powered budget analytics on YatraSaathi." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/budget.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/budget_v2.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<div class="bg-canvas">
-  <canvas id="particleCanvas"></canvas>
-</div>
-<div class="bg-glow" style="background:radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%); width: 600px; height: 600px; top: -100px; right: -100px;"></div>
+<div class="blob-bg"></div>
 
-<!-- ── Navigation ──────────────────────────────── -->
-<nav class="nav" id="mainNav">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon"><i class="fa-solid fa-plane-up"></i></div>
-      YatraSaathi
-    </a>
-
-    <div class="nav-links">
-      <a href="dashboard.html" class="nav-link">Home</a>
-      <a href="planner.html" class="nav-link">Planner</a>
-      <a href="budget.html" class="nav-link active">Budget Intelligence</a>
-      <a href="city.html" class="nav-link">City Insights</a>
+<!-- Navigation (Shared with planner) -->
+<header class="header" id="site-header">
+  <div class="container nav-container">
+    <div class="logo">
+      <a href="home.html" style="display: block; height: 100%;">
+        <img src="assets/logos/mainlogo.svg" alt="YatraSaathi Logo" id="site-logo" onerror="this.onerror=null; this.src=''; this.alt='YatraSaathi';" style="height: 100%;" />
+      </a>
     </div>
 
-    <div class="nav-actions">
-      <div class="user-profile-btn">
-        <img src="https://ui-avatars.com/api/?name=Traveler&background=3b82f6&color=fff" alt="User" class="nav-avatar">
+    <!-- Dock Navbar -->
+    <div class="dock-outer" id="dock-nav">
+      <nav class="dock-panel" role="toolbar" aria-label="Application dock">
+        <a href="home.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-house"></i></div>
+          <div class="dock-label">Home</div>
+        </a>
+        <a href="planner.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="dock-label">Planner</div>
+        </a>
+        <a href="budget.html" class="dock-item active">
+          <div class="dock-icon"><i class="fa-solid fa-wallet"></i></div>
+          <div class="dock-label">Budget</div>
+        </a>
+
+      </nav>
+    </div>
+
+    <!-- Scroll Navbar -->
+    <nav class="scroll-nav" id="scroll-nav">
+      <div class="scroll-nav-links">
+        <a href="home.html" class="scroll-nav-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="planner.html" class="scroll-nav-link"><i class="fa-solid fa-wand-magic-sparkles"></i> Planner</a>
+        <a href="budget.html" class="scroll-nav-link active"><i class="fa-solid fa-wallet"></i> Budget</a>
+
       </div>
-      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+      <div class="scroll-nav-actions" style="display:flex; align-items:center; gap:15px;">
+        <img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:36px; height:36px; border-radius:50%;">
+        <button onclick="AuthAPI.logout()" style="color: #DF6951; font-weight: 600; cursor: pointer; background: none; border: none; font-size: 14px; font-family: 'Poppins', sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </nav>
   </div>
-</nav>
+</header>
 
-<div class="page-wrapper" style="padding-top: 100px;">
-  <div class="container budget-layout">
-    
-    <!-- Page Header -->
-    <div class="budget-header-wrapper" style="display:flex;align-items:center;justify-content:space-between;gap:2rem;margin-bottom:3rem;flex-wrap:wrap;">
-      <div class="budget-header reveal" style="flex:1;min-width:300px;margin-bottom:0;">
-        <div class="section-badge" style="color:var(--clr-emerald);background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2)">
+<div class="budget-page">
+  <div class="budget-container">
+
+    <!-- ── Hero Section ── -->
+    <div class="budget-hero">
+      <div class="budget-hero-text">
+        <div class="hero-badge">
           <i class="fa-solid fa-chart-pie"></i> AI Financial Tracking
         </div>
-        <h1 class="section-title">Budget <span class="text-gradient" style="background:linear-gradient(135deg, #10b981, #06b6d4);-webkit-background-clip:text">Intelligence</span></h1>
-        <p class="section-subtitle" id="budgetSubtitle">Real-time expense monitoring, AI-driven saving recommendations.</p>
+        <h1>Budget <span>Intelligence</span></h1>
+        <p id="budgetSubtitle">Real-time expense monitoring for your trip. AI-driven saving recommendations.</p>
       </div>
-      <div class="budget-visual reveal reveal-delay-1" style="flex:1;min-width:300px;text-align:right;">
-        <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=600&auto=format&fit=crop" alt="Finance Tracking" style="max-width:100%;width:350px;border-radius:var(--r-xl);box-shadow:var(--shadow-card);border:4px solid rgba(255,255,255,0.08);transform:rotate(2deg);transition:transform 0.4s ease;" onmouseover="this.style.transform='rotate(0deg) scale(1.05)'" onmouseout="this.style.transform='rotate(2deg) scale(1)'" />
+      <div class="budget-hero-visual">
+        <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=700&auto=format&fit=crop" alt="Finance Tracking" />
       </div>
     </div>
 
-    <!-- ── Trip Selector (if no trip in URL) ─────── -->
-    <div id="tripSelectorBanner" class="glass reveal" style="display:none;padding:16px 20px;border-radius:12px;margin-bottom:2rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <i class="fa-solid fa-circle-info" style="color:var(--clr-primary)"></i>
-      <span style="color:#94a3b8;flex:1;">Select a trip to view its budget analytics:</span>
-      <select id="tripSelector" class="form-control" style="max-width:300px;background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;">
+    <!-- ── Trip Selector ── -->
+    <div class="trip-selector-banner" id="tripSelectorBanner" style="display:none;">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Select a trip to view its budget analytics:</span>
+      <select id="tripSelector">
         <option value="">Loading trips...</option>
       </select>
-      <button class="btn btn-primary btn-sm" onclick="onTripSelect()">
+      <button class="load-btn" onclick="onTripSelect()">
         <i class="fa-solid fa-check"></i> Load
       </button>
     </div>
 
+    <!-- ── Budget Grid ── -->
     <div class="budget-grid">
-      
-      <!-- ── Budget Overview Card ──────────────────── -->
-      <div class="budget-card glass reveal reveal-delay-1">
-        <h3>Total Budget Overview</h3>
-        <div style="margin-bottom:0.5rem;">
-          <span style="font-size:0.8rem;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Trip</span>
-          <div id="budgetDestination" style="color:#f1f5f9;font-weight:600;font-size:1rem;margin-top:2px;">—</div>
-          <div id="budgetDuration"    style="color:#64748b;font-size:0.8rem;margin-top:2px;">—</div>
+
+      <!-- Budget Overview -->
+      <div class="b-card">
+        <h3>
+          <i class="fa-solid fa-gauge-high" style="background: rgba(223,105,81,0.1); color: #DF6951;"></i>
+          Budget Overview
+        </h3>
+        <div class="budget-trip-info">
+          <div class="budget-trip-label">Trip</div>
+          <div class="budget-trip-dest" id="budgetDestination">—</div>
+          <div class="budget-trip-dur" id="budgetDuration">—</div>
         </div>
-        <div class="budget-meter-container">
-          <div class="meter-text">
-            <span class="meter-spent" id="budgetSpent">₹0</span>
-            <span class="meter-total"> / <span id="budgetTotal">₹0</span></span>
-          </div>
-          <div class="progress-bar" style="height:12px;margin-bottom:0.5rem">
-            <div class="progress-fill" id="budgetProgressBar" style="width:0%;background:linear-gradient(90deg,#10b981,#f59e0b);transition:width 1s ease;"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div id="burnRateStatus" style="font-size:13px;color:#94a3b8;">Calculating burn rate...</div>
-            <div style="font-size:13px;color:#64748b;"><span id="budgetPercent">0%</span> used</div>
-          </div>
+        <div class="meter-amounts">
+          <span class="meter-spent-val" id="budgetSpent">₹0</span>
+          <span class="meter-total-val">/ <span id="budgetTotal">₹0</span></span>
         </div>
-        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.06);">
-          <div style="display:flex;justify-content:space-between;">
-            <span style="color:#64748b;font-size:13px;">Remaining</span>
-            <span id="budgetRemaining" style="color:#10b981;font-weight:600;">₹0</span>
-          </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="budgetProgressBar" style="width:0%;"></div>
+        </div>
+        <div class="meter-meta">
+          <span id="burnRateStatus">Calculating burn rate...</span>
+          <span class="remaining" id="budgetRemaining">₹0 left</span>
+        </div>
+        <div style="margin-top: 12px; font-size: 13px; color: #8C92B1; text-align: right;">
+          <span id="budgetPercent">0%</span> of budget used
         </div>
       </div>
 
-      <!-- ── AI Budget Advice Card ──────────────────── -->
-      <div class="budget-card glass reveal reveal-delay-2" style="border-color:rgba(16,185,129,0.3)">
-        <h3><i class="fa-solid fa-robot" style="color:var(--clr-emerald)"></i> AI Budget Advisor</h3>
-        <div id="aiAdvice" style="color:#94a3b8;font-size:0.875rem;line-height:1.7;min-height:80px;">
-          <i class="fa-solid fa-spinner fa-spin" style="margin-right:8px;color:#8b5cf6;"></i>
-          Analyzing your spending patterns...
+      <!-- AI Budget Advisor -->
+      <div class="b-card">
+        <h3>
+          <i class="fa-solid fa-robot" style="background: rgba(30,181,137,0.1); color: #1EB589;"></i>
+          AI Budget Advisor
+        </h3>
+        <div class="ai-advisor-content" id="aiAdvice">
+          <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px; color: #DF6951;"></i>
+          Log some expenses to unlock AI-powered budget advice.
         </div>
       </div>
 
-      <!-- ── Add Expense Form ───────────────────────── -->
-      <div class="budget-card glass reveal reveal-delay-3">
-        <h3><i class="fa-solid fa-plus-circle" style="color:var(--clr-primary)"></i> Log Expense</h3>
-        <form id="addExpenseForm" style="display:flex;flex-direction:column;gap:12px;">
+      <!-- Log Expense -->
+      <div class="b-card">
+        <h3>
+          <i class="fa-solid fa-plus-circle" style="background: rgba(65,82,203,0.1); color: #4152CB;"></i>
+          Log Expense
+        </h3>
+        <form class="expense-form" id="addExpenseForm">
           <div>
-            <label class="form-label" style="font-size:12px;color:#64748b;margin-bottom:4px;display:block;">Category</label>
-            <select id="expenseCategory" class="form-control" style="background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;width:100%;">
+            <label>Category</label>
+            <select id="expenseCategory">
               <option value="food">🍽️ Food & Dining</option>
               <option value="transport">🚗 Transport</option>
               <option value="accommodation">🏨 Accommodation</option>
@@ -130,36 +151,42 @@
             </select>
           </div>
           <div>
-            <label class="form-label" style="font-size:12px;color:#64748b;margin-bottom:4px;display:block;">Amount (₹)</label>
-            <input type="number" id="expenseAmount" class="form-control" placeholder="e.g. 1200" min="1" step="0.01" required style="background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;width:100%;">
+            <label>Amount (₹)</label>
+            <input type="number" id="expenseAmount" placeholder="e.g. 1200" min="1" step="0.01" required>
           </div>
           <div>
-            <label class="form-label" style="font-size:12px;color:#64748b;margin-bottom:4px;display:block;">Description (optional)</label>
-            <input type="text" id="expenseDesc" class="form-control" placeholder="e.g. Dinner at local restaurant" style="background:rgba(255,255,255,0.05);color:#f1f5f9;border:1px solid rgba(255,255,255,0.1);padding:8px 12px;border-radius:8px;width:100%;">
+            <label>Description (optional)</label>
+            <input type="text" id="expenseDesc" placeholder="e.g. Dinner at local restaurant">
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;">
+          <button type="submit" class="submit-btn">
             <i class="fa-solid fa-plus"></i> Add Expense
           </button>
         </form>
       </div>
 
-      <!-- ── Expense Breakdown Chart ────────────────── -->
-      <div class="budget-card glass reveal" style="grid-column: 1 / -1">
-        <h3>Expense Breakdown</h3>
-        <div class="chart-container" style="position:relative;height:300px;">
+      <!-- Chart Placeholder — full width if JS populates it -->
+      <div class="b-card full-width">
+        <h3>
+          <i class="fa-solid fa-chart-donut" style="background: rgba(241,165,1,0.1); color: #F1A501;"></i>
+          Expense Breakdown
+        </h3>
+        <div class="chart-container">
           <canvas id="budgetChart"></canvas>
         </div>
       </div>
 
-      <!-- ── Expense List ───────────────────────────── -->
-      <div class="budget-card glass reveal" style="grid-column: 1 / -1">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-          <h3>Transaction History</h3>
-          <span id="expenseCount" style="color:#64748b;font-size:13px;">0 transactions</span>
+      <!-- Transaction History -->
+      <div class="b-card full-width">
+        <div class="transactions-header">
+          <h3 style="margin-bottom: 0;">
+            <i class="fa-solid fa-receipt" style="background: rgba(223,105,81,0.1); color: #DF6951;"></i>
+            Transaction History
+          </h3>
+          <span class="tx-count" id="expenseCount">0 transactions</span>
         </div>
         <div class="expense-list" id="expenseList">
-          <div style="color:#94a3b8;text-align:center;padding:20px;">
-            <i class="fa-solid fa-receipt" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:8px;"></i>
+          <div class="expense-empty">
+            <i class="fa-solid fa-receipt"></i>
             No expenses yet. Log your first expense above.
           </div>
         </div>
@@ -169,9 +196,8 @@
   </div>
 </div>
 
-<script src="js/particles.js"></script>
-<script src="js/main.js"></script>
 <script src="js/api.js"></script>
 <script src="js/budget.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
