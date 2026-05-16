@@ -49,6 +49,10 @@
     <!-- Dock Navbar (default, visible on top) -->
     <div class="dock-outer" id="dock-nav">
       <nav class="dock-panel" role="toolbar" aria-label="Application dock">
+         <a href="home.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-house"></i></div>
+          <div class="dock-label">Home</div>
+        </a>
         <a href="index.html" class="dock-item">
           <div class="dock-icon"><i class="fa-solid fa-map-location-dot"></i></div>
           <div class="dock-label">Destinations</div>
@@ -61,10 +65,7 @@
           <div class="dock-icon"><i class="fa-solid fa-building"></i></div>
           <div class="dock-label">City Insights</div>
         </a>
-        <a href="dashboard.html" class="dock-item">
-          <div class="dock-icon"><i class="fa-solid fa-chart-line"></i></div>
-          <div class="dock-label">Dashboard</div>
-        </a>
+       
         <div class="dock-divider"></div>
         <a href="auth.html" class="dock-item">
           <div class="dock-icon"><i class="fa-solid fa-user"></i></div>
@@ -89,8 +90,8 @@
         <a href="city.html" class="scroll-nav-link">
           <i class="fa-solid fa-building"></i> City Insights
         </a>
-        <a href="dashboard.html" class="scroll-nav-link">
-          <i class="fa-solid fa-chart-line"></i> Dashboard
+        <a href="home.html" class="scroll-nav-link">
+          <i class="fa-solid fa-house"></i> Home
         </a>
       </div>
       <div class="scroll-nav-actions">
@@ -670,6 +671,32 @@
 
     window.addEventListener('scroll', updateNav, { passive: true });
     updateNav(); // Initialize on load
+  });
+</script>
+
+<script src="js/api.js"></script>
+<script>
+  // Auth Guard for protected routes
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.dock-item, .scroll-nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        
+        // Skip login/signup buttons
+        if (href === 'auth.html') return;
+
+        // Check if user is signed in
+        if (!Auth.isLoggedIn()) {
+          e.preventDefault();
+          window.location.href = 'auth.html';
+        } else if (href === 'index.html') {
+          // If signed in and clicking "Destinations", proceed to home page
+          e.preventDefault();
+          window.location.href = 'home.html';
+        }
+      });
+    });
   });
 </script>
 

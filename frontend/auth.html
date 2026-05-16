@@ -150,7 +150,7 @@
 <script src="js/api.js"></script>
 <script>
   // Redirect if already logged in
-  if (Auth.isLoggedIn()) window.location.href = 'dashboard.html';
+  if (Auth.isLoggedIn()) window.location.href = 'home.html';
 
   function switchTab(tabId) {
     document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
@@ -193,7 +193,7 @@
       // Store a minimal user record for nav personalization
       const username = email.split('@')[0];
       Auth.setUser({ username, email });
-      window.location.href = 'dashboard.html';
+      window.location.href = 'home.html';
     } catch (err) {
       showError('signin-error', err.message || 'Login failed. Check your credentials.');
     } finally {
@@ -218,7 +218,7 @@
       // Auto-login after signup
       await AuthAPI.login(email, password);
       Auth.setUser({ id: data.id, username, email });
-      setTimeout(() => window.location.href = 'dashboard.html', 800);
+      setTimeout(() => window.location.href = 'home.html', 800);
     } catch (err) {
       showError('signup-error', err.message || 'Signup failed. Try a different username or email.');
     } finally {

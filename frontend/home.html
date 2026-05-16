@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home — YatraSaathi AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Chart.js for data visualization if needed -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+
+<div class="blob-bg"></div>
+
+<!-- Navigation -->
+<header class="header" id="site-header">
+  <div class="container nav-container">
+    <div class="logo">
+      <a href="home.html" style="display: block; height: 100%;">
+        <img src="assets/logos/mainlogo.svg" alt="YatraSaathi Logo" id="site-logo" onerror="this.onerror=null; this.src=''; this.alt='YatraSaathi';" style="height: 100%;" />
+      </a>
+    </div>
+
+    <!-- Dock Navbar -->
+    <div class="dock-outer" id="dock-nav">
+      <nav class="dock-panel" role="toolbar" aria-label="Application dock">
+        <a href="home.html" class="dock-item active" style="background-color: #fff; box-shadow: 0 5px 15px rgba(24,30,75,0.06);">
+          <div class="dock-icon"><i class="fa-solid fa-house" style="color: var(--clr-primary);"></i></div>
+          <div class="dock-label">Home</div>
+        </a>
+        <a href="planner.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="dock-label">Planner</div>
+        </a>
+        <a href="city.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-building"></i></div>
+          <div class="dock-label">City Insights</div>
+        </a>
+        <div class="dock-divider"></div>
+        <div class="dock-item" style="cursor: default;">
+          <div class="dock-icon"><img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:28px; height:28px; border-radius:50%;"></div>
+          <div class="dock-label">Profile</div>
+        </div>
+        <a href="#" class="dock-item" onclick="AuthAPI.logout()">
+          <div class="dock-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+          <div class="dock-label">Logout</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Scroll Navbar -->
+    <nav class="scroll-nav" id="scroll-nav">
+      <div class="scroll-nav-links">
+        <a href="home.html" class="scroll-nav-link active">
+          <i class="fa-solid fa-house"></i> Home
+        </a>
+        <a href="planner.html" class="scroll-nav-link">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Planner
+        </a>
+        <a href="city.html" class="scroll-nav-link">
+          <i class="fa-solid fa-building"></i> City Insights
+        </a>
+      </div>
+      <div class="scroll-nav-actions" style="display:flex; align-items:center; gap:15px;">
+        <img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:36px; height:36px; border-radius:50%;">
+        <button onclick="AuthAPI.logout()" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="user-hero">
+  <div class="container">
+    <div class="user-hero-card">
+      <div class="user-hero-content">
+        <h1>Welcome back, <span style="color: #DF6951;" class="user-name-display">Traveler</span>!</h1>
+        <p>Your AI travel assistant is ready to help you plan your next dream vacation. Explore new destinations or pick up where you left off.</p>
+        <div class="user-hero-actions" style="margin-top: 25px; display: flex; gap: 15px;">
+          <a href="planner.html" class="btn-action"><i class="fa-solid fa-wand-magic-sparkles"></i> Plan New Trip</a>
+          <a href="city.html" class="btn-outline"><i class="fa-solid fa-building"></i> City Insights</a>
+        </div>
+      </div>
+      <div class="user-hero-image">
+        <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?q=80&w=1000&auto=format&fit=crop" alt="Travel Visual">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="my-plans-section">
+  <div class="container">
+    <div class="section-heading" style="margin-bottom: 40px;">
+      <h2 style="font-family: 'Volkhov', serif; font-size: 36px; color: #181E4B;">My <span style="color: #DF6951;">Plans</span></h2>
+      <p style="color: #5E6282; font-size: 16px;">Trips you have planned or are currently planning.</p>
+    </div>
+
+    <div class="plans-grid">
+      <!-- Plan Card 1 -->
+      <a href="#" class="plan-card">
+        <div class="plan-card-img">
+          <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop" alt="Kyoto">
+          <div class="plan-badge">Upcoming</div>
+        </div>
+        <div class="plan-card-body">
+          <div class="plan-meta">Oct 12 - Oct 15 • 4 Days</div>
+          <h3>Kyoto Adventure</h3>
+          <p>Exploring temples, gardens, and traditional tea houses in the heart of Japan.</p>
+          <div class="plan-footer">
+            <span class="plan-price">Est: ₹45,000</span>
+            <div class="btn-view"><i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Plan Card 2 -->
+      <a href="#" class="plan-card">
+        <div class="plan-card-img">
+          <img src="https://images.unsplash.com/photo-1502602898657-3e907fa0a586?q=80&w=800&auto=format&fit=crop" alt="Paris">
+          <div class="plan-badge past">Completed</div>
+        </div>
+        <div class="plan-card-body">
+          <div class="plan-meta">Mar 5 - Mar 10 • 6 Days</div>
+          <h3>Paris Getaway</h3>
+          <p>Romantic walks along the Seine, Eiffel Tower sunsets, and culinary delights.</p>
+          <div class="plan-footer">
+            <span class="plan-price">Spent: ₹85,000</span>
+            <div class="btn-view"><i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Add New Plan Card -->
+      <a href="planner.html" class="plan-card add-new-plan">
+        <div class="add-new-content">
+          <div class="add-icon"><i class="fa-solid fa-plus"></i></div>
+          <h3>Create New Plan</h3>
+          <p>Let AI design your perfect itinerary</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Insights Section -->
+<section class="insights-section">
+  <div class="container">
+    <div class="section-heading" style="margin-bottom: 30px;">
+      <h2 style="font-family: 'Volkhov', serif; font-size: 28px; color: #181E4B;">Smart <span style="color: #DF6951;">Insights</span></h2>
+      <p style="color: #5E6282; font-size: 15px;">AI-powered tips for your upcoming trips.</p>
+    </div>
+
+    <div class="insights-grid">
+      <div class="insight-card">
+        <div class="insight-icon currency"><i class="fa-solid fa-money-bill-transfer"></i></div>
+        <div class="insight-content">
+          <h4>Currency Tip</h4>
+          <p>Yen is currently favorable. Consider exchanging currency now to save approx ₹2,500 for your Kyoto trip.</p>
+        </div>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-icon weather"><i class="fa-solid fa-cloud-sun"></i></div>
+        <div class="insight-content">
+          <h4>Weather Alert</h4>
+          <p>Light showers expected on Day 2 of your Kyoto Adventure. We've updated the itinerary to prioritize indoor museums.</p>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon route"><i class="fa-solid fa-route"></i></div>
+        <div class="insight-content">
+          <h4>Route Optimized</h4>
+          <p>We've re-routed your transport to avoid planned road closures near the Golden Pavilion, saving you 45 mins.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Banner -->
+<div class="container">
+  <div class="stats-banner">
+    <div class="stat-item">
+      <h2>02</h2>
+      <p>Trips Planned</p>
+    </div>
+    <div class="stat-item">
+      <h2>10</h2>
+      <p>Travel Days</p>
+    </div>
+    <div class="stat-item">
+      <h2>03</h2>
+      <p>Cities Explored</p>
+    </div>
+    <div class="stat-item">
+      <h2>₹1.3L</h2>
+      <p>Budget Managed</p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container footer-container">
+    <div class="footer-brand">
+      <img src="assets/logos/mainlogo.svg" alt="YatraSaathi Logo" class="footer-logo" onerror="this.onerror=null; this.src=''; this.alt='YatraSaathi';" />
+      <p class="footer-tagline">Your AI-Powered Travel Companion</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h3>Company</h3>
+        <a href="#">About</a>
+        <a href="#">Careers</a>
+        <a href="#">Mobile</a>
+      </div>
+      <div class="footer-col">
+        <h3>Contact</h3>
+        <a href="#">Help/FAQ</a>
+        <a href="#">Press</a>
+        <a href="#">Affiliates</a>
+      </div>
+      <div class="footer-col">
+        <h3>More</h3>
+        <a href="#">Airlinefees</a>
+        <a href="#">Airline</a>
+        <a href="#">Low fare tips</a>
+      </div>
+    </div>
+    <div class="footer-social">
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="active"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+      </div>
+      <p>Discover our app</p>
+      <div class="app-buttons">
+        <i class="fa-brands fa-google-play" style="font-size: 35px; color: #080809;"></i>
+        <i class="fa-brands fa-app-store" style="font-size: 35px; color: #080809;"></i>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>All rights reserved@yatrasaathi.co</p>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>
