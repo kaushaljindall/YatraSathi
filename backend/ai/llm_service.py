@@ -10,7 +10,7 @@ class LLMService:
         self.base_url = "https://api.groq.com/openai/v1/chat/completions"
         self.model = "llama3-8b-8192"
 
-    async def generate_response(self, system_prompt: str, user_query: str, temperature: float = 0.5) -> str:
+    async def generate_response(self, system_prompt: str, user_query: str, temperature: float = 0.5, json_mode: bool = False) -> str:
         """
         Asynchronously calls the Groq LLM API with the injected context and prompt.
         """
@@ -19,18 +19,22 @@ class LLMService:
             return "AI Generation Error: GROQ API Key missing."
 
         try:
+            payload = {
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_query}
+                ],
+                "temperature": temperature
+            }
+            if json_mode:
+                payload["response_format"] = {"type": "json_object"}
+
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     self.base_url,
                     headers={"Authorization": f"Bearer {self.api_key}"},
-                    json={
-                        "model": "llama-3.1-8b-instant",
-                        "messages": [
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": user_query}
-                        ],
-                        "temperature": temperature
-                    },
+                    json=payload,
                     timeout=60.0
                 )
                 

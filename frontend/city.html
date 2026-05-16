@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Insights — YatraSaathi AI</title>
+  <meta name="description" content="Discover deep AI-powered insights, attractions, best times to visit, and local costs for any city globally with YatraSaathi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/city_v2.css?v=1" />
+</head>
+<body>
+
+<div class="blob-bg"></div>
+
+<!-- Navigation -->
+<header class="header" id="site-header">
+  <div class="container nav-container">
+    <div class="logo">
+      <a href="home.html" style="display: block; height: 100%;">
+        <img src="assets/logos/mainlogo.svg" alt="YatraSaathi Logo" id="site-logo" onerror="this.onerror=null; this.src=''; this.alt='YatraSaathi';" style="height: 100%;" />
+      </a>
+    </div>
+
+    <!-- Dock Navbar -->
+    <div class="dock-outer" id="dock-nav">
+      <nav class="dock-panel" role="toolbar">
+        <a href="home.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-house"></i></div>
+          <div class="dock-label">Home</div>
+        </a>
+        <a href="planner.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="dock-label">Planner</div>
+        </a>
+        <a href="budget.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-wallet"></i></div>
+          <div class="dock-label">Budget</div>
+        </a>
+        <a href="city.html" class="dock-item active">
+          <div class="dock-icon"><i class="fa-solid fa-building"></i></div>
+          <div class="dock-label">Insights</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Scroll Navbar -->
+    <nav class="scroll-nav" id="scroll-nav">
+      <div class="scroll-nav-links">
+        <a href="home.html" class="scroll-nav-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="planner.html" class="scroll-nav-link"><i class="fa-solid fa-wand-magic-sparkles"></i> Planner</a>
+        <a href="budget.html" class="scroll-nav-link"><i class="fa-solid fa-wallet"></i> Budget</a>
+        <a href="city.html" class="scroll-nav-link active"><i class="fa-solid fa-building"></i> City Insights</a>
+      </div>
+      <div class="scroll-nav-actions" style="display:flex; align-items:center; gap:15px;">
+        <img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:36px; height:36px; border-radius:50%;">
+        <button onclick="AuthAPI.logout()" style="color: #DF6951; font-weight: 600; cursor: pointer; background: none; border: none; font-size: 14px; font-family: 'Poppins', sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div class="city-page">
+  <div class="city-container">
+
+    <!-- ── Hero Section ── -->
+    <div class="city-hero">
+      <div>
+        <div class="city-hero-badge">
+          <i class="fa-solid fa-building"></i> Deep Local Knowledge
+        </div>
+        <h1>City <span>Insights</span></h1>
+        <p>Unlock the secrets of any destination worldwide. From local transport costs to the best season to visit, our AI provides everything you need to know before you go.</p>
+        
+        <form class="city-search-pill" id="citySearchForm">
+          <i class="fa-solid fa-location-dot"></i>
+          <input type="text" id="cityInput" placeholder="Enter a city (e.g., Paris, Tokyo, Bali)..." required autocomplete="off" />
+          <button type="submit">Get Insights</button>
+        </form>
+      </div>
+      
+      <div class="city-hero-visual">
+        <img src="https://images.unsplash.com/photo-1480796927426-f609979314bd?q=80&w=1000&auto=format&fit=crop" alt="Tokyo City" class="hero-img-main" />
+        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop" alt="Details" class="hero-img-float" />
+        <div class="hero-stat-badge">
+          <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div class="stat-text">
+            <span>Powered by</span>
+            <strong>AI Analytics</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick select chips -->
+    <div class="popular-cities">
+      <div class="city-chip" onclick="searchCity('Paris, France')">
+        <img src="https://images.unsplash.com/photo-1502602898657-3e90760b2401?w=100&h=100&fit=crop" alt="Paris">
+        Paris, France
+      </div>
+      <div class="city-chip" onclick="searchCity('Kyoto, Japan')">
+        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=100&h=100&fit=crop" alt="Kyoto">
+        Kyoto, Japan
+      </div>
+      <div class="city-chip" onclick="searchCity('Rome, Italy')">
+        <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=100&h=100&fit=crop" alt="Rome">
+        Rome, Italy
+      </div>
+      <div class="city-chip" onclick="searchCity('New York, USA')">
+        <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=100&h=100&fit=crop" alt="NY">
+        New York, USA
+      </div>
+    </div>
+
+    <!-- ── Loading State ── -->
+    <div class="city-loading" id="loadingState">
+      <div class="pulse-icon"><i class="fa-solid fa-compass"></i></div>
+      <h2>Analyzing City Data...</h2>
+      <p id="loadingText">Gathering weather patterns, attraction details, and cost estimates.</p>
+    </div>
+
+    <!-- ── Insights Content ── -->
+    <div class="city-content" id="insightsContent">
+      
+      <!-- Quick Stats -->
+      <div class="stats-strip">
+        <div class="stat-card">
+          <div class="stat-icon-lg" style="background: rgba(30,181,137,0.1); color: #1EB589;"><i class="fa-solid fa-wallet"></i></div>
+          <div class="stat-value" id="statBudget">—</div>
+          <div class="stat-label">Daily Budget</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-lg" style="background: rgba(241,165,1,0.1); color: #F1A501;"><i class="fa-solid fa-sun"></i></div>
+          <div class="stat-value" id="statSeason">—</div>
+          <div class="stat-label">Best Season</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-lg" style="background: rgba(65,82,203,0.1); color: #4152CB;"><i class="fa-solid fa-language"></i></div>
+          <div class="stat-value" id="statLang">—</div>
+          <div class="stat-label">Primary Language</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-lg" style="background: rgba(223,105,81,0.1); color: #DF6951;"><i class="fa-solid fa-clock"></i></div>
+          <div class="stat-value" id="statDays">—</div>
+          <div class="stat-label">Ideal Stay</div>
+        </div>
+      </div>
+
+      <!-- Top Attractions -->
+      <h2 class="section-title">Must-See Attractions</h2>
+      <p class="section-subtitle">The highest-rated spots you shouldn't miss.</p>
+      
+      <div class="attractions-grid" id="attractionsGrid">
+        <!-- Injected via JS -->
+      </div>
+
+      <div class="two-col">
+        <!-- Weather & Best Time to Visit -->
+        <div class="info-card">
+          <h3>
+            <div class="card-icon" style="background: rgba(241,165,1,0.1); color: #F1A501;"><i class="fa-solid fa-cloud-sun"></i></div>
+            Weather & Seasons
+          </h3>
+          <p style="color: #5E6282; font-size: 15px; line-height: 1.6; margin-bottom: 25px;" id="weatherDesc"></p>
+          <div class="weather-row" id="weatherMonths">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Local Foods -->
+        <div class="info-card">
+          <h3>
+            <div class="card-icon" style="background: rgba(30,181,137,0.1); color: #1EB589;"><i class="fa-solid fa-utensils"></i></div>
+            Local Delicacies
+          </h3>
+          <div class="food-list" id="foodList">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget & Transportation -->
+      <h2 class="section-title">Cost & Transport</h2>
+      <p class="section-subtitle">Plan your budget effectively.</p>
+
+      <div class="two-col">
+        <div class="info-card">
+          <h3>
+            <div class="card-icon" style="background: rgba(65,82,203,0.1); color: #4152CB;"><i class="fa-solid fa-train"></i></div>
+            Getting Around
+          </h3>
+          <p style="color: #5E6282; font-size: 14px; margin-bottom: 20px;" id="transportDesc"></p>
+          <div class="transport-list" id="transportList">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>
+            <div class="card-icon" style="background: rgba(223,105,81,0.1); color: #DF6951;"><i class="fa-solid fa-lightbulb"></i></div>
+            Pro Tips & Safety
+          </h3>
+          <div class="tips-grid" id="tipsGrid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget Breakdown Tiers -->
+      <div class="budget-breakdown">
+        <h3 style="font-family: 'Volkhov', serif; font-size: 26px; color: #181E4B; margin-bottom: 30px; text-align: center;">Daily Budget Estimates</h3>
+        <div class="budget-tiers" id="budgetTiers">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/city.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

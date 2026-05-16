@@ -26,10 +26,16 @@ async def get_city_insights(
             city=request.city
         )
 
+        import json
+        try:
+            insights_data = json.loads(result["recommendation"])
+        except Exception:
+            insights_data = {"error": "Failed to parse insights", "raw": result["recommendation"]}
+
         return {
             "success": True,
             "city": result["city"],
-            "insights": result["recommendation"],
+            "insights": insights_data,
             "sources_used": result["sources_used"]
         }
 

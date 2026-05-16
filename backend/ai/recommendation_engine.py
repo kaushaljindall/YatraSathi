@@ -19,7 +19,7 @@ class RecommendationEngine:
         )
         
         # Generate response
-        response = await llm_service.generate_response(system_prompt, query, temperature=0.6)
+        response = await llm_service.generate_response(system_prompt, query, temperature=0.6, json_mode=True)
         
         # Update user memory
         memory.add_interaction(user_id, query, response)
