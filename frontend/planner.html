@@ -87,9 +87,10 @@
         <div class="form-row main-row">
           <div class="form-group flex-1">
             <label class="form-label">Destination</label>
-            <div class="input-icon-wrapper">
+            <div class="input-icon-wrapper" style="position:relative;">
               <i class="fa-solid fa-location-dot input-icon"></i>
-              <input type="text" class="form-control" id="destination" placeholder="Where do you want to go?" required value="Kyoto, Japan">
+              <input type="text" class="form-control" id="destination" placeholder="Where do you want to go?" required value="Kyoto, Japan" autocomplete="off">
+              <ul id="plannerCityAutocomplete" class="planner-city-ac"></ul>
             </div>
           </div>
           <div class="form-group" style="width: 170px;">
@@ -297,5 +298,126 @@
     }
   });
 </script>
+<style>
+.planner-city-ac {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.05);
+  list-style: none;
+  margin: 0; padding: 6px;
+  z-index: 9999;
+  display: none;
+  animation: acIn 0.16s ease;
+}
+.planner-city-ac.open { display: block; }
+@keyframes acIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.planner-city-ac li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: background 0.15s;
+}
+.planner-city-ac li:hover, .planner-city-ac li.pac-active { background: rgba(223,105,81,0.07); }
+.planner-city-ac .pac-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(65,82,203,0.1); color: #4152CB;
+  display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+}
+.planner-city-ac .pac-name { font-size: 14px; font-weight: 600; color: #181E4B; }
+.planner-city-ac .pac-country { font-size: 12px; color: #8C92B1; }
+.planner-city-ac .pac-loader { justify-content: center; color: #8C92B1; font-size: 13px; padding: 12px; }
+</style>
+<script>
+/* ── Planner Destination Autocomplete — Open-Meteo Geocoding ── */
+(function () {
+  const input = document.getElementById('destination');
+  const list  = document.getElementById('plannerCityAutocomplete');
+  let timer = null, activeIdx = -1, currentItems = [];
+  if (!input || !list) return;
+
+  function close() { list.innerHTML = ''; list.classList.remove('open'); activeIdx = -1; currentItems = []; }
+
+  function codeToFlag(code) {
+    if (!code || code.length !== 2) return '🌍';
+    return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 - 65 + c.charCodeAt(0))).join('');
+  }
+
+  function render(cities) {
+    list.innerHTML = ''; currentItems = cities; activeIdx = -1;
+    if (!cities.length) { close(); return; }
+    cities.forEach((city) => {
+      const li = document.createElement('li');
+      const sub = [city.region, city.country].filter(Boolean).join(', ');
+      li.innerHTML = `
+        <div class="pac-icon"><i class="fa-solid fa-location-dot"></i></div>
+        <div style="flex:1">
+          <div class="pac-name">${city.name}</div>
+          <div class="pac-country">${sub}</div>
+        </div>
+        <span style="font-size:16px">${city.flag||''}</span>`;
+      li.addEventListener('mousedown', e => {
+        e.preventDefault();
+        const parts = [city.name];
+        if (city.region && city.region !== city.name) parts.push(city.region);
+        if (city.country) parts.push(city.country);
+        input.value = parts.join(', ');
+        close();
+      });
+      list.appendChild(li);
+    });
+    list.classList.add('open');
+  }
+
+  async function fetch_cities(q) {
+    list.innerHTML = '<li class="pac-loader"><i class="fa-solid fa-spinner fa-spin"></i> &nbsp;Searching...</li>';
+    list.classList.add('open');
+
+    // Primary: Open-Meteo Geocoding — free, no key, CORS-safe, real cities only
+    try {
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`, { signal: AbortSignal.timeout(4000) });
+      const data = await res.json();
+      const results = data.results || [];
+      if (results.length) {
+        render(results.map(r => ({ name: r.name, region: r.admin1 || '', country: r.country || '', flag: codeToFlag(r.country_code) })));
+        return;
+      }
+    } catch(_) {}
+
+    // Secondary: Teleport Cities
+    try {
+      const res = await fetch(`https://api.teleport.org/api/cities/?search=${encodeURIComponent(q)}&limit=7`, { signal: AbortSignal.timeout(4000) });
+      const data = await res.json();
+      const items = (data._embedded?.['city:search-results'] || []).map(r => {
+        const p = r.matching_full_name.split(',').map(s => s.trim());
+        return { name: p[0], region: p[1] || '', country: p[p.length-1], flag: '🌍' };
+      });
+      if (items.length) { render(items); return; }
+    } catch(_) {}
+
+    list.innerHTML = '<li class="pac-loader" style="color:#c95540"><i class="fa-solid fa-circle-exclamation"></i> &nbsp;No cities found</li>';
+  }
+
+  input.addEventListener('input', () => { clearTimeout(timer); const q=input.value.trim(); if(q.length<2){close();return;} timer=setTimeout(()=>fetch_cities(q),280); });
+  input.addEventListener('keydown', e => {
+    const els = list.querySelectorAll('li:not(.pac-loader)');
+    if (!els.length) return;
+    if (e.key==='ArrowDown') { e.preventDefault(); activeIdx=Math.min(activeIdx+1,els.length-1); els.forEach((el,i)=>el.classList.toggle('pac-active',i===activeIdx)); els[activeIdx]?.scrollIntoView({block:'nearest'}); }
+    else if (e.key==='ArrowUp') { e.preventDefault(); activeIdx=Math.max(activeIdx-1,0); els.forEach((el,i)=>el.classList.toggle('pac-active',i===activeIdx)); els[activeIdx]?.scrollIntoView({block:'nearest'}); }
+    else if (e.key==='Enter' && activeIdx>=0) {
+      e.preventDefault();
+      const c = currentItems[activeIdx];
+      const parts = [c.name];
+      if (c.region && c.region !== c.name) parts.push(c.region);
+      if (c.country) parts.push(c.country);
+      input.value = parts.join(', ');
+      close();
+    }
+    else if (e.key==='Escape') close();
+  });
+  document.addEventListener('click', e => { if(!e.target.closest('.input-icon-wrapper')) close(); });
+})();
+</script>
 </body>
 </html>
+

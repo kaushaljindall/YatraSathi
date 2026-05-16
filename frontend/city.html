@@ -85,9 +85,12 @@
         <h1>City <span>Insights</span></h1>
         <p>Unlock the secrets of any destination worldwide. From local transport costs to the best season to visit, our AI provides everything you need to know before you go.</p>
         
-        <form class="city-search-pill" id="citySearchForm">
+        <form class="city-search-pill" id="citySearchForm" autocomplete="off">
           <i class="fa-solid fa-location-dot"></i>
-          <input type="text" id="cityInput" placeholder="Enter a city (e.g., Paris, Tokyo, Bali)..." required autocomplete="off" />
+          <div style="position:relative; flex:1;">
+            <input type="text" id="cityInput" placeholder="Enter a city (e.g., Paris, Tokyo, Bali)..." required autocomplete="off" />
+            <ul id="cityAutocomplete" class="city-autocomplete-list"></ul>
+          </div>
           <button type="submit">Get Insights</button>
         </form>
       </div>
@@ -235,5 +238,131 @@
 <script src="js/api.js"></script>
 <script src="js/city.js"></script>
 <script src="js/main.js"></script>
+<script>
+/* ── City Autocomplete — Open-Meteo Geocoding (primary) + Teleport (secondary) ── */
+(function () {
+  const input = document.getElementById('cityInput');
+  const list  = document.getElementById('cityAutocomplete');
+  let debounceTimer = null;
+  let activeIdx = -1;
+  let currentItems = [];
+
+  if (!input || !list) return;
+
+  // Country code → emoji flag
+  function codeToFlag(code) {
+    if (!code || code.length !== 2) return '🌍';
+    return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 - 65 + c.charCodeAt(0))).join('');
+  }
+
+  function closeList() {
+    list.innerHTML = '';
+    list.classList.remove('open');
+    activeIdx = -1;
+    currentItems = [];
+  }
+
+  function renderItems(cities) {
+    list.innerHTML = '';
+    currentItems = cities;
+    activeIdx = -1;
+    if (!cities.length) { closeList(); return; }
+
+    cities.forEach((city) => {
+      const li = document.createElement('li');
+      const sub = [city.region, city.country].filter(Boolean).join(', ');
+      li.innerHTML = `
+        <div class="ac-icon"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="ac-text">
+          <div class="ac-name">${city.name}</div>
+          <div class="ac-country">${sub}</div>
+        </div>
+        <span style="font-size:20px; line-height:1">${city.flag}</span>`;
+      li.addEventListener('mousedown', (e) => { e.preventDefault(); selectCity(city); });
+      list.appendChild(li);
+    });
+    list.classList.add('open');
+  }
+
+  function selectCity(city) {
+    const parts = [city.name];
+    if (city.region && city.region !== city.name) parts.push(city.region);
+    if (city.country) parts.push(city.country);
+    input.value = parts.join(', ');
+    closeList();
+  }
+
+  async function fetchCities(q) {
+    list.innerHTML = '<li class="ac-loader"><i class="fa-solid fa-spinner fa-spin"></i> &nbsp;Searching cities...</li>';
+    list.classList.add('open');
+
+    // ── Primary: Open-Meteo Geocoding API — no key, no CORS issues ──
+    try {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`;
+      const res  = await fetch(url, { signal: AbortSignal.timeout(4000) });
+      const data = await res.json();
+      const results = data.results || [];
+      if (results.length) {
+        const items = results.map(r => ({
+          name:    r.name,
+          region:  r.admin1 || '',
+          country: r.country || '',
+          flag:    codeToFlag(r.country_code),
+        }));
+        renderItems(items);
+        return;
+      }
+    } catch (_) { /* fall through to secondary */ }
+
+    // ── Secondary: Teleport Cities API ──
+    try {
+      const url = `https://api.teleport.org/api/cities/?search=${encodeURIComponent(q)}&limit=7`;
+      const res  = await fetch(url, { signal: AbortSignal.timeout(4000) });
+      const data = await res.json();
+      const items = (data._embedded?.['city:search-results'] || []).map(r => {
+        const parts = r.matching_full_name.split(',').map(s => s.trim());
+        return { name: parts[0], region: parts[1] || '', country: parts[parts.length - 1], flag: '🌍' };
+      });
+      if (items.length) { renderItems(items); return; }
+    } catch (_) { /* ignore */ }
+
+    // ── Final fallback: no results message ──
+    list.innerHTML = '<li class="ac-loader" style="color:#c95540"><i class="fa-solid fa-circle-exclamation"></i> &nbsp;No cities found</li>';
+  }
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    clearTimeout(debounceTimer);
+    if (q.length < 2) { closeList(); return; }
+    debounceTimer = setTimeout(() => fetchCities(q), 280);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    const items = list.querySelectorAll('li:not(.ac-loader)');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('ac-active', i === activeIdx));
+      items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('ac-active', i === activeIdx));
+      items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && activeIdx >= 0) {
+      e.preventDefault();
+      selectCity(currentItems[activeIdx]);
+    } else if (e.key === 'Escape') {
+      closeList();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#citySearchForm')) closeList();
+  });
+})();
+</script>
 </body>
 </html>
+
