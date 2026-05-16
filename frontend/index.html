@@ -26,13 +26,13 @@
     <div id="intro-shine" style="position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); transform: skewX(-20deg); z-index: 10; opacity: 0; pointer-events: none;"></div>
 
     <!-- The Partial Logo (Base Text) -->
-    <img id="intro-logo-partial" src="assets/logos/logo1.png" style="position: absolute; width: 100%; height: 100%; object-fit: contain; z-index: 2;">
+    <img id="intro-logo-partial" src="assets/logos/logo1.png" style="position: absolute; width: 100%; height: 100%; object-fit: contain; z-index: 2; filter: brightness(0) invert(1);">
     
     <!-- The Flying Airplane Piece -->
-    <img id="intro-plane" src="assets/logos/plane.png" style="position: absolute; width: 45%; top: 15%; right: -2%; z-index: 4; opacity: 0; filter: blur(5px);">
+    <img id="intro-plane" src="assets/logos/plane.png" style="position: absolute; width: 45%; top: 15%; right: -2%; z-index: 4; opacity: 0; filter: brightness(0) invert(1);">
     
     <!-- The Completed Seamless Logo -->
-    <img id="intro-logo-full" src="assets/logos/logo.png" style="position: absolute; width: 100%; height: 100%; object-fit: contain; z-index: 5; opacity: 0;">
+    <img id="intro-logo-full" src="assets/logos/logo.png" style="position: absolute; width: 100%; height: 100%; object-fit: contain; z-index: 5; opacity: 0; filter: brightness(0) invert(1);">
   </div>
 </div>
 
@@ -40,22 +40,69 @@
 <div class="blob-bg"></div>
 
 <!-- Navigation -->
-<header class="header">
+<header class="header" id="site-header">
   <div class="container nav-container">
     <div class="logo">
       <img src="assets/logos/mainlogo.svg" alt="YatraSaathi Logo" id="site-logo" onerror="this.onerror=null; this.src=''; this.alt='YatraSaathi';" />
     </div>
-    <nav class="nav-menu">
-      <a href="index.html">Destinations</a>
-      <a href="planner.html">Planner</a>
-      <a href="city.html">City Insights</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="auth.html">Login</a>
-      <a href="auth.html" class="btn-signup">Sign up</a>
-      <div class="dropdown">
-        <span>EN <i class="fa-solid fa-chevron-down" style="font-size:12px;margin-left:5px"></i></span>
+
+    <!-- Dock Navbar (default, visible on top) -->
+    <div class="dock-outer" id="dock-nav">
+      <nav class="dock-panel" role="toolbar" aria-label="Application dock">
+        <a href="index.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+          <div class="dock-label">Destinations</div>
+        </a>
+        <a href="planner.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="dock-label">Planner</div>
+        </a>
+        <a href="city.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-building"></i></div>
+          <div class="dock-label">City Insights</div>
+        </a>
+        <a href="dashboard.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="dock-label">Dashboard</div>
+        </a>
+        <div class="dock-divider"></div>
+        <a href="auth.html" class="dock-item">
+          <div class="dock-icon"><i class="fa-solid fa-user"></i></div>
+          <div class="dock-label">Login</div>
+        </a>
+        <a href="auth.html" class="dock-item signup-item">
+          <div class="dock-icon"><i class="fa-solid fa-user-plus"></i></div>
+          <div class="dock-label">Sign Up</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Scroll Navbar (hidden initially, appears on scroll) -->
+    <nav class="scroll-nav" id="scroll-nav">
+      <div class="scroll-nav-links">
+        <a href="index.html" class="scroll-nav-link active">
+          <i class="fa-solid fa-map-location-dot"></i> Destinations
+        </a>
+        <a href="planner.html" class="scroll-nav-link">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Planner
+        </a>
+        <a href="city.html" class="scroll-nav-link">
+          <i class="fa-solid fa-building"></i> City Insights
+        </a>
+        <a href="dashboard.html" class="scroll-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Dashboard
+        </a>
+      </div>
+      <div class="scroll-nav-actions">
+        <a href="auth.html" class="scroll-nav-login">
+          <i class="fa-solid fa-user"></i> Login
+        </a>
+        <a href="auth.html" class="scroll-nav-signup">
+          <i class="fa-solid fa-paper-plane"></i> Get Started
+        </a>
       </div>
     </nav>
+
   </div>
 </header>
 
@@ -96,6 +143,8 @@
       <h4>CATEGORY</h4>
       <h2>We Offer Best Features</h2>
     </div>
+    <!-- Pluses Illustration Decoration -->
+    <img src="data:image/svg+xml,%3Csvg width='150' height='150' viewBox='0 0 150 150' xmlns='http://www.w3.org/2000/svg'%3E%3Cpattern id='p' x='0' y='0' width='30' height='30' patternUnits='userSpaceOnUse'%3E%3Cpath d='M15 5v20M5 15h20' stroke='%23DF6951' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3C/pattern%3E%3Crect width='150' height='150' fill='url(%23p)'/%3E%3C/svg%3E" class="plus-decor" alt="Decoration">
     <div class="services-grid">
       <!-- Feature 1 -->
       <div class="service-card">
@@ -125,7 +174,7 @@
   </div>
 </section>
 
-<!-- Top Destinations Section -->
+<!-- Top Destinations Section
 <section class="destinations">
   <div class="container">
     <div class="section-heading text-center">
@@ -171,7 +220,7 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
 <!-- Steps Section -->
 <section class="steps-section">
@@ -182,21 +231,21 @@
         <h2>Plan Your Next Trip In 3 Easy Steps</h2>
       </div>
       <div class="steps-list">
-        <div class="step-item">
+        <div class="step-item" style="transition-delay: 0.1s;">
           <div class="step-icon yellow"><i class="fa-solid fa-map-location-dot"></i></div>
           <div class="step-text">
             <h3>Choose Destination</h3>
             <p>Tell us where you want to go and what you love to do.</p>
           </div>
         </div>
-        <div class="step-item">
+        <div class="step-item" style="transition-delay: 0.3s;">
           <div class="step-icon orange"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
           <div class="step-text">
             <h3>Generate AI Itinerary</h3>
             <p>Our intelligent system crafts the perfect day-by-day plan instantly.</p>
           </div>
         </div>
-        <div class="step-item">
+        <div class="step-item" style="transition-delay: 0.5s;">
           <div class="step-icon teal"><i class="fa-solid fa-plane-departure"></i></div>
           <div class="step-text">
             <h3>Reach Airport on Selected Date</h3>
@@ -245,10 +294,10 @@
         <h4>Testimonials</h4>
         <h2>What People Say About Us.</h2>
       </div>
-      <div style="display:flex;gap:10px;margin-top:50px">
-        <div style="width:12px;height:12px;border-radius:50%;background:#39425D"></div>
-        <div style="width:12px;height:12px;border-radius:50%;background:#E5E5E5"></div>
-        <div style="width:12px;height:12px;border-radius:50%;background:#E5E5E5"></div>
+      <div class="testi-dots" style="display:flex;gap:10px;margin-top:50px; cursor:pointer;">
+        <div class="dot active" style="width:12px;height:12px;border-radius:50%;background:#39425D; transition: background 0.3s;"></div>
+        <div class="dot" style="width:12px;height:12px;border-radius:50%;background:#E5E5E5; transition: background 0.3s;"></div>
+        <div class="dot" style="width:12px;height:12px;border-radius:50%;background:#E5E5E5; transition: background 0.3s;"></div>
       </div>
     </div>
     <div class="testi-cards">
@@ -262,6 +311,11 @@
         <p>"YatraSaathi planned my entire Kyoto trip in 30 seconds. The AI knew exactly which temples to visit in sequence."</p>
         <h4>Chris Thomas</h4>
         <span>CEO of Red Button</span>
+      </div>
+      <div class="testi-card hidden-card">
+        <p>"The budget intelligence feature saved us $400 on our Europe trip by warning us about currency rates and local scams!"</p>
+        <h4>Sarah Jenkins</h4>
+        <span>Travel Blogger</span>
       </div>
       <div class="testi-controls">
         <i class="fa-solid fa-chevron-up active"></i>
@@ -380,85 +434,236 @@
       y: window.innerHeight * 0.3,
       rotation: 20,
       scale: 0.8,
-      filter: "blur(8px)",
+      filter: "brightness(0) invert(1) blur(8px)",
       opacity: 0
     });
     
     gsap.set("#intro-logo-partial", { opacity: 0 });
 
-    // 1. Slow, cinematic fade in of the text logo
+    // 1. Snappy fade in of the text logo
     tl.to("#intro-logo-partial", {
       opacity: 1,
-      duration: 2,
+      duration: 0.8,
       ease: "power2.inOut"
-    }, 0.5);
+    }, 0.1);
 
-    // 2. Ultra-smooth Bezier Flight
+    // 2. Ultra-fast Bezier Flight
     tl.to("#intro-plane", {
       opacity: 1,
-      filter: "blur(0px)",
-      duration: 1.5
-    }, 1.5);
+      filter: "brightness(0) invert(1) blur(0px)",
+      duration: 0.8
+    }, 0.3);
 
     tl.to("#intro-plane", {
       x: 0,
       scale: 1,
       rotation: 0,
-      duration: 2.5,
+      duration: 1.2,
       ease: "power3.inOut"
-    }, 1.5);
+    }, 0.3);
 
     tl.to("#intro-plane", {
       y: 0,
-      duration: 2.5,
+      duration: 1.2,
       ease: "power2.out"
-    }, 1.5);
+    }, 0.3);
 
     // 3. Perfect Snap & Complete Logo (Crossfade)
-    tl.to("#intro-plane", { opacity: 0, duration: 0.1 }, 3.9);
-    tl.to("#intro-logo-partial", { opacity: 0, duration: 0.1 }, 3.9);
-    tl.to("#intro-logo-full", { opacity: 1, duration: 0.1 }, 3.9);
+    tl.to("#intro-plane", { opacity: 0, duration: 0.1 }, 1.4);
+    tl.to("#intro-logo-partial", { opacity: 0, duration: 0.1 }, 1.4);
+    tl.to("#intro-logo-full", { opacity: 1, duration: 0.1 }, 1.4);
 
     // 4. Subtle Micro-Pulse and Glow
     tl.to("#ambient-light", {
-      opacity: 0.8,
+      opacity: 0.6,
       scale: 1.2,
-      duration: 2,
+      duration: 1,
       ease: "power2.out"
-    }, 3.9);
+    }, 1.4);
 
     tl.to("#intro-logo-container", {
-      scale: 1.015,
-      filter: "drop-shadow(0 0 10px rgba(223, 105, 81, 0.4))",
-      duration: 1.5,
+      scale: 1.02,
+      filter: "drop-shadow(0 0 12px rgba(223, 105, 81, 0.6))",
+      duration: 0.5,
       ease: "power3.out"
-    }, 3.9);
+    }, 1.4);
     
     tl.to("#intro-logo-container", {
       scale: 1,
-      duration: 2,
+      filter: "drop-shadow(0 0 0px rgba(223, 105, 81, 0))",
+      duration: 0.5,
       ease: "power2.inOut"
-    }, 5.4);
+    }, 1.9);
 
     // 5. Razor-thin Premium Shine Sweep
-    tl.to("#intro-shine", { opacity: 0.8, duration: 0.1 }, 4.2);
+    tl.to("#intro-shine", { opacity: 0.8, duration: 0.05 }, 1.4);
     tl.to("#intro-shine", {
       left: "150%",
-      duration: 1.5,
+      duration: 0.7,
       ease: "power2.inOut"
-    }, 4.2);
-    tl.to("#intro-shine", { opacity: 0, duration: 0.1 }, 5.7);
+    }, 1.4);
+    tl.to("#intro-shine", { opacity: 0, duration: 0.05 }, 2.1);
 
     // 6. The "Curtain Reveal" - Slides up cleanly to reveal the white site
     tl.to(preloader, {
       yPercent: -100,
-      duration: 1.4,
+      duration: 0.8,
       ease: "power4.inOut",
-      delay: 0.5, 
+      delay: 0.4, // Total duration around 3.2s
       onComplete: () => {
         preloader.style.display = 'none';
       }
     });
+  });
+</script>
+
+<script>
+  // Scroll Animation Observer for Steps Section
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show-scroll');
+          // Optional: Unobserve after animating once to prevent re-triggering
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    const animatedElements = document.querySelectorAll('.step-item, .trip-card, .ongoing-card');
+    animatedElements.forEach(el => observer.observe(el));
+  });
+</script>
+
+<script>
+  // Testimonial Card Shuffle Animation
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = Array.from(document.querySelectorAll('.testi-card'));
+    const controls = document.querySelectorAll('.testi-controls i');
+    const dots = document.querySelectorAll('.testi-dots .dot');
+
+    let activeIdx = 0;
+
+    if (cards.length < 2) return;
+
+    const shuffleCards = () => {
+      // Calculate new indices
+      const prevActiveIdx = activeIdx;
+      activeIdx = (activeIdx + 1) % cards.length;
+      const nextIdx = (activeIdx + 1) % cards.length;
+
+      // Reset all cards to hidden
+      cards.forEach(c => {
+        c.classList.remove('active', 'next');
+        c.classList.add('hidden-card');
+      });
+
+      // Assign active and next
+      cards[activeIdx].classList.remove('hidden-card');
+      cards[activeIdx].classList.add('active');
+
+      cards[nextIdx].classList.remove('hidden-card');
+      cards[nextIdx].classList.add('next');
+
+      // Update dots
+      if (dots.length > 0) {
+        dots.forEach(d => {
+          d.classList.remove('active');
+          d.style.background = '#E5E5E5';
+        });
+        
+        const dotIdx = activeIdx % dots.length;
+        dots[dotIdx].classList.add('active');
+        dots[dotIdx].style.background = '#39425D';
+      }
+    };
+
+    controls.forEach(ctrl => {
+      ctrl.style.cursor = 'pointer';
+      ctrl.addEventListener('click', shuffleCards);
+    });
+
+    // Optional: Allow clicking dots to shuffle
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        if (!dot.classList.contains('active') && index < 2) {
+          shuffleCards();
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  // macOS Dock Hover Magnification Logic (Vanilla JS implementation of React Bits Dock)
+  document.addEventListener('DOMContentLoaded', () => {
+    const dockOuter = document.querySelector('.dock-outer');
+    const dockItems = document.querySelectorAll('.dock-item');
+    const baseSize = 45; // Matches CSS width/height
+    const maxSize = 70;  // Magnified size
+    const distance = 150; // Proximity threshold
+
+    dockOuter.addEventListener('mousemove', (e) => {
+      dockItems.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        const itemCenterX = rect.left + rect.width / 2;
+        const dist = Math.abs(e.clientX - itemCenterX);
+        
+        let scale = 1;
+        if (dist < distance) {
+          // Calculate exponential scale factor based on proximity
+          const scaleFactor = 1 - Math.pow(dist / distance, 2);
+          scale = 1 + ((maxSize / baseSize) - 1) * scaleFactor;
+        }
+        
+        // Apply smooth transform without transition conflicts
+        item.style.transform = `scale(${scale})`;
+        item.style.margin = `0 ${5 * (scale - 1)}px`;
+      });
+    });
+
+    dockOuter.addEventListener('mouseleave', () => {
+      dockItems.forEach(item => {
+        item.style.transform = `scale(1)`;
+        item.style.margin = `0`;
+        // Use CSS transition for the snap back
+        item.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin 0.3s';
+      });
+    });
+
+    dockOuter.addEventListener('mouseenter', () => {
+      // Remove transition so it tracks mouse instantly
+      dockItems.forEach(item => {
+        item.style.transition = 'background-color 0.2s, box-shadow 0.2s';
+      });
+    });
+  });
+</script>
+
+<script>
+  // Morphing Navbar Logic — Dock on top, Text Nav on scroll
+  document.addEventListener('DOMContentLoaded', () => {
+    const header    = document.getElementById('site-header');
+    const dockNav   = document.getElementById('dock-nav');
+    const scrollNav = document.getElementById('scroll-nav');
+    const THRESHOLD = 80; // px before morphing
+
+    const updateNav = () => {
+      if (window.scrollY > THRESHOLD) {
+        // Scrolled state
+        header.classList.add('scrolled');
+        dockNav.classList.add('nav-hidden');
+        scrollNav.classList.add('nav-visible');
+      } else {
+        // Top state
+        header.classList.remove('scrolled');
+        dockNav.classList.remove('nav-hidden');
+        scrollNav.classList.remove('nav-visible');
+      }
+    };
+
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav(); // Initialize on load
   });
 </script>
 
