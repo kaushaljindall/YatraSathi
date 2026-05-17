@@ -78,8 +78,13 @@
   <div class="planner-top-bar">
     <div class="planner-container">
       <div class="planner-header-text">
-        <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #DF6951;"></i> AI Trip Builder</h2>
-        <p>Configure your next adventure.</p>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+          <div>
+            <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #DF6951;"></i> AI Trip Builder</h2>
+            <p>Configure your next adventure.</p>
+          </div>
+          <button type="button" id="memoryAutofillBtn" style="background:rgba(139,92,246,0.1); color:#8b5cf6; border:1px solid rgba(139,92,246,0.3); padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s;"><i class="fa-solid fa-brain"></i> Auto-fill from Memory</button>
+        </div>
       </div>
 
       <form id="plannerForm" class="horizontal-planner-form">
@@ -206,6 +211,7 @@
             <div class="result-actions" style="display: flex; gap: 15px;">
               <button class="btn-outline-primary" style="background: transparent; border: 2px solid #DF6951; color: #DF6951; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif;"><i class="fa-solid fa-wallet"></i> Track Budget</button>
               <button class="btn-primary" style="background: #DF6951; border: none; color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; box-shadow: 0 5px 15px rgba(223,105,81,0.2);"><i class="fa-solid fa-bookmark"></i> Save to Dashboard</button>
+              <button id="simulateDisruptionBtn" class="btn-primary" style="background: #4152CB; border: none; color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; box-shadow: 0 5px 15px rgba(65,82,203,0.2);"><i class="fa-solid fa-triangle-exclamation"></i> Simulate Disruptions</button>
             </div>
           </div>
           
@@ -234,7 +240,7 @@
           </div>
         </div>
 
-        <div class="itinerary-timeline" id="itineraryContainer">
+        <div class="itinerary-container" id="itineraryContainer">
           <!-- Populated by JS -->
         </div>
       </div>
@@ -416,6 +422,49 @@
     else if (e.key==='Escape') close();
   });
   document.addEventListener('click', e => { if(!e.target.closest('.input-icon-wrapper')) close(); });
+
+  // Disruption Simulation
+  const simulateBtn = document.getElementById('simulateDisruptionBtn');
+  if (simulateBtn) {
+    simulateBtn.addEventListener('click', async () => {
+      const dest = document.getElementById('resDest').innerText;
+      if (!dest || dest === '—') return alert('Generate a trip first.');
+      
+      const originalText = simulateBtn.innerHTML;
+      simulateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+      
+      try {
+        const res = await window.SimulationAPI.analyzeScenario("Extreme Weather", dest + " itinerary");
+        alert("Disruption Analysis:\n\n" + (res.scenario || res.message || JSON.stringify(res)));
+      } catch (e) {
+        alert("Failed to simulate disruption: " + e.message);
+      } finally {
+        simulateBtn.innerHTML = originalText;
+      }
+    });
+  }
+
+  // Memory Auto-fill
+  const memoryBtn = document.getElementById('memoryAutofillBtn');
+  if (memoryBtn) {
+    memoryBtn.addEventListener('click', async () => {
+      const orig = memoryBtn.innerHTML;
+      memoryBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Recalling...';
+      try {
+        const res = await window.MemoryAPI.recall();
+        alert("Memory Auto-fill:\n\n" + (res.memory || res.message || JSON.stringify(res)));
+        // You could populate the form fields here (budget, pace, interests)
+        const chips = document.querySelectorAll('.chip');
+        chips.forEach(c => c.classList.add('selected'));
+        const slider = document.getElementById('paceSlider');
+        if (slider) slider.value = 3;
+      } catch (err) {
+        alert("Failed to recall memory: " + err.message);
+      } finally {
+        memoryBtn.innerHTML = orig;
+      }
+    });
+  }
 })();
 </script>
 </body>

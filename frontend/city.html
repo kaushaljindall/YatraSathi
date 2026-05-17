@@ -92,6 +92,8 @@
             <ul id="cityAutocomplete" class="city-autocomplete-list"></ul>
           </div>
           <button type="submit">Get Insights</button>
+          <button type="button" id="scanLandmarkBtn" title="Scan Landmark Image" style="background: rgba(30,181,137,0.1); color: #1EB589; border: 1px solid rgba(30,181,137,0.2); padding: 0 20px; border-radius: 50px; font-size: 16px; cursor: pointer; transition: all 0.2s;"><i class="fa-solid fa-camera"></i></button>
+          <input type="file" id="landmarkUpload" style="display: none;" accept="image/*" />
         </form>
       </div>
       
@@ -173,9 +175,10 @@
       <div class="two-col">
         <!-- Weather & Best Time to Visit -->
         <div class="info-card">
-          <h3>
+          <h3 style="display:flex; align-items:center;">
             <div class="card-icon" style="background: rgba(241,165,1,0.1); color: #F1A501;"><i class="fa-solid fa-cloud-sun"></i></div>
             Weather & Seasons
+            <button id="globalAssessBtn" style="margin-left:auto; background:#F1A501; color:#fff; border:none; padding:5px 12px; border-radius:8px; font-size:12px; cursor:pointer; font-weight:600;"><i class="fa-solid fa-globe"></i> Global Risk</button>
           </h3>
           <p style="color: #5E6282; font-size: 15px; line-height: 1.6; margin-bottom: 25px;" id="weatherDesc"></p>
           <div class="weather-row" id="weatherMonths">
@@ -201,9 +204,10 @@
 
       <div class="two-col">
         <div class="info-card">
-          <h3>
+          <h3 style="display:flex; align-items:center;">
             <div class="card-icon" style="background: rgba(65,82,203,0.1); color: #4152CB;"><i class="fa-solid fa-train"></i></div>
             Getting Around
+            <button id="smartTransitBtn" style="margin-left:auto; background:#4152CB; color:#fff; border:none; padding:5px 12px; border-radius:8px; font-size:12px; cursor:pointer; font-weight:600;"><i class="fa-solid fa-route"></i> Smart Transit</button>
           </h3>
           <p style="color: #5E6282; font-size: 14px; margin-bottom: 20px;" id="transportDesc"></p>
           <div class="transport-list" id="transportList">
@@ -361,6 +365,68 @@
   document.addEventListener('click', (e) => {
     if (!e.target.closest('#citySearchForm')) closeList();
   });
+
+  // Vision / Multimodal Logic
+  const scanBtn = document.getElementById('scanLandmarkBtn');
+  const fileInput = document.getElementById('landmarkUpload');
+
+  if (scanBtn && fileInput) {
+    scanBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const originalIcon = scanBtn.innerHTML;
+      scanBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      
+      try {
+        const res = await MultimodalAPI.analyze(file, 'Identify the city or landmark in this image and provide a brief insight.');
+        alert("Vision AI Analysis:\n\n" + (res.analysis || res.message));
+        // You could also populate the cityInput with the detected city
+      } catch(err) {
+        alert("Failed to analyze image: " + err.message);
+      } finally {
+        scanBtn.innerHTML = originalIcon;
+        fileInput.value = ''; // reset
+      }
+    });
+  }
+
+  // Global Intelligence API
+  const globalAssessBtn = document.getElementById('globalAssessBtn');
+  if (globalAssessBtn) {
+    globalAssessBtn.addEventListener('click', async () => {
+      const city = document.getElementById('cityInput').value || 'The current city';
+      const orig = globalAssessBtn.innerHTML;
+      globalAssessBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      try {
+        const res = await window.GlobalIntelligenceAPI.getRegionalProfile(city);
+        alert("Global Intelligence Assessment:\n\n" + (res.profile || res.message || JSON.stringify(res)));
+      } catch (err) {
+        alert("Assessment failed: " + err.message);
+      } finally {
+        globalAssessBtn.innerHTML = orig;
+      }
+    });
+  }
+
+  // Mobility API
+  const smartTransitBtn = document.getElementById('smartTransitBtn');
+  if (smartTransitBtn) {
+    smartTransitBtn.addEventListener('click', async () => {
+      const city = document.getElementById('cityInput').value || 'The current city';
+      const orig = smartTransitBtn.innerHTML;
+      smartTransitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      try {
+        const res = await window.MobilityAPI.recommend(15, "balanced");
+        alert("Smart Transit Options:\n\n" + (res.recommendations || res.message || JSON.stringify(res)));
+      } catch (err) {
+        alert("Failed to get transit options: " + err.message);
+      } finally {
+        smartTransitBtn.innerHTML = orig;
+      }
+    });
+  }
 })();
 </script>
 </body>

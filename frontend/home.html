@@ -162,6 +162,9 @@
           <a href="planner.html" style="background:#DF6951; color:#fff; padding:12px 24px; border-radius:50px; font-size:14px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; box-shadow:0 6px 20px rgba(223,105,81,0.25);">
             <i class="fa-solid fa-wand-magic-sparkles"></i> Plan New Trip
           </a>
+          <button id="autonomousBtn" style="background:#1EB589; color:#fff; border:none; cursor:pointer; padding:12px 24px; border-radius:50px; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:8px; box-shadow:0 6px 20px rgba(30,181,137,0.25);">
+            <i class="fa-solid fa-robot"></i> Auto Strategy
+          </button>
           <a href="city.html" style="background:#F5F6FF; color:#4152CB; padding:12px 24px; border-radius:50px; font-size:14px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
             <i class="fa-solid fa-building"></i> City Insights
           </a>
@@ -232,6 +235,7 @@
   <section class="home-section">
     <div class="home-section-head" style="margin-bottom:16px;">
       <h2><i class="fa-solid fa-bell" style="color:#F1A501; font-size:20px;"></i> Smart <span>Alerts</span></h2>
+      <button id="checkRisksBtn" style="background:none; border:none; color:#DF6951; font-weight:600; cursor:pointer; font-size:13px; font-family:'Poppins',sans-serif;"><i class="fa-solid fa-shield-halved"></i> Assess Risks</button>
     </div>
     <div class="alerts-row" id="alertsGrid">
       <div class="alert-card info">
@@ -277,6 +281,7 @@
     </div>
   </div>
   <div class="chat-input-row">
+    <button class="chat-send-btn" id="chatMicBtn" style="background: rgba(223,105,81,0.1); color: #DF6951; border: 1px solid rgba(223,105,81,0.2);"><i class="fa-solid fa-microphone"></i></button>
     <input type="text" id="chatInput" placeholder="Ask your assistant..." />
     <button class="chat-send-btn" id="chatSend"><i class="fa-solid fa-paper-plane"></i></button>
   </div>
@@ -381,6 +386,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sendBtn.addEventListener('click', send);
   input.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+
+  // Voice Recording Logic
+  const micBtn = document.getElementById('chatMicBtn');
+  let isRecording = false;
+  let mediaRecorder;
+  let audioChunks = [];
+
+  micBtn.addEventListener('click', async () => {
+    if (!isRecording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const file = new File([audioBlob], "recording.webm", { type: 'audio/webm' });
+          
+          micBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+          try {
+            const result = await VoiceAPI.transcribe(file);
+            input.value = result.transcription || "I didn't catch that.";
+            send(); // Auto send after transcribe
+          } catch(err) {
+            console.error(err);
+            appendMsg('ai', '⚠️ Failed to process audio.');
+          } finally {
+            micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+            micBtn.style.animation = 'none';
+          }
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        micBtn.style.animation = 'pulse-dot 1.5s infinite';
+        micBtn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+      } catch (err) {
+        console.error("Mic error:", err);
+        alert("Microphone access denied or unavailable.");
+      }
+    } else {
+      mediaRecorder.stop();
+      isRecording = false;
+      // Stop all audio tracks
+      mediaRecorder.stream.getTracks().forEach(t => t.stop());
+    }
+  });
 });
 
 /* ── Update upcoming trip banner ── */
@@ -407,6 +460,57 @@ window._updateBanner = function(trips) {
   const bar = document.getElementById('budgetBar');
   if (bar) bar.style.width = '70%';
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Autonomous Strategy
+  const autoBtn = document.getElementById('autonomousBtn');
+  if (autoBtn) {
+    autoBtn.addEventListener('click', async () => {
+      const orig = autoBtn.innerHTML;
+      autoBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+      try {
+        const res = await window.AutonomousAPI.optimize({}, { type: "Budget-conscious, fast-paced" });
+        alert("Autonomous Strategy:\n\n" + (res.optimization || res.message || "Optimization successful"));
+      } catch (err) {
+        alert("Strategy failed: " + err.message);
+      } finally {
+        autoBtn.innerHTML = orig;
+      }
+    });
+  }
+
+  // Predictive Risks
+  const riskBtn = document.getElementById('checkRisksBtn');
+  if (riskBtn) {
+    riskBtn.addEventListener('click', async () => {
+      const orig = riskBtn.innerHTML;
+      riskBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      try {
+        const res = await window.SuperAIAPI.riskAssessment("Upcoming Trip", "moderate", 12, 10);
+        alert("Predictive Risk Assessment:\n\n" + (res.risk_score ? `Risk Score: ${res.risk_score}` : res.message || "Risks checked"));
+      } catch (err) {
+        alert("Risk check failed: " + err.message);
+      } finally {
+        riskBtn.innerHTML = orig;
+      }
+    });
+  }
+
+  // Wearables / Biometrics
+  const profileItem = document.getElementById('navProfileItem');
+  if (profileItem) {
+    profileItem.title = "Double click to sync wearable biometrics";
+    profileItem.addEventListener('dblclick', async () => {
+      try {
+        await window.WearableAPI.notify("Biometrics Synced", "Heart rate 85, stress low.", "info");
+        if(window.showToast) window.showToast("Biometrics Synced", "success", "❤️");
+        else alert("Biometrics synced successfully!");
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+});
 </script>
 </body>
 </html>

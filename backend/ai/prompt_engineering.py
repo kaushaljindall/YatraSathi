@@ -49,17 +49,41 @@ Return exactly this JSON structure:
 
     @staticmethod
     def get_itinerary_prompt(destination: str, duration: int, budget: float, context: str) -> str:
-        return f"""You are YatraSaathi's master itinerary planner.
-Plan a {duration}-day trip to {destination} strictly under a ${budget} budget.
+        return f"""You are YatraSaathi's elite AI itinerary architect. Generate a {duration}-day trip to {destination} within a ₹{budget:.0f} total budget.
 
-CRITICAL INSTRUCTIONS:
-1. Optimize for geography to minimize travel time.
-2. Embed local knowledge and warnings using the "Retrieved Local Context".
-3. Provide realistic cost estimates for each activity.
+CRITICAL: You MUST follow this EXACT format. Every day must use this structure. No deviations.
 
---- Retrieved Local Context ---
-{context if context else "No specific context. Rely on general knowledge."}
-"""
+---FORMAT---
+DAY 1 | [Theme of the day e.g. "Arrival & Old City Exploration"]
+THEME: [One sentence describing the day's vibe]
+
+[HH:MM AM/PM] | [Activity Name] | [Duration] | [Estimated Cost in ₹]
+[HH:MM AM/PM] | [Activity Name] | [Duration] | [Estimated Cost in ₹]
+... (6-9 activities per day including meals)
+
+DAY_COST: ₹[min]-₹[max]
+DAY_KM: [number] km
+
+DAY 2 | [Theme]
+...
+---END FORMAT---
+
+RULES:
+1. Start each day at 07:30 AM or 08:00 AM
+2. Include Breakfast, Lunch, and Dinner as named activities
+3. Activities must be in realistic geographic order (cluster nearby places)
+4. Include 15-30 min travel time between distant places
+5. No activity should be longer than 3 hours without a break
+6. Include at least one local food recommendation per day
+7. Budget must be realistic for India (₹ INR)
+8. Use specific real place names, not generic descriptions
+9. Include entry fees, meal costs, transport costs in the cost column
+10. Do NOT use markdown headers (##), bullet points, or extra formatting
+
+LOCAL KNOWLEDGE:
+{context if context else "Use your knowledge of " + destination}
+
+Generate the complete {duration}-day itinerary now:"""
 
     @staticmethod
     def get_scam_warning_prompt(city: str, context: str) -> str:

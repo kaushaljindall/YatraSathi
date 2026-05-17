@@ -50,7 +50,17 @@ async function apiFetch(path, options = {}) {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    throw new Error(data.detail || data.message || `HTTP ${res.status}`);
+    let errorMsg = `HTTP ${res.status}`;
+    if (data.detail) {
+      if (Array.isArray(data.detail)) {
+        errorMsg = data.detail.map(err => err.msg || JSON.stringify(err)).join(", ");
+      } else {
+        errorMsg = data.detail;
+      }
+    } else if (data.message) {
+      errorMsg = data.message;
+    }
+    throw new Error(errorMsg);
   }
 
   return data;
@@ -282,7 +292,247 @@ window.showToast = function (message, type = "info", icon = "") {
   }, 4500);
 };
 
+/* ── Voice Intelligence ───────────────────────────────────────── */
+const VoiceAPI = {
+  async transcribe(audioBlob) {
+    const formData = new FormData();
+    formData.append("audio", audioBlob);
+    // Use raw fetch to handle FormData correctly (bypassing JSON content-type in apiFetch)
+    const token = Auth.getToken();
+    const res = await fetch(`${API_BASE}/voice/transcribe`, {
+      method: "POST",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: formData,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  },
+  async respond(text, language = "en") {
+    const token = Auth.getToken();
+    const res = await fetch(`${API_BASE}/voice/respond`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({ text, language }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.blob();
+  },
+};
+
+/* ── Predictive Intelligence ──────────────────────────────────── */
+const PredictiveAPI = {
+  async predictCrowd(location, hour, month) {
+    return apiFetch("/predict/crowd", {
+      method: "POST",
+      body: JSON.stringify({ location, hour, month }),
+    });
+  },
+  async predictPricing(category, basePrice, daysAhead = 1) {
+    return apiFetch("/predict/pricing", {
+      method: "POST",
+      body: JSON.stringify({ category, base_price: basePrice, days_ahead: daysAhead }),
+    });
+  },
+  async predictWeather(city, daysAhead = 1) {
+    return apiFetch("/predict/weather", {
+      method: "POST",
+      body: JSON.stringify({ city, days_ahead: daysAhead }),
+    });
+  },
+};
+
+/* ── Ecosystem & Multimodal ───────────────────────────────────── */
+const MultimodalAPI = {
+  async analyze(imageBlob, targetLanguage = "en", sourceType = "menu") {
+    const formData = new FormData();
+    formData.append("image", imageBlob);
+    const token = Auth.getToken();
+    const res = await fetch(`${API_BASE}/multimodal/analyze?target_language=${targetLanguage}&source_type=${sourceType}`, {
+      method: "POST",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: formData,
+    });
+    return res.json();
+  },
+  async ocrScan(imageBlob, sourceType = "menu") {
+    const formData = new FormData();
+    formData.append("image", imageBlob);
+    const token = Auth.getToken();
+    const res = await fetch(`${API_BASE}/ocr/scan?source_type=${sourceType}`, {
+      method: "POST",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: formData,
+    });
+    return res.json();
+  },
+  async visionUnderstand(imageBlob) {
+    const formData = new FormData();
+    formData.append("image", imageBlob);
+    const token = Auth.getToken();
+    const res = await fetch(`${API_BASE}/vision/understand`, {
+      method: "POST",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: formData,
+    });
+    return res.json();
+  }
+};
+
+const AutonomousAPI = {
+  async optimize(trip, conditions) {
+    return apiFetch("/autonomous/optimize", {
+      method: "POST",
+      body: JSON.stringify({ trip, conditions }),
+    });
+  },
+  async evaluate(trip, conditions) {
+    return apiFetch("/autonomous/evaluate", {
+      method: "POST",
+      body: JSON.stringify({ trip, conditions }),
+    });
+  }
+};
+
+const GlobalIntelligenceAPI = {
+  async convertCurrency(amount, fromCurrency, toCurrency) {
+    return apiFetch("/currency/convert", {
+      method: "POST",
+      body: JSON.stringify({ amount, from_currency: fromCurrency, to_currency: toCurrency }),
+    });
+  },
+  async getTimezone(city) {
+    return apiFetch(`/global/timezone/${encodeURIComponent(city)}`);
+  },
+  async getRegionalProfile(country) {
+    return apiFetch(`/global/region/${encodeURIComponent(country)}`);
+  }
+};
+
+const GroupTravelAPI = {
+  async createGroup(name, memberIds = []) {
+    return apiFetch("/group/create", {
+      method: "POST",
+      body: JSON.stringify({ name, member_ids: memberIds }),
+    });
+  },
+  async getGroup(groupId) {
+    return apiFetch(`/group/${groupId}`);
+  },
+  async vote(groupId, activity, vote) {
+    return apiFetch("/group/vote", {
+      method: "POST",
+      body: JSON.stringify({ group_id: groupId, activity, vote }),
+    });
+  },
+  async splitExpense(totalAmount, memberCount, splitType = "equal") {
+    return apiFetch("/group/split", {
+      method: "POST",
+      body: JSON.stringify({ total_amount: totalAmount, member_count: memberCount, split_type: splitType }),
+    });
+  }
+};
+
+const WearableAPI = {
+  async notify(title, body, actionType = "info") {
+    return apiFetch("/wearable/notify", {
+      method: "POST",
+      body: JSON.stringify({ title, body, action_type: actionType }),
+    });
+  }
+};
+
+/* ── Super AI OS ──────────────────────────────────────────────── */
+const SuperAIAPI = {
+  async chat(message, tripContext = null) {
+    return apiFetch("/super/chat", {
+      method: "POST",
+      body: JSON.stringify({ message, trip_context: tripContext }),
+    });
+  },
+  async emotionalCheck(message, tripContext = null) {
+    return apiFetch("/super/emotional-check", {
+      method: "POST",
+      body: JSON.stringify({ message, trip_context: tripContext }),
+    });
+  },
+  async getProfile(userId) {
+    return apiFetch(`/super/profile/${userId}`);
+  },
+  async riskAssessment(city, budget, hour, month) {
+    return apiFetch("/super/risk-assessment", {
+      method: "POST",
+      body: JSON.stringify({ city, budget, hour, month }),
+    });
+  }
+};
+
+const MobilityAPI = {
+  async recommend(distanceKm, priority = "balanced") {
+    return apiFetch("/mobility/recommend", {
+      method: "POST",
+      body: JSON.stringify({ distance_km: distanceKm, priority }),
+    });
+  },
+  async navigate(origin, destination, mode = "taxi", conditions = {}) {
+    return apiFetch("/mobility/navigate", {
+      method: "POST",
+      body: JSON.stringify({ origin, destination, mode, conditions }),
+    });
+  }
+};
+
+const MemoryAPI = {
+  async store(key, value) {
+    return apiFetch("/memory/store", {
+      method: "POST",
+      body: JSON.stringify({ key, value }),
+    });
+  },
+  async recall() {
+    return apiFetch("/memory/recall");
+  },
+  async submitFeedback(recommendationId, accepted, category) {
+    return apiFetch("/feedback/recommendation", {
+      method: "POST",
+      body: JSON.stringify({ recommendation_id: recommendationId, accepted, category }),
+    });
+  }
+};
+
+const SimulationAPI = {
+  async simulateTrip(trip) {
+    return apiFetch("/simulate/trip", {
+      method: "POST",
+      body: JSON.stringify({ trip }),
+    });
+  },
+  async analyzeScenario(scenario, tripContext) {
+    return apiFetch("/simulate/scenario", {
+      method: "POST",
+      body: JSON.stringify({ scenario, trip_context: tripContext }),
+    });
+  }
+};
+
+const GlobalEventsAPI = {
+  async getCityEvents(city) {
+    return apiFetch(`/events/${encodeURIComponent(city)}`);
+  }
+};
+
 /* Export for module use if needed */
 if (typeof module !== "undefined") {
-  module.exports = { Auth, AuthAPI, TripsAPI, PlannerAPI, CityAPI, WeatherAPI, ExpensesAPI, BudgetAPI, ChatAPI, yatraWS, initNavUser };
+  module.exports = { 
+    Auth, AuthAPI, TripsAPI, PlannerAPI, CityAPI, WeatherAPI, ExpensesAPI, BudgetAPI, ChatAPI, yatraWS, initNavUser,
+    VoiceAPI, PredictiveAPI, MultimodalAPI, AutonomousAPI, GlobalIntelligenceAPI, GroupTravelAPI, WearableAPI,
+    SuperAIAPI, MobilityAPI, MemoryAPI, SimulationAPI, GlobalEventsAPI
+  };
+} else if (typeof window !== "undefined") {
+  Object.assign(window, {
+    VoiceAPI, PredictiveAPI, MultimodalAPI, AutonomousAPI, GlobalIntelligenceAPI, GroupTravelAPI, WearableAPI,
+    SuperAIAPI, MobilityAPI, MemoryAPI, SimulationAPI, GlobalEventsAPI
+  });
 }

@@ -4,227 +4,290 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to YatraSaathi — Sign In or Create Account</title>
+  <meta name="description" content="Sign in or create a YatraSaathi account to start planning AI-powered trips." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/stepper.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
-<!-- Animated Background Elements from main.css -->
-<div class="bg-canvas">
-  <canvas id="particleCanvas"></canvas>
-</div>
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-3"></div>
-
-<!-- Back to Home -->
-<a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon"><i class="fa-solid fa-plane-up"></i></div>
-      YatraSaathi
-    </a>
+<!-- ── Back to Home / Logo ── -->
+<a href="index.html" class="nav-logo" id="nav-logo-link">
+  <img src="assets/logos/mainlogo.svg" alt="YatraSaathi" class="nav-logo-img"
+       onerror="this.onerror=null; this.style.display='none'; document.getElementById('nav-logo-fallback').style.display='flex';" />
+  <span id="nav-logo-fallback" class="nav-logo-fallback" style="display:none;">
+    <span class="nav-logo-icon"><i class="fa-solid fa-plane-up"></i></span>
+    YatraSaathi
+  </span>
+</a>
 
 <div class="auth-wrapper">
-  <div class="auth-container glass">
-    
-    <!-- Image / Visual Side -->
+  <div class="auth-container">
+
+    <!-- ══════════════════════════════════════
+         VISUAL SIDE — Illustration + Stats
+    ══════════════════════════════════════ -->
     <div class="auth-visual">
-      <div class="auth-img-wrapper">
-        <img src="https://images.unsplash.com/photo-1522083115456-43b2f56b0d91?q=80&w=800&auto=format&fit=crop" alt="Travel Destination" class="auth-img">
+
+      <!-- Warm blob background matching landing page -->
+      <div class="auth-visual-blob"></div>
+
+      <!-- Plus pattern decoration (identical to landing page) -->
+      <img
+        src="data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpattern id='p' x='0' y='0' width='24' height='24' patternUnits='userSpaceOnUse'%3E%3Cpath d='M12 3v18M3 12h18' stroke='%23DF6951' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/pattern%3E%3Crect width='120' height='120' fill='url(%23p)'/%3E%3C/svg%3E"
+        class="auth-plus-decor auth-plus-tl" alt=""
+      />
+      <img
+        src="data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpattern id='p2' x='0' y='0' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Cpath d='M10 2v16M2 10h16' stroke='%23F1A501' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/pattern%3E%3Crect width='80' height='80' fill='url(%23p2)'/%3E%3C/svg%3E"
+        class="auth-plus-decor auth-plus-br" alt=""
+      />
+
+      <!-- Hero Illustration: Travel scene -->
+      <div class="auth-illus-wrap">
+        <!-- Primary travel photo -->
+        <div class="auth-illus-main">
+          <img
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop"
+            alt="Beautiful beach destination"
+            class="auth-illus-img"
+          />
+          <!-- Overlay gradient matching landing page cards -->
+          <div class="auth-illus-overlay"></div>
+        </div>
+
+        <!-- Floating stat card 1 — matches landing "ongoing-card" style -->
+        <div class="auth-float-card auth-float-top">
+          <div class="auth-float-icon" style="background:linear-gradient(135deg,#DF6951,#FF8E75);">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div class="auth-float-info">
+            <span class="auth-float-num">10K+</span>
+            <span class="auth-float-label">Trips Planned</span>
+          </div>
+        </div>
+
+        <!-- Floating stat card 2 — bottom right -->
+        <div class="auth-float-card auth-float-bottom">
+          <div class="auth-float-icon" style="background:linear-gradient(135deg,#F1A501,#FFD166);">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div class="auth-float-info">
+            <span class="auth-float-num">4.9 ★</span>
+            <span class="auth-float-label">Avg. Rating</span>
+          </div>
+        </div>
       </div>
+
+      <!-- Bottom copy -->
       <div class="auth-visual-content">
-        <div class="nav-logo-icon" style="margin-bottom:1rem; width:48px; height:48px; font-size:1.5rem;">✈</div>
-        <h2>Your AI Journey Starts Here</h2>
-        <p>Join thousands of travelers planning smarter, highly-optimized trips in seconds.</p>
+        <h2 id="visual-title" class="auth-visual-heading">Your AI Journey<br/>Starts Here</h2>
+        <p id="visual-subtitle" class="auth-visual-sub">Join thousands of travelers planning smarter, AI-optimized trips in seconds.</p>
+
+        <!-- Feature pills (landing page style) -->
+        <div class="auth-feature-pills">
+          <span class="auth-pill"><i class="fa-solid fa-brain"></i> AI Itinerary</span>
+          <span class="auth-pill"><i class="fa-solid fa-wallet"></i> Budget Track</span>
+          <span class="auth-pill"><i class="fa-solid fa-cloud-sun"></i> Live Weather</span>
+        </div>
+
+        <!-- Back to landing CTA -->
+        <a href="index.html" class="auth-home-btn">
+          <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
       </div>
     </div>
 
-    <!-- Form Side -->
+    <!-- ══════════════════════════════════════
+         FORM SIDE — Stepper
+    ══════════════════════════════════════ -->
     <div class="auth-form-side">
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
-        <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+
+      <!-- Real logo at top of form -->
+      <div class="auth-form-logo">
+        <img src="assets/logos/mainlogo.svg" alt="YatraSaathi"
+             class="auth-form-logo-img"
+             onerror="this.onerror=null; this.style.display='none'; document.getElementById('form-logo-fb').style.display='flex';" />
+        <div id="form-logo-fb" class="auth-logo-fallback" style="display:none;">
+          <div class="nav-logo-icon"><i class="fa-solid fa-plane-up"></i></div>
+          <span>YatraSaathi</span>
+        </div>
       </div>
 
-      <!-- Sign In Form -->
-      <form id="signin-form" class="auth-form active" onsubmit="handleSignIn(event)">
-        <div class="form-header">
-          <h3>Welcome Back</h3>
-          <p>Enter your credentials to access your dashboard.</p>
-        </div>
+      <!-- Tab Switcher -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" id="tab-signin" role="tab" aria-selected="true"  onclick="switchAuthMode('signin')">Sign In</button>
+        <button class="auth-tab"        id="tab-signup" role="tab" aria-selected="false" onclick="switchAuthMode('signup')">Sign Up</button>
+      </div>
 
-        <div id="signin-error" style="display:none;color:#ef4444;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;"></div>
+      <!-- Error Banner -->
+      <div id="auth-error" class="auth-error-banner" style="display:none;" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="auth-error-text"></span>
+      </div>
 
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <div class="input-with-icon">
-            <i class="fa-regular fa-envelope"></i>
-            <input type="email" id="signin-email" class="form-control" placeholder="hello@example.com" required>
-          </div>
-        </div>
+      <!-- Stepper renders here -->
+      <div id="stepper-root"></div>
 
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <div class="input-with-icon">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="signin-password" class="form-control" placeholder="••••••••" required>
-          </div>
-          <div class="form-footer">
-            <a href="#" class="forgot-link">Forgot password?</a>
-          </div>
-        </div>
-
-        <button type="submit" id="signin-btn" class="btn btn-primary auth-submit">
-          Sign In <i class="fa-solid fa-arrow-right"></i>
-        </button>
-
-        <div class="auth-divider">
-          <span>or continue with</span>
-        </div>
-
-        <div class="social-login">
-          <button type="button" class="btn btn-ghost social-btn-long" disabled title="OAuth coming soon">
-            <i class="fa-brands fa-google" style="color:#ea4335;"></i> Google
-          </button>
-          <button type="button" class="btn btn-ghost social-btn-long" disabled title="OAuth coming soon">
-            <i class="fa-brands fa-apple"></i> Apple
-          </button>
-        </div>
-      </form>
-
-      <!-- Sign Up Form -->
-      <form id="signup-form" class="auth-form" onsubmit="handleSignUp(event)">
-        <div class="form-header">
-          <h3>Create an Account</h3>
-          <p>Start planning your dream trips with AI today.</p>
-        </div>
-
-        <div id="signup-error" style="display:none;color:#ef4444;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;"></div>
-
-        <div class="form-group">
-          <label class="form-label">Username</label>
-          <div class="input-with-icon">
-            <i class="fa-regular fa-user"></i>
-            <input type="text" id="signup-username" class="form-control" placeholder="johndoe" required minlength="3">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Full Name (display)</label>
-          <div class="input-with-icon">
-            <i class="fa-solid fa-id-card"></i>
-            <input type="text" id="signup-name" class="form-control" placeholder="John Doe">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <div class="input-with-icon">
-            <i class="fa-regular fa-envelope"></i>
-            <input type="email" id="signup-email" class="form-control" placeholder="hello@example.com" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <div class="input-with-icon">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="signup-password" class="form-control" placeholder="Create a strong password (min 6 chars)" required minlength="6">
-          </div>
-        </div>
-
-        <button type="submit" id="signup-btn" class="btn btn-primary auth-submit">
-          Create Account <i class="fa-solid fa-arrow-right"></i>
-        </button>
-
-        <p class="terms-text">By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
-      </form>
+      <!-- Social proof footer -->
+      <p class="auth-social-proof">
+        <i class="fa-solid fa-shield-halved" style="color:#DF6951;"></i>
+        Secure &amp; private — we never share your data
+      </p>
 
     </div>
   </div>
 </div>
 
-<script src="js/particles.js"></script>
+<!-- Spring decoration (bottom-right, matches landing page) -->
+<div class="auth-spring-decor" aria-hidden="true">
+  <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="60" cy="60" r="55" stroke="#DF6951" stroke-width="2" stroke-dasharray="6 10" opacity="0.3"/>
+    <circle cx="60" cy="60" r="38" stroke="#F1A501" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.25"/>
+  </svg>
+</div>
+
 <script src="js/api.js"></script>
+<script src="js/stepper.js"></script>
 <script>
   // Redirect if already logged in
   if (Auth.isLoggedIn()) window.location.href = 'home.html';
 
-  function switchTab(tabId) {
-    document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-    document.querySelectorAll('.auth-form').forEach(form => {
-      form.classList.remove('active');
-      form.style.display = 'none';
-    });
-    const activeForm = document.getElementById(tabId + '-form');
-    activeForm.style.display = 'flex';
-    setTimeout(() => activeForm.classList.add('active'), 10);
+  let stepperInstance = null;
+
+  /* ── Step Definitions ──────────────────────────────────────────── */
+  const signInSteps = [
+    {
+      title: 'Welcome Back',
+      subtitle: 'Enter your email address to continue.',
+      fields: [
+        { id: 'si-email', type: 'email', label: 'Email Address', placeholder: 'hello@example.com', icon: 'fa-regular fa-envelope', required: true }
+      ]
+    },
+    {
+      title: 'Enter Password',
+      subtitle: 'Your account is safe with us.',
+      fields: [
+        { id: 'si-password', type: 'password', label: 'Password', placeholder: '••••••••', icon: 'fa-solid fa-lock', required: true }
+      ],
+      footerLink: { text: 'Forgot password?', href: '#' }
+    }
+  ];
+
+  const signUpSteps = [
+    {
+      title: 'Create Account',
+      subtitle: 'Choose a unique username to get started.',
+      fields: [
+        { id: 'su-username', type: 'text', label: 'Username', placeholder: 'johndoe', icon: 'fa-regular fa-user', required: true }
+      ]
+    },
+    {
+      title: 'Your Details',
+      subtitle: 'Help us personalise your experience.',
+      fields: [
+        { id: 'su-name',  type: 'text',  label: 'Full Name (optional)', placeholder: 'John Doe', icon: 'fa-solid fa-id-card' },
+        { id: 'su-email', type: 'email', label: 'Email Address',        placeholder: 'hello@example.com', icon: 'fa-regular fa-envelope', required: true }
+      ]
+    },
+    {
+      title: 'Secure Your Account',
+      subtitle: 'Choose a strong password (min. 6 characters).',
+      fields: [
+        { id: 'su-password', type: 'password', label: 'Password', placeholder: 'Create a strong password', icon: 'fa-solid fa-lock', required: true, minlength: 6 }
+      ]
+    }
+  ];
+
+  /* ── Error Banner ──────────────────────────────────────────────── */
+  function showError(msg) {
+    const banner = document.getElementById('auth-error');
+    document.getElementById('auth-error-text').textContent = msg;
+    banner.style.display = 'flex';
+    clearTimeout(banner._t);
+    banner._t = setTimeout(() => { banner.style.display = 'none'; }, 6000);
   }
 
-  function showError(id, msg) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.style.display = 'block';
-  }
-  function hideError(id) {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  }
-  function setLoading(btnId, loading, defaultText) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    btn.disabled = loading;
-    btn.innerHTML = loading
-      ? '<i class="fa-solid fa-spinner fa-spin"></i> Please wait...'
-      : defaultText;
-  }
-
-  async function handleSignIn(e) {
-    e.preventDefault();
-    hideError('signin-error');
-    const email    = document.getElementById('signin-email').value.trim();
-    const password = document.getElementById('signin-password').value;
-    setLoading('signin-btn', true, 'Sign In <i class="fa-solid fa-arrow-right"></i>');
+  /* ── Auth Handlers ─────────────────────────────────────────────── */
+  async function handleSignIn(formData) {
+    const email    = formData['si-email']?.trim();
+    const password = formData['si-password'];
+    if (!email || !password) { showError('Please fill in all fields.'); return false; }
     try {
       await AuthAPI.login(email, password);
-      // Store a minimal user record for nav personalization
-      const username = email.split('@')[0];
-      Auth.setUser({ username, email });
+      Auth.setUser({ username: email.split('@')[0], email });
       window.location.href = 'home.html';
+      return true;
     } catch (err) {
-      showError('signin-error', err.message || 'Login failed. Check your credentials.');
-    } finally {
-      setLoading('signin-btn', false, 'Sign In <i class="fa-solid fa-arrow-right"></i>');
+      showError(err.message || 'Login failed. Check your credentials.');
+      return false;
     }
   }
 
-  async function handleSignUp(e) {
-    e.preventDefault();
-    hideError('signup-error');
-    const username = document.getElementById('signup-username').value.trim();
-    const email    = document.getElementById('signup-email').value.trim();
-    const password = document.getElementById('signup-password').value;
-    if (!username || username.length < 3) {
-      showError('signup-error', 'Username must be at least 3 characters.');
-      return;
-    }
-    setLoading('signup-btn', true, 'Create Account <i class="fa-solid fa-arrow-right"></i>');
+  async function handleSignUp(formData) {
+    const username = formData['su-username']?.trim();
+    const email    = formData['su-email']?.trim();
+    const password = formData['su-password'];
     try {
       const data = await AuthAPI.signup(username, email, password);
-      window.showToast('Account created! Signing you in...', 'success', '✅');
-      // Auto-login after signup
+      window.showToast?.('Account created! Signing you in…', 'success', '✅');
       await AuthAPI.login(email, password);
       Auth.setUser({ id: data.id, username, email });
       setTimeout(() => window.location.href = 'home.html', 800);
+      return true;
     } catch (err) {
-      showError('signup-error', err.message || 'Signup failed. Try a different username or email.');
-    } finally {
-      setLoading('signup-btn', false, 'Create Account <i class="fa-solid fa-arrow-right"></i>');
+      showError(err.message || 'Signup failed. Try a different username or email.');
+      return false;
     }
   }
+
+  /* ── Switch Auth Mode ──────────────────────────────────────────── */
+  const visualData = {
+    signin: {
+      title:    'Welcome<br/>Back ✈',
+      subtitle: 'Sign in to access your trips, budgets, and AI recommendations.',
+      img:      'https://images.unsplash.com/photo-1488085061387-422e29b40080?q=80&w=600&auto=format&fit=crop'
+    },
+    signup: {
+      title:    'Your AI Journey<br/>Starts Here',
+      subtitle: 'Join thousands of travelers planning smarter, AI-optimized trips in seconds.',
+      img:      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop'
+    }
+  };
+
+  function switchAuthMode(mode) {
+    document.querySelectorAll('.auth-tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    const activeTab = document.getElementById(`tab-${mode}`);
+    activeTab.classList.add('active');
+    activeTab.setAttribute('aria-selected', 'true');
+
+    // Update visual panel
+    const vd = visualData[mode];
+    document.getElementById('visual-title').innerHTML     = vd.title;
+    document.getElementById('visual-subtitle').textContent = vd.subtitle;
+    const illus = document.querySelector('.auth-illus-img');
+    if (illus) { illus.style.opacity = '0'; setTimeout(() => { illus.src = vd.img; illus.style.opacity = '1'; }, 300); }
+
+    document.getElementById('auth-error').style.display = 'none';
+
+    if (stepperInstance) stepperInstance.destroy();
+    stepperInstance = new Stepper('stepper-root', {
+      steps:          mode === 'signin' ? signInSteps : signUpSteps,
+      initialStep:    1,
+      backButtonText: 'Previous',
+      nextButtonText: 'Next',
+      onStepChange:   () => {},
+      onComplete:     mode === 'signin' ? handleSignIn : handleSignUp
+    });
+  }
+
+  // Boot
+  switchAuthMode('signin');
 </script>
 </body>
 </html>

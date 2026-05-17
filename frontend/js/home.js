@@ -215,7 +215,7 @@
       ).join('');
 
       finalHTML += `
-        <a href="home.html" class="plan-card">
+        <a href="planner.html?trip=${trip.trip_id}" class="plan-card">
           <div class="plan-card-img">
             <img src="${imgUrl}" alt="${trip.destination}"
               onerror="this.src='https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop'">
