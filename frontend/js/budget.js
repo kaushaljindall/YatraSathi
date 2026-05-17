@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  // If there's a trip in the URL, let's clean it up visually if we want, but we'll leave it for sharing.
   await initBudgetPage(tripId);
 });
 
@@ -69,10 +70,22 @@ window.onTripSelect = async function () {
 
 /* ── Initialize full budget page for a trip ─────────────────── */
 async function initBudgetPage(tripId) {
+  const success = await loadBudgetDashboard(tripId);
+  if (!success) {
+    // If it failed (e.g. 404 deleted trip), remove from cache and URL and show selector
+    localStorage.removeItem("ys_active_trip");
+    const url = new URL(window.location);
+    url.searchParams.delete("trip");
+    window.history.replaceState({}, document.title, url);
+    await showTripSelector();
+    return;
+  }
+
+  const banner = document.getElementById("tripSelectorBanner");
+  if (banner) banner.style.display = "none";
+
   const grid = document.getElementById("budgetGrid");
   if (grid) grid.style.display = "grid";
-
-  await loadBudgetDashboard(tripId);
 
   // Wire add-expense form
   const addForm = document.getElementById("addExpenseForm");
@@ -155,9 +168,19 @@ async function loadBudgetDashboard(tripId) {
     renderExpenseChart(expenses, totalBudget);
     renderExpenseList(expenses);
 
+    // ── Update landing-page-style stats strip ──
+    const setS = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setS("sExpenses", expenses.length);
+    setS("sCities", trip.destination ? 1 : 0);
+
+    return true;
+
   } catch (err) {
     console.error("Budget dashboard error:", err);
-    window.showToast(`Could not load budget data: ${err.message}`, "error", "❌");
+    if (!err.message.includes("Trip not found")) {
+      window.showToast(`Could not load budget data: ${err.message}`, "error", "❌");
+    }
+    return false;
   }
 }
 
@@ -332,8 +355,12 @@ function renderBurnRate(burnRate) {
 
 /* ── No-trip fallback ───────────────────────────────────────── */
 function renderNoTripState() {
+  const banner = document.getElementById("tripSelectorBanner");
+  if (banner) banner.style.display = "none";
+  
   const main = document.querySelector(".budget-grid");
   if (main) {
+    main.style.display = "grid";
     main.innerHTML = `
       <div style="text-align:center;padding:80px 20px;color:#8C92B1;grid-column:1/-1;">
         <i class="fa-solid fa-wallet" style="font-size:3rem;opacity:0.2;display:block;margin-bottom:16px;color:#181E4B;"></i>

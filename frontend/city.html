@@ -92,7 +92,7 @@
             <ul id="cityAutocomplete" class="city-autocomplete-list"></ul>
           </div>
           <button type="submit">Get Insights</button>
-          <button type="button" id="scanLandmarkBtn" title="Scan Landmark Image" style="background: rgba(30,181,137,0.1); color: #1EB589; border: 1px solid rgba(30,181,137,0.2); padding: 0 20px; border-radius: 50px; font-size: 16px; cursor: pointer; transition: all 0.2s;"><i class="fa-solid fa-camera"></i></button>
+          <button type="button" id="scanLandmarkBtn" title="Scan Landmark Image"><i class="fa-solid fa-camera"></i></button>
           <input type="file" id="landmarkUpload" style="display: none;" accept="image/*" />
         </form>
       </div>
@@ -380,9 +380,20 @@
       scanBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
       
       try {
-        const res = await MultimodalAPI.analyze(file, 'Identify the city or landmark in this image and provide a brief insight.');
-        alert("Vision AI Analysis:\n\n" + (res.analysis || res.message));
-        // You could also populate the cityInput with the detected city
+        const res = await MultimodalAPI.visionUnderstand(file);
+        
+        let msg = "Landmark Analysis Complete:\n\n";
+        if (res.data && res.data.analysis) {
+            msg += res.data.analysis;
+        } else {
+            msg += JSON.stringify(res);
+        }
+        alert(msg);
+        
+        // Auto-fill city input if we detected a location
+        if (res.data && res.data.detected_location) {
+            document.getElementById('cityInput').value = res.data.detected_location;
+        }
       } catch(err) {
         alert("Failed to analyze image: " + err.message);
       } finally {

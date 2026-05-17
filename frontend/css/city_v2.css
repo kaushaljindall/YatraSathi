@@ -66,7 +66,7 @@
   box-shadow: 0 15px 40px rgba(0,0,0,0.06);
   padding: 8px 8px 8px 22px;
   align-items: center;
-  max-width: 480px;
+  max-width: 600px;
   transition: box-shadow 0.3s;
 }
 .city-search-pill:focus-within {
@@ -91,7 +91,7 @@
 }
 .city-search-pill input::placeholder { color: #8C92B1; }
 
-.city-search-pill button {
+.city-search-pill button[type="submit"] {
   background: #DF6951;
   color: #fff;
   border: none;
@@ -105,9 +105,30 @@
   box-shadow: 0 5px 15px rgba(223,105,81,0.25);
   white-space: nowrap;
 }
-.city-search-pill button:hover {
+.city-search-pill button[type="submit"]:hover {
   background: #c95540;
   transform: scale(1.03);
+}
+
+.city-search-pill #scanLandmarkBtn {
+  background: rgba(30,181,137,0.1);
+  color: #1EB589;
+  border: 1px solid rgba(30,181,137,0.2);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+.city-search-pill #scanLandmarkBtn:hover {
+  background: rgba(30,181,137,0.2);
+  transform: scale(1.05);
 }
 
 /* Hero Visual */
