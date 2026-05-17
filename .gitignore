@@ -40,3 +40,4 @@ logs/
 ./frontend-react
 
 backend/data/database.json
+backend/backend/data/trips

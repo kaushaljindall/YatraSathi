@@ -67,11 +67,34 @@ async def create_trip(
                 "user_id": current_user["id"],
                 "destination": trip.destination,
                 "duration_days": duration_days,
-                "itinerary_text": trip.itinerary_text,
+                "itinerary_text": trip.itinerary_text, # this is now JSON string
                 "estimated_cost": round(trip.budget * 0.85, 2),
                 "generated_at": datetime.utcnow().isoformat()
             }
             db_data["itineraries"].append(itinerary_record)
+            
+            # Save the full trip JSON to a separate file as requested
+            import json
+            import os
+            trip_file_path = f"backend/data/trips/trip_{trip_id}.json"
+            try:
+                os.makedirs("backend/data/trips", exist_ok=True)
+                with open(trip_file_path, "w", encoding="utf-8") as f:
+                    # try to parse itinerary_text as JSON, if it is JSON
+                    try:
+                        parsed_itinerary = json.loads(trip.itinerary_text)
+                    except:
+                        parsed_itinerary = trip.itinerary_text
+                        
+                    full_trip_data = {
+                        "tripId": f"trip_{trip_id}",
+                        "city": trip.destination,
+                        "metadata": new_trip,
+                        "plan": parsed_itinerary
+                    }
+                    json.dump(full_trip_data, f, indent=2, ensure_ascii=False)
+            except Exception as e:
+                logger.error(f"Failed to write individual trip JSON: {e}")
 
         await write_db(db_data)
 

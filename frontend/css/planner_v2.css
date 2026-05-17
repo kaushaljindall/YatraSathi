@@ -670,4 +670,34 @@
   .empty-hero-content {
     margin-top: -80px;
   }
+
+  .itinerary-container {
+    padding: 30px 20px;
+  }
+  
+  .itinerary-day {
+    padding-left: 20px;
+  }
+  
+  .itinerary-day::before {
+    left: 2px;
+  }
+  
+  .day-header::before {
+    left: -24px;
+    width: 12px;
+    height: 12px;
+    top: 8px;
+  }
+
+  .activity-card {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+  }
+  
+  .activity-time {
+    font-size: 13px;
+    color: #DF6951;
+  }
 }

@@ -4,70 +4,52 @@
  * Renders real AI-generated itinerary from Groq LLM + RAG pipeline.
  */
 
-/* ── Markdown Itinerary Renderer (GLOBAL — accessible everywhere) ── */
+/* ── JSON Itinerary Renderer (GLOBAL — accessible everywhere) ── */
 function renderMarkdownItinerary(text, destination, durationDays) {
   if (!text) return "<p style='color:#94a3b8;padding:20px;'>No itinerary content received.</p>";
 
-  // Supports: **Day 1:**, ### Day 1:, Day 1:, Day 1 -
-  const dayRegex = /(?:###?\s*|\*{0,2})Day\s+(\d+)[:\*\s\-]/gi;
-  const parts = text.split(dayRegex);
+  let parsed = null;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    // Fallback if not valid JSON
+    return `<div class="itinerary-day"><div class="activity-card"><div class="activity-details"><p style="line-height:1.8;">${text.replace(/\n/g, "<br>")}</p></div></div></div>`;
+  }
 
-  if (parts.length <= 1) {
-    // Plain text fallback
-    return `
-      <div class="itinerary-day">
-        <div class="day-header">
-          <h3>Your ${durationDays || 3}-Day Plan for ${destination}</h3>
-        </div>
-        <div class="activity-card">
-          <div class="activity-details">
-            <p style="line-height:1.8;font-size:15px;">${text.replace(/\n/g, "<br>")}</p>
-          </div>
-        </div>
-      </div>`;
+  if (!parsed.days || !Array.isArray(parsed.days) || parsed.days.length === 0) {
+    return "<p style='color:#94a3b8;padding:20px;'>No itinerary days found in response.</p>";
   }
 
   let html = "";
-  for (let i = 1; i < parts.length; i += 2) {
-    const dayNum  = parts[i];
-    const content = parts[i + 1] || "";
-
-    const lines = content
-      .split("\n")
-      .map(l => l.trim())
-      .filter(l => l.length > 2);
-
-    let activities = "";
-    if (lines.length === 0) {
-      activities = "<p style='color:#94a3b8;padding:12px'>Free day / No activities specified.</p>";
-    } else {
-      activities = lines.map((line, idx) => {
-        const timeMatch = line.match(/(\d{1,2}:\d{2}\s?(?:AM|PM|am|pm)?)/);
-        const timeStr   = timeMatch ? timeMatch[1] : "";
-        const title     = line
-          .replace(/^[\*\-\•#]+/, "")
-          .replace(timeMatch?.[0] || "", "")
-          .replace(/\*\*/g, "")
-          .trim();
-        if (!title) return "";
+  parsed.days.forEach((dayData, index) => {
+    const dayNum = dayData.day || (index + 1);
+    const title = dayData.title || `Exploring ${destination}`;
+    
+    let activitiesHtml = "";
+    if (dayData.activities && Array.isArray(dayData.activities)) {
+      activitiesHtml = dayData.activities.map((act, idx) => {
         return `
           <div class="activity-card" style="animation-delay:${idx * 0.05}s;">
-            <div class="activity-time" style="min-width:80px;">${timeStr || "Anytime"}</div>
+            <div class="activity-time" style="min-width:80px;">${act.time || "Anytime"}</div>
             <div class="activity-details">
-              <p style="margin:0;font-size:14px;line-height:1.6;">${title}</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;font-weight:600;">${act.activity}</p>
             </div>
           </div>`;
       }).join("");
+    } else {
+      activitiesHtml = "<p style='color:#94a3b8;padding:12px'>Free day / No activities specified.</p>";
     }
 
     html += `
       <div class="itinerary-day">
-        <div class="day-header"><h3>Day ${dayNum} – ${destination}</h3></div>
-        ${activities}
+        <div class="day-header">
+          <h3>Day ${dayNum} – ${title}</h3>
+        </div>
+        ${activitiesHtml}
       </div>`;
-  }
+  });
 
-  return html || `<div class="itinerary-day"><div class="activity-card"><div class="activity-details"><p style="line-height:1.8;">${text.replace(/\n/g, "<br>")}</p></div></div></div>`;
+  return html;
 }
 
 /* ── Load an existing saved trip by ID (GLOBAL) ─────────────────── */
@@ -135,6 +117,17 @@ async function loadExistingTrip(tripId) {
     const saveBtn = document.querySelector(".result-actions .btn-primary");
     if (saveBtn) saveBtn.onclick = () => window.location.href = "home.html";
 
+    // Load Live Info
+    CityAPI.getLiveInfo(trip.destination).then(info => {
+      if (info && info.success) {
+        const weatherEl = document.querySelector('.sc-icon.fa-sun')?.closest('.summary-card')?.querySelector('.sc-val');
+        if (weatherEl) weatherEl.textContent = info.weather;
+        
+        const costEl = document.getElementById("resEstimatedCost");
+        if (costEl && info.average_spend) costEl.textContent = info.average_spend;
+      }
+    }).catch(e => console.warn("Live info fetch failed", e));
+
     resultState?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   } catch (err) {
@@ -186,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("generateBtn");
 
   /* ── Form submit ─────────────────────────────────────────────── */
-  form.addEventListener("submit", async (e) => {
+  btn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const destination = document.getElementById("destination").value.trim();
@@ -339,6 +332,17 @@ document.addEventListener("DOMContentLoaded", () => {
         budgetBtn.onclick   = () => window.location.href = `budget.html?trip=${tripId}`;
       }
     }
+
+    // Load Live Info
+    CityAPI.getLiveInfo(dest).then(info => {
+      if (info && info.success) {
+        const weatherEl = document.querySelector('.sc-icon.fa-sun')?.closest('.summary-card')?.querySelector('.sc-val');
+        if (weatherEl) weatherEl.textContent = info.weather;
+        
+        const costEl = document.getElementById("resEstimatedCost");
+        if (costEl && info.average_spend) costEl.textContent = info.average_spend;
+      }
+    }).catch(e => console.warn("Live info fetch failed", e));
 
     resultState?.scrollIntoView({ behavior: "smooth", block: "start" });
   }

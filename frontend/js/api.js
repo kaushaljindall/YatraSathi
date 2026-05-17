@@ -137,10 +137,11 @@ const CityAPI = {
 
   /** Scrape a real Wikipedia image for a city — no auth required */
   async getImage(city) {
-    return apiFetch(`/city/city-image?city=${encodeURIComponent(city)}`, {
-      method: "GET",
-    });
+    return apiFetch(`/city/city-image?city=${encodeURIComponent(city)}`);
   },
+  async getLiveInfo(city) {
+    return apiFetch(`/city/live-info?city=${encodeURIComponent(city)}`);
+  }
 };
 
 
