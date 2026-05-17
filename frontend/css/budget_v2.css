@@ -153,11 +153,12 @@
 
 /* ── Cards ── */
 .b-card {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
   border-radius: 30px;
   padding: 35px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.04);
-  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -262,10 +263,15 @@
 
 /* ── AI Advisor ── */
 .ai-advisor-content {
-  color: #5E6282;
+  color: #181E4B;
   font-size: 15px;
   line-height: 1.8;
   min-height: 100px;
+  background: linear-gradient(135deg, rgba(30, 181, 137, 0.1) 0%, rgba(30, 181, 137, 0.02) 100%);
+  border-left: 4px solid #1EB589;
+  padding: 20px;
+  border-radius: 0 16px 16px 0;
+  margin-top: 10px;
 }
 
 /* ── Log Expense Form ── */

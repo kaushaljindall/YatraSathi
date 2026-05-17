@@ -69,6 +69,9 @@ window.onTripSelect = async function () {
 
 /* ── Initialize full budget page for a trip ─────────────────── */
 async function initBudgetPage(tripId) {
+  const grid = document.getElementById("budgetGrid");
+  if (grid) grid.style.display = "grid";
+
   await loadBudgetDashboard(tripId);
 
   // Wire add-expense form
