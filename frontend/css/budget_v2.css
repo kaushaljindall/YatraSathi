@@ -8,13 +8,28 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* ── Hide scroll-nav completely when dock is active ── */
+/* ── Active dock item — highlighted pill (matches home.html) ── */
+.dock-item.active {
+  background-color: #fff;
+  box-shadow: 0 5px 15px rgba(24, 30, 75, 0.10);
+  border-color: rgba(255, 255, 255, 1);
+}
+
+.dock-item.active .dock-icon i,
+.dock-item.active .dock-icon svg {
+  color: var(--clr-primary);
+}
+
+/* ── Scroll-nav: hidden by default, revealed on scroll ── */
 #scroll-nav {
-  display: none !important;
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
 }
 
 #scroll-nav.nav-visible {
-  display: flex !important;
+  opacity: 1;
+  pointer-events: all;
 }
 
 /* ── Landing-page cream blob background ── */
