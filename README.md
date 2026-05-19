@@ -9,6 +9,7 @@ YatraSathi is an AI-powered travel planning platform backend built with FastAPI 
 - **Attraction Discovery**: Fetch landmarks and tourist locations.
 - **Hotel Recommendation System**: Suggest accommodations based on location and budget.
 - **Conversational Travel Assistant**: Ask questions and get customized travel plans and advice.
+- **Ziva AI Avatar**: Real-time multilingual conversational AI avatar using Whisper STT, edge-tts, and Three.js 3D rendering over WebSockets.
 - **RAG Knowledge Base**: Uses FAISS vector search to retrieve travel context efficiently.
 
 ## Architecture
@@ -49,7 +50,8 @@ sequenceDiagram
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) & Docker Compose
-- Or locally: Python 3.10+, PostgreSQL, Redis
+- Or locally: Python 3.10+, PostgreSQL, Redis (running locally on port 6379)
+- **FFmpeg**: Required in system PATH for audio/video processing
 
 ## Setup and Installation
 
@@ -115,7 +117,7 @@ YatraSathi/
 │   │   ├── models/        # SQLAlchemy Database Models
 │   │   ├── routers/       # API endpoints (controllers)
 │   │   ├── schemas/       # Pydantic schemas (validation)
-│   │   ├── services/      # Business logic
+│   │   ├── services/      # Business logic (STT, TTS, Lipsync, AI Pipeline)
 │   │   ├── utils/         # Helper functions (Geo, clustering)
 │   │   ├── vector_store/  # FAISS Vector indexing
 │   │   ├── config.py      # Environment variables configuration

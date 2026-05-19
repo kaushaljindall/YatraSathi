@@ -21,3 +21,4 @@ torch
 torchvision 
 torchaudio --index-url https://download.pytorch.org/whl/cpu
 beautifulsoup4
+redis>=4.5.0

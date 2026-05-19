@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziva - YatraSathi AI Avatar</title>
+    <link rel="stylesheet" href="css/ziva.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="ziva-container">
+        <!-- Background Orbs -->
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+
+        <div class="ziva-glass-panel">
+            <header>
+                <h2>Ziva AI <span class="badge">Live</span></h2>
+                <div class="lang-selector">
+                    <select id="langSelect">
+                        <option value="en">English</option>
+                        <option value="hi">Hindi</option>
+                        <option value="fr">French</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="avatar-display" id="avatarDisplay3D">
+                <!-- 3D Avatar will be injected here -->
+                
+                <!-- Realtime Subtitles overlay -->
+                <div class="subtitles" id="subtitlesBox" style="z-index: 10;">
+                    <p class="translation-text" id="translationText">Listening...</p>
+                </div>
+            </div>
+
+            <div class="controls-area">
+                <div class="waveform" id="waveform">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                
+                <button id="micBtn" class="mic-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                </button>
+                <p class="status-text" id="statusText">Tap to speak</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden audio element to play TTS response -->
+    <audio id="ttsAudioPlayer" style="display: none;"></audio>
+
+    <!-- Main Logic -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module">
+        import ZivaWebSocket from './js/ziva/websocket.js';
+        import { AvatarRenderer } from './js/ziva/avatarRenderer.js';
+
+        const micBtn = document.getElementById('micBtn');
+        const statusText = document.getElementById('statusText');
+        const translationText = document.getElementById('translationText');
+        const waveform = document.getElementById('waveform');
+        const ttsAudioPlayer = document.getElementById('ttsAudioPlayer');
+        
+        // Initialize 3D Avatar
+        const avatar3D = new AvatarRenderer('avatarDisplay3D');
+        
+        let ws;
+
+        // Automatically return avatar to idle when audio finishes
+        ttsAudioPlayer.addEventListener('ended', () => {
+            avatar3D.setTalking(false);
+        });
+
+        const handleEvents = {
+            onConnect: () => { statusText.innerText = "Connected to Ziva"; },
+            onRecordingStart: () => { 
+                micBtn.classList.add('recording');
+                waveform.classList.add('active');
+                statusText.innerText = "Listening...";
+                translationText.innerText = "...";
+                // Stop any playing audio
+                ttsAudioPlayer.pause();
+                avatar3D.setTalking(false);
+            },
+            onRecordingStop: () => {
+                micBtn.classList.remove('recording');
+                waveform.classList.remove('active');
+                statusText.innerText = "Processing...";
+            },
+            status: (msg) => { statusText.innerText = msg; },
+            stt: (data) => { translationText.innerText = `You: "${data.text}"`; },
+            translation: (text) => { translationText.innerText = text; },
+            video_ready: (data) => {
+                // Now treating 'video_ready' or backend payload as the source audio to play
+                // while we animate the 3D model!
+                ttsAudioPlayer.src = data.url;
+                ttsAudioPlayer.play().then(() => {
+                    avatar3D.setTalking(true);
+                }).catch(e => console.error("Audio playback failed:", e));
+
+                statusText.innerText = "Tap to speak";
+                translationText.innerText = data.text;
+            },
+            error: (err) => { statusText.innerText = `Error: ${err}`; }
+        };
+
+        // Initialize WebSockets connected to FastAPI server
+        ws = new ZivaWebSocket('ws://localhost:8000/ws/ziva', handleEvents);
+
+        micBtn.addEventListener('click', () => {
+            if (ws.isRecording) {
+                ws.stopRecording();
+            } else {
+                ws.startRecording();
+            }
+        });
+    </script>
+</body>
+</html>

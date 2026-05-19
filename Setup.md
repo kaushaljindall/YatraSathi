@@ -4,6 +4,8 @@ This guide provides instructions to spin up the YatraSaathi AI Travel Platform l
 
 ## Prerequisites
 - Python 3.10+
+- **Redis**: Must be running locally on port 6379 for caching
+- **FFmpeg**: Must be installed and available in system PATH
 - Node.js (for any future frontend build steps, though currently frontend is vanilla JS)
 - A Groq API Key
 - An OpenWeatherMap API Key
@@ -57,7 +59,7 @@ Then navigate to `http://localhost:3000` in your browser.
 2. Sign up or log in (the database is a local JSON file `backend/data/database.json`, so no external DB is needed).
 3. Navigate to **Planner** to generate an AI itinerary.
 4. Try out **City Insights** to query the RAG database.
-5. Use the **Dashboard** to chat with the real-time AI assistant.
+5. Interact with **Ziva AI Avatar**, the real-time multilingual 3D voice assistant.
 
 ---
 **Note:** If you encounter `ModuleNotFoundError: No module named 'pytz'`, manually run `pip install pytz aiofiles`.
