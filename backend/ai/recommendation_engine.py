@@ -19,7 +19,33 @@ class RecommendationEngine:
         )
         
         # Generate response
-        response = await llm_service.generate_response(system_prompt, query, temperature=0.6, json_mode=True, key_type="insights")
+        raw_response = await llm_service.generate_response(system_prompt, query, temperature=0.6, json_mode=False, key_type="insights")
+        
+        import json
+        import re
+        try:
+            clean_response = raw_response.strip()
+            if clean_response.startswith("```"):
+                match = re.search(r'```(?:json)?\s*(.*?)\s*```', clean_response, re.DOTALL)
+                if match:
+                    clean_response = match.group(1)
+            
+            # Validate JSON
+            parsed = json.loads(clean_response)
+            response = json.dumps(parsed)
+        except json.JSONDecodeError:
+            fallback_json = {
+                "quick_stats": {"daily_budget": "N/A", "best_season": "Any", "primary_language": "Unknown", "ideal_stay_days": "3 Days"},
+                "attractions": [{"name": "Error formatting response", "tag": "Error", "desc": raw_response}],
+                "weather_desc": "Information currently unavailable.",
+                "weather_months": [],
+                "food": [],
+                "transport_desc": "Information unavailable.",
+                "transport": [],
+                "tips": [],
+                "budget_tiers": []
+            }
+            response = json.dumps(fallback_json)
         
         # Update user memory
         memory.add_interaction(user_id, query, response)

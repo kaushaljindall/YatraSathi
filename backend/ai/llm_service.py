@@ -52,8 +52,13 @@ class LLMService:
             data = response.json()
             return data["choices"][0]["message"]["content"]
             
+        except httpx.HTTPStatusError as e:
+            error_msg = f"LLM generation failed for {key_type} (HTTP {e.response.status_code}): {e.response.text}"
+            logger.error(error_msg)
+            return f"An error occurred while generating the AI response. Please try again later. [DEBUG: {error_msg}]"
         except Exception as e:
-            logger.error(f"LLM generation failed for {key_type}: {str(e)}")
-            return "An error occurred while generating the AI response. Please try again later."
+            error_msg = f"LLM generation failed for {key_type}: {str(e)}"
+            logger.error(error_msg)
+            return f"An error occurred while generating the AI response. Please try again later. [DEBUG: {error_msg}]"
 
 llm_service = LLMService()
