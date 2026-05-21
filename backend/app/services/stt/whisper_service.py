@@ -16,8 +16,8 @@ class WhisperService:
     def _load_model(self):
         if not whisper:
             return
-        # Load medium model as requested, optimizing with fp16 if on GPU
-        self.model = whisper.load_model("medium", device=self.device)
+        # Load small model for faster real-time performance and to avoid Windows memory allocation errors
+        self.model = whisper.load_model("small", device=self.device)
         if self.device == "cuda":
             self.model = self.model.half()
 

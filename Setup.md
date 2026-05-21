@@ -4,9 +4,10 @@ This guide provides instructions to spin up the YatraSaathi AI Travel Platform l
 
 ## Prerequisites
 - Python 3.10+
-- **Redis**: Must be running locally on port 6379 for caching
-- **FFmpeg**: Must be installed and available in system PATH
-- Node.js (for any future frontend build steps, though currently frontend is vanilla JS)
+- **Redis**: Strongly recommended for low-latency caching in the Ziva AI real-time translation pipeline (runs on port 6379). If unavailable, the system safely bypasses it.
+- **FFmpeg**: Must be installed and available in system PATH (required for Edge-TTS audio processing).
+- **3D Avatar Models**: Ensure `Ziva.glb`, `Animations.glb` are placed in `frontend/react-chatbot/public/models/` for the React Three Fiber rendering.
+- Node.js (Required for Vite/React frontend)
 - A Groq API Key
 - An OpenWeatherMap API Key
 
@@ -44,22 +45,30 @@ Start the FastAPI backend with hot-reload enabled:
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## 5. Launch the Frontend
-The frontend is currently built using Vanilla HTML/CSS/JS to keep it lightweight.
+## 5. Launch the React Chatbot (Port 5173)
+YatraSaathi uses a React Micro-Frontend for the 3D Ziva Avatar. Open a new terminal:
+```bash
+cd frontend/react-chatbot
+npm install
+npm run dev
+```
 
-Simply open `frontend/index.html` in your web browser. Or, run a local static server:
+## 6. Launch the Main Website (Port 3000)
+The main frontend is built using lightweight Vanilla HTML/CSS/JS.
+
+You must run a local server (e.g., VS Code Live Server, or Python's HTTP server) on port 3000 so the iframe bridge works without CORS issues:
 ```bash
 cd frontend
 python -m http.server 3000
 ```
-Then navigate to `http://localhost:3000` in your browser.
+Then navigate to `http://localhost:3000/home.html` in your browser.
 
-## 6. Accessing the App
-1. Go to the frontend.
+## 7. Accessing the App
+1. Go to the main frontend at `http://localhost:3000`.
 2. Sign up or log in (the database is a local JSON file `backend/data/database.json`, so no external DB is needed).
-3. Navigate to **Planner** to generate an AI itinerary.
-4. Try out **City Insights** to query the RAG database.
-5. Interact with **Ziva AI Avatar**, the real-time multilingual 3D voice assistant.
+3. Click the floating **Robot Button** in the bottom right corner to spawn the React-powered Ziva 3D Avatar!
+4. Navigate to **Planner** to generate an AI itinerary.
+5. Try out **City Insights** to query the RAG database.
 
 ---
 **Note:** If you encounter `ModuleNotFoundError: No module named 'pytz'`, manually run `pip install pytz aiofiles`.

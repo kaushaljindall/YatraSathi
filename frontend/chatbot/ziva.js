@@ -11,6 +11,7 @@ export class ZivaManager {
         this.translationText = document.getElementById('zivaTranslationText');
         this.userText = document.getElementById('zivaUserText');
         this.langSelect = document.getElementById('zivaLangSelect');
+        this.sourceLangSelect = document.getElementById('zivaSourceLangSelect');
         this.audioPlayer = document.getElementById('zivaAudioPlayer');
         
         this.waveform = new WaveformVisualizer('zivaWaveform');
@@ -55,7 +56,11 @@ export class ZivaManager {
                 } else if(data.type === 'audio_url') {
                     // Play TTS audio and animate avatar
                     if(this.audioPlayer) {
-                        this.audioPlayer.src = data.url;
+                        // Prepend backend URL since frontend runs on port 3000
+                        this.audioPlayer.src = 'http://localhost:8000' + data.url;
+                        if(this.avatar) {
+                            this.avatar.connectAudio(this.audioPlayer);
+                        }
                         this.audioPlayer.play().then(() => {
                             if(this.avatar) this.avatar.playAnimation('talking');
                         }).catch(e => console.error("Audio play failed:", e));
@@ -63,6 +68,9 @@ export class ZivaManager {
                     this.updateStatus("Tap mic to speak");
                 } else if(data.type === 'avatar_state') {
                     if(this.avatar) this.avatar.playAnimation(data.state);
+                } else if(data.type === 'error') {
+                    this.updateStatus("Error: " + data.message);
+                    if(this.avatar) this.avatar.playAnimation('idle');
                 }
             },
             onError: (err) => {
@@ -111,7 +119,8 @@ export class ZivaManager {
             // Send language setting to backend
             this.ws.sendData({
                 type: 'config',
-                target_lang: this.langSelect.value
+                target_lang: this.langSelect ? this.langSelect.value : 'en',
+                source_lang: this.sourceLangSelect ? this.sourceLangSelect.value : 'auto'
             });
             
             await this.recorder.start();

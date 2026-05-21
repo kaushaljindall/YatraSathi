@@ -21,6 +21,11 @@ from security.security_headers import security_headers_middleware
 from security.rate_limiter import rate_limiter
 from scaling.task_queue import task_queue
 from app.api.routes.websocket import router as ziva_ws_router
+from fastapi.staticfiles import StaticFiles
+
+# Ensure static directories exist
+os.makedirs("data/cache", exist_ok=True)
+os.makedirs("data/temp", exist_ok=True)
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -47,13 +52,23 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# ── Mount Static Directory ─────────────────────────────────────────
+# Wrap StaticFiles in CORSMiddleware because mounts bypass global app middlewares in Starlette
+app.mount("/static", CORSMiddleware(
+    StaticFiles(directory="data/cache"),
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+), name="static")
+
 # ── Security Headers Middleware ────────────────────────────────────
 app.middleware("http")(security_headers_middleware)
 
 # ── Performance Tracking Middleware ───────────────────────────────
 app.middleware("http")(performance_tracking_middleware)
 
-# ── CORS Middleware ────────────────────────────────────────────────
+# ── Global CORS Middleware ─────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Lock down to specific origins in production

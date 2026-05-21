@@ -1,6 +1,7 @@
 // avatar.js
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { Lipsync } from 'wawa-lipsync';
 
 export class AvatarManager {
     constructor(containerId) {
@@ -39,6 +40,14 @@ export class AvatarManager {
         this.animations = {};
         this.currentAction = null;
         this.model = null;
+        this.headNode = null;
+        this.teethNode = null;
+
+        // Lipsync Setup
+        this.lipsync = new Lipsync();
+        this.audioElement = null;
+        this.lipsyncConnected = false;
+        this.isAudioPlaying = false;
 
         this.initModel();
         
@@ -74,6 +83,12 @@ export class AvatarManager {
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
+                    if (child.name === 'Wolf3D_Head') {
+                        this.headNode = child;
+                    }
+                    if (child.name === 'Wolf3D_Teeth') {
+                        this.teethNode = child;
+                    }
                 }
             });
 
@@ -145,6 +160,18 @@ export class AvatarManager {
         this.currentAction = action;
     }
 
+    connectAudio(audioEl) {
+        this.audioElement = audioEl;
+        if (!this.lipsyncConnected && this.lipsync && this.audioElement) {
+            this.lipsync.connectAudio(this.audioElement);
+            this.lipsyncConnected = true;
+            
+            this.audioElement.addEventListener('play', () => { this.isAudioPlaying = true; });
+            this.audioElement.addEventListener('pause', () => { this.isAudioPlaying = false; });
+            this.audioElement.addEventListener('ended', () => { this.isAudioPlaying = false; });
+        }
+    }
+
     animate() {
         requestAnimationFrame(() => this.animate());
         const delta = this.clock.getDelta();
@@ -153,6 +180,42 @@ export class AvatarManager {
         // Gentle breathing rotation
         if (this.model && this.currentAction && this.currentAction.getClip().name.toLowerCase().includes('idle')) {
             this.model.rotation.y = Math.sin(Date.now() * 0.001) * 0.05;
+        }
+
+        // Lipsync processing
+        if (this.lipsyncConnected && this.headNode) {
+            if (this.isAudioPlaying) {
+                this.lipsync.processAudio();
+            }
+
+            const currentViseme = this.lipsync.viseme;
+            const dict = this.headNode.morphTargetDictionary;
+            const influences = this.headNode.morphTargetInfluences;
+            const teethInfluences = this.teethNode ? this.teethNode.morphTargetInfluences : null;
+
+            if (dict && influences) {
+                for (const key in dict) {
+                    const idx = dict[key];
+                    let targetValue = 0;
+                    
+                    if (this.isAudioPlaying && key.startsWith('viseme_')) {
+                        if (key === currentViseme) {
+                            targetValue = 1.0;
+                        }
+                    }
+
+                    // Lerp for smooth transition
+                    const lerpSpeed = (key.startsWith('viseme_') && this.isAudioPlaying) ? 0.5 : 0.25;
+                    influences[idx] += (targetValue - influences[idx]) * lerpSpeed;
+
+                    if (this.teethNode && this.teethNode.morphTargetDictionary) {
+                        const teethIdx = this.teethNode.morphTargetDictionary[key];
+                        if (teethIdx !== undefined && teethInfluences) {
+                            teethInfluences[teethIdx] += (targetValue - teethInfluences[teethIdx]) * lerpSpeed;
+                        }
+                    }
+                }
+            }
         }
 
         this.renderer.render(this.scene, this.camera);

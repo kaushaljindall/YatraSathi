@@ -9,49 +9,54 @@ YatraSathi is an AI-powered travel planning platform backend built with FastAPI 
 - **Attraction Discovery**: Fetch landmarks and tourist locations.
 - **Hotel Recommendation System**: Suggest accommodations based on location and budget.
 - **Conversational Travel Assistant**: Ask questions and get customized travel plans and advice.
-- **Ziva AI Avatar**: Real-time multilingual conversational AI avatar using Whisper STT, edge-tts, and Three.js 3D rendering over WebSockets.
+- **Ziva AI Avatar**: Real-time multilingual conversational AI avatar using Faster-Whisper STT, Edge-TTS, Redis Caching for ultra-low latency, and Three.js for interactive 3D rendering (GLB animations) over WebSockets.
 - **RAG Knowledge Base**: Uses FAISS vector search to retrieve travel context efficiently.
+- **Wawa-Lipsync Integration**: Optional fallback for video generation from audio.
 
 ## Architecture
 
 ![YatraSathi Architecture Diagram](frontend/assets/YatraSathi.png)
 
-Below is the high-level system interaction architecture for YatraSathi's core planning features:
+YatraSathi uses a highly optimized **Hybrid Micro-Frontend Architecture**:
+
+1. **Website Frontend (Port 3000)**: A lightweight, fast, SEO-friendly HTML/JS application handling core navigation, travel dashboards, and static marketing content.
+2. **React Chatbot System (Port 5173)**: An isolated React + Vite application handling heavy 3D rendering (Ziva Avatar), Web Audio API, wawa-lipsync, and WebSocket communication. It is embedded dynamically into the Website via an iframe and controlled via `postMessage`.
+3. **FastAPI Backend (Port 8000)**: An async event-driven Python server processing STT (Whisper), LLM generation, TTS (Edge-TTS), and RAG vector searches.
+
+Below is the high-level system interaction architecture:
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant Browser
+    participant HTMLWebsite as Website (HTML/JS)
+    participant ReactChatbot as Ziva Iframe (React)
     participant FastAPI as Backend (FastAPI)
     participant GroqLLM as External AI (Groq)
 
-    User->>Browser: Enters "Kyoto, 3 Days, Art"
-    User->>Browser: Clicks "Generate Pattern"
-    Browser->>Browser: Collect data, build JSON
-    Browser->>FastAPI: POST /itinerary/generate_direct (JSON Payload)
+    User->>HTMLWebsite: Clicks "Chat with Ziva"
+    HTMLWebsite->>ReactChatbot: postMessage({ type: 'TOGGLE_VISIBILITY' })
+    ReactChatbot->>User: Renders 3D Avatar & UI
+    User->>ReactChatbot: Speaks into Microphone
+    ReactChatbot->>FastAPI: WebSocket Audio Chunks (ArrayBuffer)
     
     activate FastAPI
-    FastAPI->>FastAPI: Pydantic Schema Validation
-    FastAPI->>FastAPI: Construct LangChain System Prompt
-    FastAPI->>GroqLLM: Invoke LLM Model (llama3-70b-8192)
-    
-    activate GroqLLM
-    Note over GroqLLM: Processing Geospatial rules,<br/>Weather estimations, and formatting raw HTML.
-    GroqLLM-->>FastAPI: Returns Formatted HTML String Payload
-    deactivate GroqLLM
-    
-    FastAPI-->>Browser: HTTP 200 OK { response: "<html...>" }
+    FastAPI->>FastAPI: Whisper STT Transcription
+    FastAPI->>GroqLLM: Invoke LLM Model (llama3-70b)
+    GroqLLM-->>FastAPI: Returns Response Text
+    FastAPI->>FastAPI: Edge-TTS Audio Generation
+    FastAPI-->>ReactChatbot: Yield WebSocket { audio_url, text, avatar_state }
     deactivate FastAPI
     
-    Browser->>Browser: DOM Implementation (innerHTML)
-    Browser->>User: Displays stunning itinerary UI
+    ReactChatbot->>ReactChatbot: Plays Audio + Wawa-Lipsync
+    ReactChatbot->>User: Avatar speaks with dynamic lip-sync
 ```
 
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) & Docker Compose
-- Or locally: Python 3.10+, PostgreSQL, Redis (running locally on port 6379)
-- **FFmpeg**: Required in system PATH for audio/video processing
+- Or locally: Python 3.10+, PostgreSQL, Redis (running locally on port 6379, optional but recommended)
+- **FFmpeg**: Required in system PATH for audio/video processing and TTS/Lipsync.
+- **3D Assets**: `Ziva.glb`, `Animations.glb`, and `Snepard.glb` placed in `frontend/assets/model/`.
 
 ## Setup and Installation
 
@@ -110,20 +115,28 @@ Once the app is running, interactive API documentation is automatically generate
 
 ```text
 YatraSathi/
-├── docker-compose.yml     # Orchestrates DB, Redis, and overall App
-├── backend/
-│   ├── app/               # FastAPI Application logic
-│   │   ├── ai/            # Groq LLM integration and Agent Tools
-│   │   ├── models/        # SQLAlchemy Database Models
-│   │   ├── routers/       # API endpoints (controllers)
-│   │   ├── schemas/       # Pydantic schemas (validation)
-│   │   ├── services/      # Business logic (STT, TTS, Lipsync, AI Pipeline)
-│   │   ├── utils/         # Helper functions (Geo, clustering)
-│   │   ├── vector_store/  # FAISS Vector indexing
-│   │   ├── config.py      # Environment variables configuration
-│   │   └── main.py        # Entry point
-│   ├── Dockerfile         # Docker Image definition for API
-│   ├── requirements.txt   # Python Dependencies
-│   └── .env               # Secrets configuration
-└── frontend/              # Web application
+├── frontend/                     # Main Web Application (Port 3000)
+│   ├── index.html                # Landing Page
+│   ├── home.html                 # Dashboard (Hosts React Iframe)
+│   └── js/
+│       └── iframe-bridge.js      # PostMessage communication bridge
+├── react-chatbot/                # 3D Avatar & Chat UI (Port 5173)
+│   ├── public/
+│   │   └── models/               # Ziva.glb, Animations.glb
+│   └── src/
+│       ├── store/                # Zustand State Management
+│       ├── avatar/               # R3F Experience & Lipsync Logic
+│       ├── websocket/            # Backend Socket Connection
+│       └── components/           # ChatOverlay & Framer Motion UI
+├── backend/                      # FastAPI AI Engine (Port 8000)
+│   ├── app/                      
+│   │   ├── api/                  # REST and WebSocket endpoints
+│   │   ├── services/             # Pipeline: STT, LLM, TTS, Lipsync
+│   │   ├── models/               # Database Models
+│   │   └── rag/                  # Vector Store integration
+│   ├── data/
+│   │   ├── cache/                # Statically mounted TTS Audio outputs
+│   │   └── temp/                 # Ephemeral WebSocket incoming audio
+│   └── main.py                   # Application Entrypoint
+└── docker-compose.yml            # Container Orchestration
 ```

@@ -25,6 +25,7 @@ manager = WebSocketManager()
 async def ziva_websocket(websocket: WebSocket):
     await manager.connect(websocket)
     target_lang = "en"
+    source_lang = "auto"
     audio_buffer = bytearray()
     
     try:
@@ -32,15 +33,20 @@ async def ziva_websocket(websocket: WebSocket):
             # Receive message from frontend
             message = await websocket.receive()
             
+            if message.get("type") == "websocket.disconnect":
+                manager.disconnect(websocket)
+                break
+            
             if "text" in message:
                 try:
                     data = json.loads(message["text"])
                     if data.get("type") == "config":
                         target_lang = data.get("target_lang", "en")
+                        source_lang = data.get("source_lang", "auto")
                     elif data.get("type") == "stop_recording":
                         # Process buffered audio
                         if len(audio_buffer) > 0:
-                            async for event in process_audio_stream(bytes(audio_buffer), target_lang):
+                            async for event in process_audio_stream(bytes(audio_buffer), target_lang, source_lang):
                                 await manager.send_message(event, websocket)
                         audio_buffer.clear()
                 except json.JSONDecodeError:
@@ -50,7 +56,13 @@ async def ziva_websocket(websocket: WebSocket):
                 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+    except RuntimeError as e:
+        # Happens if socket was already closed
+        manager.disconnect(websocket)
     except Exception as e:
-        await manager.send_message({"type": "error", "message": str(e)}, websocket)
+        try:
+            await manager.send_message({"type": "error", "message": str(e)}, websocket)
+        except Exception:
+            pass
         manager.disconnect(websocket)
 
