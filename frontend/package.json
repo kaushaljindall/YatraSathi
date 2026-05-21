@@ -1,0 +1,7 @@
+{
+  "name": "yatrasaathi-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd react-chatbot && npm install && npm run build"
+  }
+}
