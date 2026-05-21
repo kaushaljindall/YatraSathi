@@ -40,7 +40,7 @@ async def process_audio_stream(audio_bytes: bytes, target_lang: str = "en", sour
     full_lang = lang_map.get(target_lang, target_lang)
     
     system_prompt = f"You are a highly accurate professional translator. Translate the following text into {full_lang}. Reply ONLY with the exact translated text in {full_lang}, with no conversational filler, no quotation marks, and no extra explanation."
-    ai_response_text = await llm_service.generate_response(system_prompt, text)
+    ai_response_text = await llm_service.generate_response(system_prompt, text, key_type="translation")
     yield {"type": "translation", "text": ai_response_text}
     
     # Simple heuristic emotion detection for A2F

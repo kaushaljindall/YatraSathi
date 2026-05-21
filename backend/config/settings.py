@@ -13,6 +13,9 @@ class Settings(BaseSettings):
 
     # External APIs
     GROQ_API_KEY: str
+    GROQ_API_KEY_TRANSLATION: Optional[str] = None
+    GROQ_API_KEY_PLANNER: Optional[str] = None
+    GROQ_API_KEY_INSIGHTS: Optional[str] = None
     OPENWEATHERMAP_API_KEY: Optional[str] = None
 
     # RAG Settings

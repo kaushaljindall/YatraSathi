@@ -13,6 +13,6 @@ class ItineraryAI:
         system_prompt = Prompts.get_itinerary_prompt(destination, duration, budget, context)
         user_query = f"Create a realistic day-by-day plan. I like: {', '.join(preferences)}. "
         
-        return await llm_service.generate_response(system_prompt, user_query, temperature=0.7, json_mode=True)
+        return await llm_service.generate_response(system_prompt, user_query, temperature=0.7, json_mode=True, key_type="planner")
 
 itinerary_ai = ItineraryAI()
