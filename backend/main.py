@@ -20,6 +20,7 @@ from monitoring.logging_engine import app_logger
 from security.security_headers import security_headers_middleware
 from security.rate_limiter import rate_limiter
 from scaling.task_queue import task_queue
+from app.api.routes.websocket import router as ziva_ws_router
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -86,6 +87,7 @@ app.include_router(predictive.router,    prefix=f"{V1}",           tags=["Predic
 app.include_router(ecosystem.router,     prefix=f"{V1}",           tags=["Multimodal & Ecosystem (Phase 8)"])
 app.include_router(super_ai.router,      prefix=f"{V1}",           tags=["Super AI OS (Phase 9)"])
 app.include_router(health_router,                                   tags=["Health & Monitoring"])
+app.include_router(ziva_ws_router,                                  tags=["Ziva WebSocket"])
 app.include_router(live_updates.router,                             tags=["Live WebSockets"])
 
 @app.get("/metrics")

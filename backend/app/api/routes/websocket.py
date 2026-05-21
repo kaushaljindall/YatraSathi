@@ -1,5 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from app.services.streaming.stream_pipeline import process_audio_stream
+import json
 
 router = APIRouter()
 
@@ -20,20 +21,36 @@ class WebSocketManager:
 
 manager = WebSocketManager()
 
-@router.websocket("/ws/ziva")
+@router.websocket("/ws/ziva/audio")
 async def ziva_websocket(websocket: WebSocket):
     await manager.connect(websocket)
+    target_lang = "en"
+    audio_buffer = bytearray()
+    
     try:
         while True:
-            # Receive audio chunk from frontend
-            data = await websocket.receive_bytes()
+            # Receive message from frontend
+            message = await websocket.receive()
             
-            # Stream events back continuously
-            async for event in process_audio_stream(data):
-                await manager.send_message(event, websocket)
+            if "text" in message:
+                try:
+                    data = json.loads(message["text"])
+                    if data.get("type") == "config":
+                        target_lang = data.get("target_lang", "en")
+                    elif data.get("type") == "stop_recording":
+                        # Process buffered audio
+                        if len(audio_buffer) > 0:
+                            async for event in process_audio_stream(bytes(audio_buffer), target_lang):
+                                await manager.send_message(event, websocket)
+                        audio_buffer.clear()
+                except json.JSONDecodeError:
+                    pass
+            elif "bytes" in message:
+                audio_buffer.extend(message["bytes"])
                 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
     except Exception as e:
-        await manager.send_message({"type": "error", "payload": str(e)}, websocket)
+        await manager.send_message({"type": "error", "message": str(e)}, websocket)
         manager.disconnect(websocket)
+
