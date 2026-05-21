@@ -6,6 +6,7 @@ This guide provides instructions to spin up the YatraSaathi AI Travel Platform l
 - Python 3.10+
 - **Redis**: Strongly recommended for low-latency caching in the Ziva AI real-time translation pipeline (runs on port 6379). If unavailable, the system safely bypasses it.
 - **FFmpeg**: Must be installed and available in system PATH (required for Edge-TTS audio processing).
+- **NVIDIA Omniverse & Audio2Face**: (Optional but required for realistic lip-sync) Run the Audio2Face headless server on port 8011.
 - **3D Avatar Models**: Ensure `Ziva.glb`, `Animations.glb` are placed in `frontend/react-chatbot/public/models/` for the React Three Fiber rendering.
 - Node.js (Required for Vite/React frontend)
 - A Groq API Key
@@ -20,6 +21,7 @@ Open `backend/.env` and fill in your keys:
 - `GROQ_API_KEY=your_groq_api_key_here`
 - `OPENWEATHERMAP_API_KEY=your_openweathermap_api_key`
 - `SECRET_KEY=generate_a_random_secure_string_here`
+- `AUDIO2FACE_URL=http://localhost:8011`
 
 ## 2. Backend Installation
 Navigate to the backend directory and install the Python dependencies:

@@ -13,6 +13,7 @@ interface ChatState {
   expressionTrigger: number;
   animation: string;
   animationTrigger: number;
+  a2fFrames: any[];
   
   setStatus: (status: string) => void;
   setUserText: (text: string) => void;
@@ -26,6 +27,7 @@ interface ChatState {
   setAnimation: (anim: string) => void;
   triggerAnimation: () => void;
   triggerExpression: () => void;
+  setA2fFrames: (frames: any[]) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -41,6 +43,7 @@ export const useChatStore = create<ChatState>((set) => ({
   expressionTrigger: 0,
   animation: "Idle",
   animationTrigger: 0,
+  a2fFrames: [],
 
   setStatus: (status) => set({ status }),
   setUserText: (userText) => set({ userText }),
@@ -54,4 +57,5 @@ export const useChatStore = create<ChatState>((set) => ({
   setAnimation: (animation) => set({ animation }),
   triggerAnimation: () => set((state) => ({ animationTrigger: state.animationTrigger + 1 })),
   triggerExpression: () => set((state) => ({ expressionTrigger: state.expressionTrigger + 1 })),
+  setA2fFrames: (a2fFrames) => set({ a2fFrames }),
 }));

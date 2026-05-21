@@ -25,7 +25,13 @@ export class SocketManager {
       } else if (data.type === "translation") {
         store.setTranslationText(data.text);
       } else if (data.type === "audio_url") {
-        store.setAudioUrl(`http://localhost:8000${data.url}`);
+        const url = data.url.startsWith("http") ? data.url : `http://localhost:8000${data.url}`;
+        store.setAudioUrl(url);
+        store.setStatus("Tap mic to speak");
+      } else if (data.type === "a2f_stream") {
+        const url = data.url.startsWith("http") ? data.url : `http://localhost:8000${data.url}`;
+        store.setA2fFrames(data.frames || []);
+        store.setAudioUrl(url);
         store.setStatus("Tap mic to speak");
       } else if (data.type === "avatar_state") {
         store.setAnimation(

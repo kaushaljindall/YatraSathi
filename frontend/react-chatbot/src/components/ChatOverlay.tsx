@@ -1,7 +1,7 @@
 import { useChatStore } from '../store/useChatStore';
 import { useAudioPipeline } from '../hooks/useAudioPipeline';
 import { Mic, Square } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export function ChatOverlay() {
   const {

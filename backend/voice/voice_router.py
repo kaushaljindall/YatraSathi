@@ -1,5 +1,6 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 from pydantic import BaseModel
 import logging
 
@@ -48,3 +49,10 @@ async def voice_respond(
     except Exception as e:
         logger.error(f"TTS failed: {e}")
         raise HTTPException(status_code=500, detail="Speech generation failed")
+
+@router.get("/audio/{audio_id}")
+async def get_audio_by_id(audio_id: str):
+    file_path = f"data/cache/out_{audio_id}.mp3"
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Audio not found")
+    return FileResponse(file_path, media_type="audio/mpeg")

@@ -9,9 +9,9 @@ import { useGraph, useFrame } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib' 
 import type { GLTF } from 'three-stdlib'
+import { useA2FStream } from './useA2FStream'
+import { useChatStore } from '../store/useChatStore'
 import { Lipsync } from 'wawa-lipsync'
-
-// 1. Types
 interface FacialExpressionValues {
   [key: string]: number | undefined
 }
@@ -117,10 +117,8 @@ type ZivaProps = {
   animationTrigger?: number; // Trigger to replay animations
 } & React.JSX.IntrinsicElements['group']
 
-export function Ziva({ audioUrl, expression, expressionTrigger, animation, animationTrigger, ...props }: ZivaProps) {
-  const VISEME_INTENSITY = 1.0 // Reduced slightly for better blending
+export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, animationTrigger, ...props }: ZivaProps) {
   const LERP_SPEED = 0.25
-  const VISEME_LERP_SPEED = 0.5 // Faster lerp for mouth movement
   const SPEAKING_MOUTH_EXPRESSION_ATTENUATION = 0.25
   
   const group = useRef<THREE.Group>(null)
@@ -256,15 +254,16 @@ export function Ziva({ audioUrl, expression, expressionTrigger, animation, anima
     }
   }, [currentAnimation, actions])
 
-  // 3. Audio & Lipsync Setup
-  const lipsyncRef = useRef<Lipsync | null>(null)
+  // 3. Audio & A2F Setup
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const lipsyncConnectedRef = useRef(false)
   const autoplayRetryArmedRef = useRef(false)
+  const a2fFrames = useChatStore(state => state.a2fFrames)
+  
+  // Fallback lipsync for when A2F is offline
+  const lipsyncRef = useRef<Lipsync | null>(null)
 
   // Initialize Lipsync once to prevent AudioContext limits (max 6 in Chrome)
   useEffect(() => {
-    // Create lipsync instance once
     lipsyncRef.current = new Lipsync()
 
     const unlockAudioContext = () => {
@@ -281,11 +280,18 @@ export function Ziva({ audioUrl, expression, expressionTrigger, animation, anima
       window.removeEventListener('pointerdown', unlockAudioContext);
       window.removeEventListener('keydown', unlockAudioContext);
       try {
-        // Try to close AudioContext if wawa-lipsync exposes it
         (lipsyncRef.current as any)?.audioContext?.close()
       } catch (e) {}
     }
   }, [])
+  
+  // Use our new A2F stream hook
+  const { updateBlendshapes } = useA2FStream(
+    audioRef, 
+    a2fFrames, 
+    nodes.Wolf3D_Head, 
+    nodes.Wolf3D_Teeth
+  )
 
   useEffect(() => {
     if (!audioUrl) {
@@ -298,15 +304,15 @@ export function Ziva({ audioUrl, expression, expressionTrigger, animation, anima
       return
     }
 
-    // Create a NEW Audio element to prevent MediaElementSourceNode from going silent when src changes
+    // Create a NEW Audio element
     const audio = new Audio()
     audio.crossOrigin = 'anonymous'
     audio.loop = false
     audio.src = audioUrl
     audioRef.current = audio
 
-    // Connect the NEW audio to the REUSED lipsync instance
-    if (lipsyncRef.current) {
+    // Only connect wawa-lipsync if we have NO A2F frames
+    if (lipsyncRef.current && (!a2fFrames || a2fFrames.length === 0)) {
         lipsyncRef.current.connectAudio(audio)
     }
 
@@ -342,11 +348,6 @@ export function Ziva({ audioUrl, expression, expressionTrigger, animation, anima
 
     const tryPlay = async () => {
       try {
-        // Explicitly resume audio context if wawa-lipsync exposes it and it's suspended
-        const ac = (lipsyncRef.current as any)?.audioContext;
-        if (ac && ac.state === 'suspended') {
-            await ac.resume();
-        }
         await audio.play()
       } catch (e) {
         if (!autoplayRetryArmedRef.current) {
@@ -399,22 +400,26 @@ export function Ziva({ audioUrl, expression, expressionTrigger, animation, anima
 
   // 6. Frame Loop
   useFrame(() => {
-    const lipsync = lipsyncRef.current
     const head = nodes.Wolf3D_Head
     const teeth = nodes.Wolf3D_Teeth
 
-    if (!head || !lipsync) return
+    if (!head) return
 
-    // A. Analyze Audio
-    if (audioRef.current && lipsyncConnectedRef.current) {
-      lipsync.processAudio()
-    }
-
-    // B. Check if audio is playing
+    // A. Analyze Audio (Fallback to wawa-lipsync if no A2F frames)
     const isAudioPlaying = audioRef.current && !audioRef.current.paused && !audioRef.current.ended
     
-    // The library returns values like "viseme_aa", "viseme_sil" directly
-    const currentViseme = lipsync.viseme 
+    let fallbackViseme: string | null = null;
+    
+    if (isAudioPlaying) {
+      if (a2fFrames && a2fFrames.length > 0) {
+        // High-Fidelity NVIDIA Audio2Face
+        updateBlendshapes()
+      } else if (lipsyncRef.current) {
+        // Client-side heuristic fallback
+        lipsyncRef.current.processAudio()
+        fallbackViseme = lipsyncRef.current.viseme
+      }
+    } 
 
     // C. Expressions
     // Apply expressions even while speaking so the tone shows on the face.
@@ -444,18 +449,22 @@ export function Ziva({ audioUrl, expression, expressionTrigger, animation, anima
         targetValue = blink ? 1 : 0
       }
 
-      // Lip Sync Logic
-      if (key.startsWith('viseme_') && isAudioPlaying) {
-        // FIXED: currentViseme already includes the "viseme_" prefix,
-        // so we compare directly instead of adding it again.
-        if (key === currentViseme) {
-          targetValue = VISEME_INTENSITY
+      // If A2F is active, it handles lip sync. We only lerp our own custom expressions here.
+      if (isAudioPlaying && a2fFrames && a2fFrames.length > 0) {
+        if (key.startsWith('jaw') || key.startsWith('mouth') || key.startsWith('cheek') || key.startsWith('viseme_')) {
+          return; // Skip overwriting what A2F just did in updateBlendshapes()
+        }
+      }
+      
+      // Fallback Lipsync Logic
+      if (isAudioPlaying && (!a2fFrames || a2fFrames.length === 0)) {
+        if (key.startsWith('viseme_') && key === fallbackViseme) {
+          targetValue = 1.0 // VISEME_INTENSITY
         }
       }
 
-      // Determine lerp speed based on what we are animating
-      const lerpSpeed = (key.startsWith('viseme_') && isAudioPlaying) 
-        ? VISEME_LERP_SPEED 
+      const lerpSpeed = (isAudioPlaying && (!a2fFrames || a2fFrames.length === 0) && key.startsWith('viseme_')) 
+        ? 0.5 // VISEME_LERP_SPEED
         : LERP_SPEED
 
       // Apply with lerp

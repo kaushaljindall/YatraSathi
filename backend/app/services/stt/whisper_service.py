@@ -16,6 +16,11 @@ class WhisperService:
     def _load_model(self):
         if not whisper:
             return
+            
+        import shutil
+        if not shutil.which("ffmpeg"):
+            print("WARNING: ffmpeg is not installed or not in PATH! STT will fail.")
+            
         # Load small model for faster real-time performance and to avoid Windows memory allocation errors
         self.model = whisper.load_model("small", device=self.device)
         if self.device == "cuda":

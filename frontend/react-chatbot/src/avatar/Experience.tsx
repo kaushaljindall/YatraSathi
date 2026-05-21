@@ -1,6 +1,6 @@
 import { Environment, OrbitControls, Sparkles, ContactShadows } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import { Ziva } from "./Ziva";
+import { ZivaA2F } from "./ZivaA2F";
 
 interface ExperienceProps {
     audioUrl: string | null;
@@ -49,7 +49,7 @@ export const Experience = ({ audioUrl, expression, expressionTrigger, animation,
             {/* 5. The Avatar */}
             {/* Shift X to the right for equal spacing between chat and right edge. Adjust 0.4 as needed. */}
             <group position={[isMobile ? 0 : 0.4, -1.3, 0]} scale={1.3}>
-                <Ziva
+                <ZivaA2F
                     audioUrl={audioUrl}
                     expression={expression}
                     expressionTrigger={expressionTrigger}

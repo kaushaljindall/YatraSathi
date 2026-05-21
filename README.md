@@ -11,7 +11,7 @@ YatraSathi is an AI-powered travel planning platform backend built with FastAPI 
 - **Conversational Travel Assistant**: Ask questions and get customized travel plans and advice.
 - **Ziva AI Avatar**: Real-time multilingual conversational AI avatar using Faster-Whisper STT, Edge-TTS, Redis Caching for ultra-low latency, and Three.js for interactive 3D rendering (GLB animations) over WebSockets.
 - **RAG Knowledge Base**: Uses FAISS vector search to retrieve travel context efficiently.
-- **Wawa-Lipsync Integration**: Optional fallback for video generation from audio.
+- **NVIDIA Audio2Face Integration**: Production-grade facial animation and ARKit blendshape lip-sync streaming via local A2F headless server.
 
 ## Architecture
 
@@ -20,7 +20,7 @@ YatraSathi is an AI-powered travel planning platform backend built with FastAPI 
 YatraSathi uses a highly optimized **Hybrid Micro-Frontend Architecture**:
 
 1. **Website Frontend (Port 3000)**: A lightweight, fast, SEO-friendly HTML/JS application handling core navigation, travel dashboards, and static marketing content.
-2. **React Chatbot System (Port 5173)**: An isolated React + Vite application handling heavy 3D rendering (Ziva Avatar), Web Audio API, wawa-lipsync, and WebSocket communication. It is embedded dynamically into the Website via an iframe and controlled via `postMessage`.
+2. **React Chatbot System (Port 5173)**: An isolated React + Vite application handling heavy 3D rendering (Ziva Avatar), Web Audio API, real-time A2F blendshape interpolation, and WebSocket communication. It is embedded dynamically into the Website via an iframe and controlled via `postMessage`.
 3. **FastAPI Backend (Port 8000)**: An async event-driven Python server processing STT (Whisper), LLM generation, TTS (Edge-TTS), and RAG vector searches.
 
 Below is the high-level system interaction architecture:
@@ -44,18 +44,21 @@ sequenceDiagram
     FastAPI->>GroqLLM: Invoke LLM Model (llama3-70b)
     GroqLLM-->>FastAPI: Returns Response Text
     FastAPI->>FastAPI: Edge-TTS Audio Generation
-    FastAPI-->>ReactChatbot: Yield WebSocket { audio_url, text, avatar_state }
+    FastAPI->>NVIDIA_Audio2Face: Request Blendshapes (REST/gRPC)
+    NVIDIA_Audio2Face-->>FastAPI: Return ARKit Blendshape Frames
+    FastAPI-->>ReactChatbot: Yield WebSocket { audio_url, a2f_stream, text }
     deactivate FastAPI
     
-    ReactChatbot->>ReactChatbot: Plays Audio + Wawa-Lipsync
-    ReactChatbot->>User: Avatar speaks with dynamic lip-sync
+    ReactChatbot->>ReactChatbot: Synchronize Audio Playback + A2F Blendshapes
+    ReactChatbot->>User: Avatar speaks with realistic A2F facial animation
 ```
 
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) & Docker Compose
 - Or locally: Python 3.10+, PostgreSQL, Redis (running locally on port 6379, optional but recommended)
-- **FFmpeg**: Required in system PATH for audio/video processing and TTS/Lipsync.
+- **FFmpeg**: Required in system PATH for audio/video processing and TTS.
+- **NVIDIA Omniverse & Audio2Face**: Required for real-time facial animation generation (run headless on port 8011).
 - **3D Assets**: `Ziva.glb`, `Animations.glb`, and `Snepard.glb` placed in `frontend/assets/model/`.
 
 ## Setup and Installation
@@ -94,6 +97,7 @@ For detailed step-by-step instructions, please see [Setup.md](Setup.md).
    GROQ_API_KEY=your_groq_api_key_here
    OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
    SECRET_KEY=your_jwt_secret
+   AUDIO2FACE_URL=http://localhost:8011
    ```
    *(Note: The database is a local JSON file at `backend/data/database.json`, so no external DB setup is required.)*
 4. **Seed the RAG Knowledge Base** (Crucial step for City Insights & Itinerary planning):

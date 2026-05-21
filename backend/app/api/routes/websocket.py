@@ -24,6 +24,7 @@ manager = WebSocketManager()
 @router.websocket("/ws/ziva/audio")
 async def ziva_websocket(websocket: WebSocket):
     await manager.connect(websocket)
+    print("🎙️ [Ziva WebSocket] Client Connected!")
     target_lang = "en"
     source_lang = "auto"
     audio_buffer = bytearray()
@@ -43,7 +44,9 @@ async def ziva_websocket(websocket: WebSocket):
                     if data.get("type") == "config":
                         target_lang = data.get("target_lang", "en")
                         source_lang = data.get("source_lang", "auto")
+                        print(f"🎙️ [Ziva WebSocket] Config received: {source_lang} -> {target_lang}")
                     elif data.get("type") == "stop_recording":
+                        print(f"🎙️ [Ziva WebSocket] Recording stopped. Total audio bytes received: {len(audio_buffer)}")
                         # Process buffered audio
                         if len(audio_buffer) > 0:
                             async for event in process_audio_stream(bytes(audio_buffer), target_lang, source_lang):
@@ -52,9 +55,12 @@ async def ziva_websocket(websocket: WebSocket):
                 except json.JSONDecodeError:
                     pass
             elif "bytes" in message:
+                chunk_size = len(message["bytes"])
+                print(f"🎙️ [Ziva WebSocket] Received audio chunk: {chunk_size} bytes")
                 audio_buffer.extend(message["bytes"])
                 
     except WebSocketDisconnect:
+        print("🎙️ [Ziva WebSocket] Disconnected")
         manager.disconnect(websocket)
     except RuntimeError as e:
         # Happens if socket was already closed
