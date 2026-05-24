@@ -13,18 +13,23 @@ class ItineraryAI:
         system_prompt = Prompts.get_itinerary_prompt(destination, duration, budget, context)
         user_query = f"Create a realistic day-by-day plan. I like: {', '.join(preferences)}. "
         
-        raw_response = await llm_service.generate_response(system_prompt, user_query, temperature=0.7, json_mode=False, key_type="planner")
+        raw_response = await llm_service.generate_response(system_prompt, user_query, temperature=0.7, json_mode=True, key_type="planner")
         
         import json
         import re
         try:
-            # Strip markdown formatting if the LLM included it (e.g., ```json ... ```)
             clean_response = raw_response.strip()
             if clean_response.startswith("```"):
                 # Use regex to extract everything between the first ```... and the last ```
                 match = re.search(r'```(?:json)?\s*(.*?)\s*```', clean_response, re.DOTALL)
                 if match:
                     clean_response = match.group(1)
+            
+            # Further ensure we only grab the JSON object
+            start_idx = clean_response.find('{')
+            end_idx = clean_response.rfind('}')
+            if start_idx != -1 and end_idx != -1 and start_idx < end_idx:
+                clean_response = clean_response[start_idx:end_idx+1]
             
             # Parse the string returned by Groq to ensure it's valid JSON
             parsed = json.loads(clean_response)

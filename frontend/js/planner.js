@@ -20,6 +20,21 @@ function renderMarkdownItinerary(text, destination, durationDays) {
     return "<p style='color:#94a3b8;padding:20px;'>No itinerary days found in response.</p>";
   }
 
+  // Detect backend fallback where the actual JSON was stuffed into day 1's activity
+  if (parsed.days.length === 1 && 
+      parsed.days[0].activities && parsed.days[0].activities.length === 1 &&
+      typeof parsed.days[0].activities[0].activity === 'string' &&
+      parsed.days[0].activities[0].activity.trim().startsWith('{')) {
+    try {
+      let innerParsed = JSON.parse(parsed.days[0].activities[0].activity);
+      if (innerParsed.days && Array.isArray(innerParsed.days)) {
+        parsed = innerParsed;
+      }
+    } catch (err) {
+      // ignore parsing error
+    }
+  }
+
   let html = "";
   parsed.days.forEach((dayData, index) => {
     const dayNum = dayData.day || (index + 1);
