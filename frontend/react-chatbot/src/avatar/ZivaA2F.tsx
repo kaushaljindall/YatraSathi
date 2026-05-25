@@ -122,12 +122,12 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
   const SPEAKING_MOUTH_EXPRESSION_ATTENUATION = 0.25
   
   const group = useRef<THREE.Group>(null)
-  const { scene } = useGLTF('/models/Ziva.glb')
+  const { scene } = useGLTF('./models/Ziva.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult
 
   // 2. Animation Logic (With Warning Fixes)
-  const { animations: clips } = useGLTF('/models/Animations.glb')
+  const { animations: clips } = useGLTF('./models/Animations.glb')
   
   useMemo(() => {
     if (clips) {
@@ -500,5 +500,5 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
   )
 }
 
-useGLTF.preload('/models/Ziva.glb')
-useGLTF.preload('/models/Animations.glb')
+useGLTF.preload('./models/Ziva.glb')
+useGLTF.preload('./models/Animations.glb')
