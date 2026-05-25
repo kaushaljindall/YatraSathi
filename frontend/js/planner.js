@@ -47,7 +47,7 @@ function renderMarkdownItinerary(text, destination, durationDays) {
           <div class="activity-card" style="animation-delay:${idx * 0.05}s;">
             <div class="activity-time" style="min-width:80px;">${act.time || "Anytime"}</div>
             <div class="activity-details">
-              <p style="margin:0;font-size:14px;line-height:1.6;font-weight:600;">${act.activity}</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;font-weight:600;">${act.activity || act.name || act.title || act.description || "Planned Activity"}</p>
             </div>
           </div>`;
       }).join("");
