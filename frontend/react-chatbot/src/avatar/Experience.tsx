@@ -27,7 +27,7 @@ export const Experience = ({ audioUrl, expression, expressionTrigger, animation,
 
             {/* 2. Environment */}
             <Environment
-                files="/home.exr"
+                files="./home.exr"
                 background
                 
             />
