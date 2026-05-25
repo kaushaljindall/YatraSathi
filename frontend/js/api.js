@@ -4,7 +4,7 @@
  * Handles: JWT injection, error normalization, token expiry.
  */
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+const API_BASE = "https://ikaushaljindal-yatrasaathi-backend.hf.space/api/v1";
 
 /* ── Token & User Management ──────────────────────────────────── */
 const Auth = {

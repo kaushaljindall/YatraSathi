@@ -118,7 +118,7 @@
         };
 
         // Initialize WebSockets connected to FastAPI server
-        ws = new ZivaWebSocket('ws://localhost:8000/ws/ziva', handleEvents);
+        ws = new ZivaWebSocket('wss://ikaushaljindal-yatrasaathi-backend.hf.space/ws/ziva', handleEvents);
 
         micBtn.addEventListener('click', () => {
             if (ws.isRecording) {

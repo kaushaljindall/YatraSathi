@@ -39,7 +39,7 @@ export class ZivaManager {
         }
         
         // Initialize WebSocket
-        this.ws = new ZivaWebSocket('ws://localhost:8000/ws/ziva/audio', {
+        this.ws = new ZivaWebSocket('wss://ikaushaljindal-yatrasaathi-backend.hf.space/ws/ziva/audio', {
             onConnect: () => {
                 this.updateStatus("Ready to talk");
             },
@@ -57,7 +57,7 @@ export class ZivaManager {
                     // Play TTS audio and animate avatar
                     if(this.audioPlayer) {
                         // Prepend backend URL since frontend runs on port 3000
-                        this.audioPlayer.src = 'http://localhost:8000' + data.url;
+                        this.audioPlayer.src = 'https://ikaushaljindal-yatrasaathi-backend.hf.space' + data.url;
                         if(this.avatar) {
                             this.avatar.connectAudio(this.audioPlayer);
                         }

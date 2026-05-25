@@ -1,3 +1,4 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 fastapi==0.103.2
 uvicorn[standard]==0.23.2
 pydantic==2.4.2
@@ -6,19 +7,18 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
 sentence-transformers>=2.7.0
-faiss-cpu==1.13.2
+faiss-cpu
 httpx==0.25.0
 python-dotenv==1.0.0
-openai-whisper==20231117
+openai-whisper
 edge-tts==6.1.9
 websockets==12.0
 cryptography==41.0.5
 pytz==2023.3
 aiofiles==23.2.1
-setuptools==80.2.0
 email-validator==2.0.0
-torch 
-torchvision 
-torchaudio --index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+torchaudio
 beautifulsoup4
 numpy>=1.24.0
