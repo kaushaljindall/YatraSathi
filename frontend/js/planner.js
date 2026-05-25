@@ -21,10 +21,10 @@ function renderMarkdownItinerary(text, destination, durationDays) {
   }
 
   // Detect backend fallback where the actual JSON was stuffed into day 1's activity
-  if (parsed.days.length === 1 && 
-      parsed.days[0].activities && parsed.days[0].activities.length === 1 &&
-      typeof parsed.days[0].activities[0].activity === 'string' &&
-      parsed.days[0].activities[0].activity.trim().startsWith('{')) {
+  if (parsed.days.length === 1 &&
+    parsed.days[0].activities && parsed.days[0].activities.length === 1 &&
+    typeof parsed.days[0].activities[0].activity === 'string' &&
+    parsed.days[0].activities[0].activity.trim().startsWith('{')) {
     try {
       let innerParsed = JSON.parse(parsed.days[0].activities[0].activity);
       if (innerParsed.days && Array.isArray(innerParsed.days)) {
@@ -39,7 +39,7 @@ function renderMarkdownItinerary(text, destination, durationDays) {
   parsed.days.forEach((dayData, index) => {
     const dayNum = dayData.day || (index + 1);
     const title = dayData.title || `Exploring ${destination}`;
-    
+
     let activitiesHtml = "";
     if (dayData.activities && Array.isArray(dayData.activities)) {
       activitiesHtml = dayData.activities.map((act, idx) => {
@@ -47,7 +47,7 @@ function renderMarkdownItinerary(text, destination, durationDays) {
           <div class="activity-card" style="animation-delay:${idx * 0.05}s;">
             <div class="activity-time" style="min-width:80px;">${act.time || "Anytime"}</div>
             <div class="activity-details">
-              <p style="margin:0;font-size:14px;line-height:1.6;font-weight:600;">${act.activity || act.name || act.title || act.description || "Planned Activity"}</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;font-weight:600;">${act.activity}</p>
             </div>
           </div>`;
       }).join("");
@@ -69,10 +69,10 @@ function renderMarkdownItinerary(text, destination, durationDays) {
 
 /* ── Load an existing saved trip by ID (GLOBAL) ─────────────────── */
 async function loadExistingTrip(tripId) {
-  const emptyState   = document.getElementById("emptyState");
+  const emptyState = document.getElementById("emptyState");
   const loadingState = document.getElementById("loadingState");
-  const resultState  = document.getElementById("resultState");
-  const statusText   = document.getElementById("loadingStatusText");
+  const resultState = document.getElementById("resultState");
+  const statusText = document.getElementById("loadingStatusText");
 
   emptyState?.classList.add("hidden");
   loadingState?.classList.remove("hidden");
@@ -80,7 +80,7 @@ async function loadExistingTrip(tripId) {
 
   try {
     const result = await TripsAPI.get(tripId);
-    const trip   = result.trip;
+    const trip = result.trip;
 
     loadingState?.classList.add("hidden");
 
@@ -100,7 +100,7 @@ async function loadExistingTrip(tripId) {
     if (destEl) destEl.textContent = trip.destination;
 
     const d1 = new Date(trip.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    const d2 = new Date(trip.end_date).toLocaleDateString("en-US",   { month: "short", day: "numeric" });
+    const d2 = new Date(trip.end_date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
     const datesEl = document.getElementById("resDates");
     if (datesEl) datesEl.textContent = `${d1} – ${d2}`;
 
@@ -108,7 +108,7 @@ async function loadExistingTrip(tripId) {
     if (budgetEl) budgetEl.textContent = `₹${Number(trip.budget).toLocaleString()}`;
 
     const itinerary = trip.itinerary;
-    const costEl    = document.getElementById("resEstimatedCost");
+    const costEl = document.getElementById("resEstimatedCost");
     if (costEl && itinerary?.estimated_cost) {
       costEl.textContent = `₹${Number(itinerary.estimated_cost).toLocaleString()}`;
     }
@@ -127,7 +127,7 @@ async function loadExistingTrip(tripId) {
     const budgetBtn = document.querySelector(".result-actions .btn-outline-primary");
     if (budgetBtn) {
       budgetBtn.innerHTML = '<i class="fa-solid fa-wallet"></i> Track Budget';
-      budgetBtn.onclick   = () => window.location.href = `budget.html?trip=${tripId}`;
+      budgetBtn.onclick = () => window.location.href = `budget.html?trip=${tripId}`;
     }
     const saveBtn = document.querySelector(".result-actions .btn-primary");
     if (saveBtn) saveBtn.onclick = () => window.location.href = "home.html";
@@ -137,7 +137,7 @@ async function loadExistingTrip(tripId) {
       if (info && info.success) {
         const weatherEl = document.querySelector('.sc-icon.fa-sun')?.closest('.summary-card')?.querySelector('.sc-val');
         if (weatherEl) weatherEl.textContent = info.weather;
-        
+
         const costEl = document.getElementById("resEstimatedCost");
         if (costEl && info.average_spend) costEl.textContent = info.average_spend;
       }
@@ -166,17 +166,17 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!form) return;
 
   // Default dates
-  const today    = new Date();
+  const today = new Date();
   const nextWeek = new Date(today);
   nextWeek.setDate(today.getDate() + 5);
   document.getElementById("startDate").valueAsDate = today;
-  document.getElementById("endDate").valueAsDate   = nextWeek;
+  document.getElementById("endDate").valueAsDate = nextWeek;
 
-  const emptyState   = document.getElementById("emptyState");
+  const emptyState = document.getElementById("emptyState");
   const loadingState = document.getElementById("loadingState");
-  const resultState  = document.getElementById("resultState");
-  const statusText   = document.getElementById("loadingStatusText");
-  const loadingBar   = document.getElementById("loadingBar");
+  const resultState = document.getElementById("resultState");
+  const statusText = document.getElementById("loadingStatusText");
+  const loadingBar = document.getElementById("loadingBar");
 
   // Chip toggle
   document.querySelectorAll('#interestChips .chip').forEach(chip => {
@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Load existing trip if ?trip= param present
-  const urlParams      = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(window.location.search);
   const existingTripId = parseInt(urlParams.get('trip'));
   if (existingTripId) {
     loadExistingTrip(existingTripId);
@@ -198,14 +198,14 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const destination = document.getElementById("destination").value.trim();
-    const startDate   = document.getElementById("startDate").value;
-    const endDate     = document.getElementById("endDate").value;
-    const budgetEl    = document.querySelector('input[name="budget"]:checked');
-    const budgetTier  = budgetEl ? budgetEl.value : "moderate";
-    const budgetMap   = { budget: 15000, moderate: 50000, luxury: 150000 };
-    const budget      = budgetMap[budgetTier] || 50000;
-    const paceVal     = document.getElementById("paceSlider")?.value || 2;
-    const paceMap     = { 1: "relaxed", 2: "balanced", 3: "packed" };
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const budgetEl = document.querySelector('input[name="budget"]:checked');
+    const budgetTier = budgetEl ? budgetEl.value : "moderate";
+    const budgetMap = { budget: 15000, moderate: 50000, luxury: 150000 };
+    const budget = budgetMap[budgetTier] || 50000;
+    const paceVal = document.getElementById("paceSlider")?.value || 2;
+    const paceMap = { 1: "relaxed", 2: "balanced", 3: "packed" };
 
     const interests = [...document.querySelectorAll('#interestChips .chip.selected')]
       .map(el => el.dataset.val).filter(Boolean);
@@ -220,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     emptyState?.classList.add("hidden");
     resultState?.classList.add("hidden");
     loadingState?.classList.remove("hidden");
-    btn.disabled  = true;
+    btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
 
     const stages = [
@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const stageInterval = setInterval(() => {
       if (stageIdx < stages.length) {
         if (loadingBar) loadingBar.style.width = stages[stageIdx].p + "%";
-        if (statusText) statusText.textContent  = stages[stageIdx].t;
+        if (statusText) statusText.textContent = stages[stageIdx].t;
         stageIdx++;
       }
     }, 1200);
@@ -245,8 +245,8 @@ document.addEventListener("DOMContentLoaded", () => {
         dates,
         budget,
         interests,
-        travel_style:         paceMap[paceVal] || "balanced",
-        hotel_preference:     "mid-range",
+        travel_style: paceMap[paceVal] || "balanced",
+        hotel_preference: "mid-range",
         transport_preference: "public",
       });
 
@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       clearInterval(stageInterval);
       if (loadingBar) loadingBar.style.width = "100%";
-      if (statusText) statusText.textContent  = "Complete!";
+      if (statusText) statusText.textContent = "Complete!";
       await new Promise(r => setTimeout(r, 400));
 
       if (!result?.itinerary) {
@@ -268,14 +268,14 @@ document.addEventListener("DOMContentLoaded", () => {
       // Save to DB in background (non-blocking)
       TripsAPI.create({
         destination,
-        start_date:           startDate,
-        end_date:             endDate,
+        start_date: startDate,
+        end_date: endDate,
         budget,
         interests,
-        travel_style:         paceMap[paceVal] || "balanced",
-        hotel_preference:     "mid-range",
+        travel_style: paceMap[paceVal] || "balanced",
+        hotel_preference: "mid-range",
         transport_preference: "public",
-        itinerary_text:       result.itinerary,
+        itinerary_text: result.itinerary,
       }).then(tripResult => {
         if (tripResult?.trip_id) {
           localStorage.setItem("ys_active_trip", tripResult.trip_id);
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const budgetBtn = document.querySelector(".result-actions .btn-outline-primary");
           if (budgetBtn) {
             budgetBtn.innerHTML = '<i class="fa-solid fa-wallet"></i> Track Budget';
-            budgetBtn.onclick   = () => window.location.href = `budget.html?trip=${tripResult.trip_id}`;
+            budgetBtn.onclick = () => window.location.href = `budget.html?trip=${tripResult.trip_id}`;
           }
           window.showToast("Trip saved to dashboard!", "success", "💾");
         }
@@ -298,14 +298,14 @@ document.addEventListener("DOMContentLoaded", () => {
       window.showToast(`Generation failed: ${err.message}`, "error", "❌");
       console.error("[Planner] Error:", err);
     } finally {
-      btn.disabled  = false;
+      btn.disabled = false;
       btn.innerHTML = '<span class="btn-text">Regenerate Itinerary</span><i class="fa-solid fa-rotate-right btn-icon"></i>';
     }
   });
 
   /* ── Helpers ─────────────────────────────────────────────────── */
   function buildDateList(start, end) {
-    const dates   = [];
+    const dates = [];
     const current = new Date(start);
     const endDate = new Date(end);
     while (current <= endDate) {
@@ -319,10 +319,10 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingState?.classList.add("hidden");
     resultState?.classList.remove("hidden");
 
-    document.getElementById("resDest").textContent   = dest;
+    document.getElementById("resDest").textContent = dest;
     const d1 = new Date(startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    const d2 = new Date(endDate).toLocaleDateString("en-US",   { month: "short", day: "numeric" });
-    document.getElementById("resDates").textContent  = `${d1} – ${d2}`;
+    const d2 = new Date(endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    document.getElementById("resDates").textContent = `${d1} – ${d2}`;
     document.getElementById("resBudget").textContent = `₹${Number(budget).toLocaleString()}`;
 
     const costEl = document.getElementById("resEstimatedCost");
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const budgetBtn = document.querySelector('.result-actions .btn-outline-primary');
       if (budgetBtn) {
         budgetBtn.innerHTML = '<i class="fa-solid fa-wallet"></i> Track Budget';
-        budgetBtn.onclick   = () => window.location.href = `budget.html?trip=${tripId}`;
+        budgetBtn.onclick = () => window.location.href = `budget.html?trip=${tripId}`;
       }
     }
 
@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (info && info.success) {
         const weatherEl = document.querySelector('.sc-icon.fa-sun')?.closest('.summary-card')?.querySelector('.sc-val');
         if (weatherEl) weatherEl.textContent = info.weather;
-        
+
         const costEl = document.getElementById("resEstimatedCost");
         if (costEl && info.average_spend) costEl.textContent = info.average_spend;
       }

@@ -8,6 +8,9 @@ export function useAudioPipeline() {
   const startRecording = async () => {
     const store = useChatStore.getState();
     try {
+      store.setStatus("Connecting...");
+      await socketManager.ensureConnection();
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       

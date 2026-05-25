@@ -7,7 +7,7 @@ import * as THREE from 'three'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useGraph, useFrame } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
-import { SkeletonUtils } from 'three-stdlib' 
+import { SkeletonUtils } from 'three-stdlib'
 import type { GLTF } from 'three-stdlib'
 import { useA2FStream } from './useA2FStream'
 import { useChatStore } from '../store/useChatStore'
@@ -120,15 +120,15 @@ type ZivaProps = {
 export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, animationTrigger, ...props }: ZivaProps) {
   const LERP_SPEED = 0.25
   const SPEAKING_MOUTH_EXPRESSION_ATTENUATION = 0.25
-  
+
   const group = useRef<THREE.Group>(null)
-  const { scene } = useGLTF('./models/Ziva.glb')
+  const { scene } = useGLTF('/models/Ziva.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult
 
   // 2. Animation Logic (With Warning Fixes)
-  const { animations: clips } = useGLTF('./models/Animations.glb')
-  
+  const { animations: clips } = useGLTF('/models/Animations.glb')
+
   useMemo(() => {
     if (clips) {
       clips.forEach((clip) => {
@@ -136,9 +136,9 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
           // Filter out tracks that cause "No target node found" warnings
           clip.tracks = clip.tracks.filter((track) => {
             const trackName = track.name.toLowerCase();
-            return !trackName.includes('end') && 
-                   !trackName.includes('nub') && 
-                   !trackName.includes('armature');
+            return !trackName.includes('end') &&
+              !trackName.includes('nub') &&
+              !trackName.includes('armature');
           });
 
           // Rename mixamo bones to match Ready Player Me skeleton
@@ -164,12 +164,12 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
   useEffect(() => {
     if (expression && expression !== 'default') {
       setCurrentExpression(expression)
-      
+
       // Clear any existing timeout
       if (expressionTimeoutRef.current) {
         clearTimeout(expressionTimeoutRef.current)
       }
-      
+
       // Reset to default after 2 seconds
       expressionTimeoutRef.current = setTimeout(() => {
         setCurrentExpression('default')
@@ -177,7 +177,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
     } else if (expression === 'default') {
       setCurrentExpression('default')
     }
-    
+
     return () => {
       if (expressionTimeoutRef.current) {
         clearTimeout(expressionTimeoutRef.current)
@@ -189,12 +189,12 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
     // If parent provides an animation, use it. Otherwise, default/idle.
     if (animation && names.includes(animation)) {
       setCurrentAnimation(animation)
-      
+
       // Clear any existing timeout
       if (animationTimeoutRef.current) {
         clearTimeout(animationTimeoutRef.current)
       }
-      
+
       // Set timeout to return to Idle after 30 seconds (unless already Idle)
       if (animation !== 'Idle') {
         animationTimeoutRef.current = setTimeout(() => {
@@ -202,7 +202,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
         }, 10000)
       }
     }
-    
+
     return () => {
       if (animationTimeoutRef.current) {
         clearTimeout(animationTimeoutRef.current)
@@ -220,13 +220,13 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
 
   useEffect(() => {
     if (!currentAnimation || !actions[currentAnimation]) return
-    
+
     const action = actions[currentAnimation]
     action
       .reset()
       .fadeIn(0.5)
       .play()
-    
+
     // Listen for animation completion and return to Idle
     // (This handles animations that complete before 30s timeout)
     const onFinished = () => {
@@ -234,7 +234,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
         setCurrentAnimation('Idle')
       }
     }
-    
+
     // Set loop mode - Idle and Talking should loop, others play once
     if (currentAnimation === 'Idle' || currentAnimation === 'Talking') {
       action.setLoop(THREE.LoopRepeat, Infinity)
@@ -245,7 +245,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
       const mixer = action.getMixer()
       mixer?.addEventListener('finished', onFinished)
     }
-      
+
     return () => {
       action?.fadeOut(0.5)
       // @ts-ignore
@@ -258,7 +258,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const autoplayRetryArmedRef = useRef(false)
   const a2fFrames = useChatStore(state => state.a2fFrames)
-  
+
   // Fallback lipsync for when A2F is offline
   const lipsyncRef = useRef<Lipsync | null>(null)
 
@@ -269,10 +269,10 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
     const unlockAudioContext = () => {
       const ac = (lipsyncRef.current as any)?.audioContext;
       if (ac && ac.state === 'suspended') {
-        ac.resume().catch(() => {});
+        ac.resume().catch(() => { });
       }
     };
-    
+
     window.addEventListener('pointerdown', unlockAudioContext);
     window.addEventListener('keydown', unlockAudioContext);
 
@@ -281,15 +281,15 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
       window.removeEventListener('keydown', unlockAudioContext);
       try {
         (lipsyncRef.current as any)?.audioContext?.close()
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [])
-  
+
   // Use our new A2F stream hook
   const { updateBlendshapes } = useA2FStream(
-    audioRef, 
-    a2fFrames, 
-    nodes.Wolf3D_Head, 
+    audioRef,
+    a2fFrames,
+    nodes.Wolf3D_Head,
     nodes.Wolf3D_Teeth
   )
 
@@ -313,7 +313,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
 
     // Only connect wawa-lipsync if we have NO A2F frames
     if (lipsyncRef.current && (!a2fFrames || a2fFrames.length === 0)) {
-        lipsyncRef.current.connectAudio(audio)
+      lipsyncRef.current.connectAudio(audio)
     }
 
     // Drive Talking animation while audio is playing.
@@ -407,9 +407,9 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
 
     // A. Analyze Audio (Fallback to wawa-lipsync if no A2F frames)
     const isAudioPlaying = audioRef.current && !audioRef.current.paused && !audioRef.current.ended
-    
+
     let fallbackViseme: string | null = null;
-    
+
     if (isAudioPlaying) {
       if (a2fFrames && a2fFrames.length > 0) {
         // High-Fidelity NVIDIA Audio2Face
@@ -419,7 +419,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
         lipsyncRef.current.processAudio()
         fallbackViseme = lipsyncRef.current.viseme
       }
-    } 
+    }
 
     // C. Expressions
     // Apply expressions even while speaking so the tone shows on the face.
@@ -430,7 +430,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
     Object.keys(head.morphTargetDictionary || {}).forEach((key) => {
       const targetIndex = head.morphTargetDictionary![key]
       const teethIndex = teeth.morphTargetDictionary![key]
-      
+
       let targetValue = 0
 
       // Base Expression
@@ -455,7 +455,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
           return; // Skip overwriting what A2F just did in updateBlendshapes()
         }
       }
-      
+
       // Fallback Lipsync Logic
       if (isAudioPlaying && (!a2fFrames || a2fFrames.length === 0)) {
         if (key.startsWith('viseme_') && key === fallbackViseme) {
@@ -463,7 +463,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
         }
       }
 
-      const lerpSpeed = (isAudioPlaying && (!a2fFrames || a2fFrames.length === 0) && key.startsWith('viseme_')) 
+      const lerpSpeed = (isAudioPlaying && (!a2fFrames || a2fFrames.length === 0) && key.startsWith('viseme_'))
         ? 0.5 // VISEME_LERP_SPEED
         : LERP_SPEED
 
@@ -473,7 +473,7 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
         targetValue,
         lerpSpeed
       )
-      
+
       if (teethIndex !== undefined) {
         teeth.morphTargetInfluences![teethIndex] = THREE.MathUtils.lerp(
           teeth.morphTargetInfluences![teethIndex],
@@ -500,5 +500,5 @@ export function ZivaA2F({ audioUrl, expression, expressionTrigger, animation, an
   )
 }
 
-useGLTF.preload('./models/Ziva.glb')
-useGLTF.preload('./models/Animations.glb')
+useGLTF.preload('/models/Ziva.glb')
+useGLTF.preload('/models/Animations.glb')

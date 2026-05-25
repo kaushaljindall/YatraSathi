@@ -60,6 +60,26 @@ export class SocketManager {
   isOpen() {
     return this.ws?.readyState === WebSocket.OPEN;
   }
+
+  async ensureConnection(): Promise<void> {
+    if (this.isOpen()) return Promise.resolve();
+    
+    this.connect();
+    
+    return new Promise((resolve, reject) => {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (this.isOpen()) {
+          clearInterval(interval);
+          resolve();
+        } else if (attempts > 50 || this.ws?.readyState === WebSocket.CLOSED) {
+          clearInterval(interval);
+          reject(new Error("Failed to connect to backend"));
+        }
+      }, 100);
+    });
+  }
 }
 
 export const socketManager = new SocketManager("wss://ikaushaljindal-yatrasaathi-backend.hf.space/ws/ziva/audio");
