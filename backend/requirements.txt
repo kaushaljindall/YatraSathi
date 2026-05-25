@@ -22,3 +22,4 @@ torchvision
 torchaudio
 beautifulsoup4
 numpy>=1.24.0
+gTTS
