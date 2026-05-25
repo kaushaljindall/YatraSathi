@@ -18,8 +18,8 @@ export class ChatbotManager {
     }
 
     initEventListeners() {
-        this.floatingBtn.addEventListener('click', () => this.togglePanel());
-        this.closeBtn.addEventListener('click', () => this.togglePanel());
+        if (this.floatingBtn) this.floatingBtn.addEventListener('click', () => this.togglePanel());
+        if (this.closeBtn) this.closeBtn.addEventListener('click', () => this.togglePanel());
 
         this.tabChat.addEventListener('click', () => this.switchTab('chat'));
         this.tabZiva.addEventListener('click', () => this.switchTab('ziva'));
