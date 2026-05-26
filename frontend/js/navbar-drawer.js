@@ -6,15 +6,18 @@
 (function () {
   'use strict';
 
-  const hamburger = document.getElementById('nav-hamburger');
-  const drawer    = document.getElementById('mobile-drawer');
-  const overlay   = document.getElementById('mobile-drawer-overlay');
-  const closeBtn  = document.getElementById('mobile-drawer-close');
+  function initNavbarDrawer() {
+    const hamburger = document.getElementById('nav-hamburger');
+    const drawer    = document.getElementById('mobile-drawer');
+    const overlay   = document.getElementById('mobile-drawer-overlay');
+    const closeBtn  = document.getElementById('mobile-drawer-close');
 
-  if (!hamburger || !drawer) return;
+    // Make sure we don't bind multiple times if init runs twice
+    if (!hamburger || !drawer || hamburger.dataset.drawerBound === 'true') return;
+    hamburger.dataset.drawerBound = 'true';
 
-  /* ── Helpers ─────────────────────────────────────────────── */
-  function openDrawer() {
+    /* ── Helpers ─────────────────────────────────────────────── */
+    function openDrawer() {
     drawer.classList.add('open');
     drawer.setAttribute('aria-hidden', 'false');
     hamburger.classList.add('open');
@@ -99,4 +102,11 @@
       }
     }
   });
+  } // end initNavbarDrawer
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavbarDrawer);
+  } else {
+    initNavbarDrawer();
+  }
 })();
