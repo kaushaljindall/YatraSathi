@@ -16,7 +16,7 @@
 }
 
 .dock-item.active .dock-icon i,
-.dock-item. active .dock-icon svg {
+.dock-item.active .dock-icon svg {
   color: var(--clr-primary);
 }
 
