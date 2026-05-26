@@ -11,6 +11,8 @@
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
@@ -108,10 +110,6 @@
           <a href="city.html" class="scroll-nav-link">
             <i class="fa-solid fa-building"></i> City Insights
           </a>
-          <!-- <a href="ziva.html" class="scroll-nav-link">
-            <i class="fa-solid fa-robot"></i> Ziva AI
-          </a> -->
-
           <a href="home.html" class="scroll-nav-link">
             <i class="fa-solid fa-house"></i> Home
           </a>
@@ -126,8 +124,60 @@
         </div>
       </nav>
 
-    </div>
+      <!-- Hamburger Toggle (mobile only) -->
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-drawer">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    </div><!-- /.nav-container -->
   </header>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+    <div class="mobile-drawer-overlay" id="mobile-drawer-overlay"></div>
+    <nav class="mobile-drawer-panel" role="navigation" aria-label="Mobile navigation">
+      <div class="mobile-drawer-header">
+        <img src="assets/logos/mainlogo.svg" alt="YatraSaathi" class="mobile-drawer-logo"
+          onerror="this.style.display='none'">
+        <button class="mobile-drawer-close" id="mobile-drawer-close" aria-label="Close navigation menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <ul class="mobile-nav-links">
+        <li><a href="home.html" class="mobile-nav-link">
+          <span class="mobile-nav-icon"><i class="fa-solid fa-house"></i></span>
+          <span>Home</span>
+        </a></li>
+        <li><a href="index.html" class="mobile-nav-link active">
+          <span class="mobile-nav-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+          <span>Destinations</span>
+        </a></li>
+        <li><a href="planner.html" class="mobile-nav-link">
+          <span class="mobile-nav-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+          <span>Trip Planner</span>
+        </a></li>
+        <li><a href="city.html" class="mobile-nav-link">
+          <span class="mobile-nav-icon"><i class="fa-solid fa-building"></i></span>
+          <span>City Insights</span>
+        </a></li>
+        <li><a href="budget.html" class="mobile-nav-link">
+          <span class="mobile-nav-icon"><i class="fa-solid fa-wallet"></i></span>
+          <span>Budget</span>
+        </a></li>
+      </ul>
+      <div class="mobile-nav-actions">
+        <a href="auth.html" class="mobile-nav-login">
+          <i class="fa-solid fa-user"></i> Login
+        </a>
+        <a href="auth.html" class="mobile-nav-signup">
+          <i class="fa-solid fa-paper-plane"></i> Get Started
+        </a>
+      </div>
+      <p class="mobile-nav-tagline">✈️ Your AI-Powered Travel Companion</p>
+    </nav>
+  </div>
 
   <!-- Hero Section -->
   <section class="hero">
@@ -738,6 +788,7 @@
       });
     });
   </script>
+  <script src="js/navbar-drawer.js" defer></script>
 
 </body>
 

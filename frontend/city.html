@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="css/city_v2.css?v=1" />
 </head>
@@ -70,13 +72,34 @@
         <a href="city.html" class="scroll-nav-link active"><i class="fa-solid fa-building"></i> City Insights</a>
         <!-- <a href="ziva.html" class="scroll-nav-link"><i class="fa-solid fa-robot"></i> Ziva AI</a> -->
       </div>
-      <div class="scroll-nav-actions" style="display:flex; align-items:center; gap:15px;">
-        <img src="https://ui-avatars.com/api/?name=Traveler&background=DF6951&color=fff" class="nav-avatar" style="width:36px; height:36px; border-radius:50%;">
-        <button onclick="AuthAPI.logout()" style="color: #DF6951; font-weight: 600; cursor: pointer; background: none; border: none; font-size: 14px; font-family: 'Poppins', sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      </div>
+      <!-- Hamburger Toggle (mobile only) -->
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-drawer">
+        <span></span><span></span><span></span>
+      </button>
     </nav>
   </div>
 </header>
+
+<!-- Mobile Drawer -->
+<div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+  <div class="mobile-drawer-overlay" id="mobile-drawer-overlay"></div>
+  <nav class="mobile-drawer-panel" role="navigation" aria-label="Mobile navigation">
+    <div class="mobile-drawer-header">
+      <img src="assets/logos/mainlogo.svg" alt="YatraSaathi" class="mobile-drawer-logo" onerror="this.style.display='none'">
+      <button class="mobile-drawer-close" id="mobile-drawer-close" aria-label="Close navigation menu"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <ul class="mobile-nav-links">
+      <li><a href="home.html" class="mobile-nav-link"><span class="mobile-nav-icon"><i class="fa-solid fa-house"></i></span><span>Home</span></a></li>
+      <li><a href="planner.html" class="mobile-nav-link"><span class="mobile-nav-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><span>Trip Planner</span></a></li>
+      <li><a href="budget.html" class="mobile-nav-link"><span class="mobile-nav-icon"><i class="fa-solid fa-wallet"></i></span><span>Budget</span></a></li>
+      <li><a href="city.html" class="mobile-nav-link active"><span class="mobile-nav-icon"><i class="fa-solid fa-building"></i></span><span>City Insights</span></a></li>
+    </ul>
+    <div class="mobile-nav-actions">
+      <a href="#" onclick="AuthAPI.logout(); return false;" class="mobile-nav-login"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+    <p class="mobile-nav-tagline">✈️ Your AI-Powered Travel Companion</p>
+  </nav>
+</div>
 
 <div class="city-page">
   <div class="city-container">
@@ -247,6 +270,7 @@
 <script src="js/api.js"></script>
 <script src="js/city.js"></script>
 <script src="js/main.js"></script>
+<script src="js/navbar-drawer.js" defer></script>
 <script>
 /* ── City Autocomplete — Open-Meteo Geocoding (primary) + Teleport (secondary) ── */
 (function () {

@@ -41,7 +41,7 @@
 
 .city-hero h1 {
   font-family: 'Volkhov', serif;
-  font-size: 54px;
+  font-size: clamp(2.25rem, 5vw, 3.375rem);
   color: #181E4B;
   line-height: 1.15;
   margin-bottom: 18px;

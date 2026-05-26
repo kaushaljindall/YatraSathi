@@ -16,7 +16,7 @@
 }
 
 .dock-item.active .dock-icon i,
-.dock-item.active .dock-icon svg {
+.dock-item. active .dock-icon svg {
   color: var(--clr-primary);
 }
 
@@ -110,8 +110,8 @@ header#site-header.header.scrolled::after {
 }
 
 .budget-hero-text {
-  flex: 1;
-  min-width: 300px;
+  width: 100%;
+  max-width: 420px;
 }
 
 .hero-badge {
@@ -132,7 +132,7 @@ header#site-header.header.scrolled::after {
 
 .budget-hero-text h1 {
   font-family: 'Volkhov', serif;
-  font-size: 52px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
   color: #181E4B;
   line-height: 1.15;
   margin-bottom: 16px;
@@ -154,7 +154,8 @@ header#site-header.header.scrolled::after {
 }
 
 .budget-hero-visual img {
-  width: 340px;
+  width: 100%;
+  max-width: 340px;
   border-radius: 30px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.08);
   transition: transform 0.4s ease;

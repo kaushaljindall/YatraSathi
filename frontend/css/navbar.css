@@ -1,0 +1,386 @@
+/* =========================================================
+   YatraSaathi — navbar.css
+   Premium Responsive Navbar — Hamburger + Slide Drawer
+   ========================================================= */
+
+/* ── Hamburger Button ─────────────────────────────────────── */
+.nav-hamburger {
+  display: none; /* hidden on desktop */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(24, 30, 75, 0.08);
+  cursor: pointer;
+  z-index: 1100;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 12px rgba(24, 30, 75, 0.06);
+}
+
+.nav-hamburger:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 18px rgba(24, 30, 75, 0.1);
+}
+
+.nav-hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--clr-heading, #181E4B);
+  border-radius: 2px;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 0.3s ease,
+              width 0.3s ease;
+  transform-origin: center;
+}
+
+/* Animate to X when open */
+.nav-hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-hamburger.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.nav-hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile Drawer Wrapper ────────────────────────────────── */
+.mobile-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.mobile-drawer.open {
+  pointer-events: all;
+  visibility: visible;
+}
+
+/* Semi-transparent overlay */
+.mobile-drawer-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(24, 30, 75, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.mobile-drawer.open .mobile-drawer-overlay {
+  opacity: 1;
+}
+
+/* ── Slide-In Panel ───────────────────────────────────────── */
+.mobile-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(320px, 85vw);
+  height: 100%;
+  background: #fff;
+  box-shadow: -20px 0 60px rgba(24, 30, 75, 0.12);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  border-radius: 24px 0 0 24px;
+}
+
+.mobile-drawer.open .mobile-drawer-panel {
+  transform: translateX(0);
+}
+
+/* ── Drawer Header ────────────────────────────────────────── */
+.mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(24, 30, 75, 0.06);
+}
+
+.mobile-drawer-logo {
+  height: 48px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+}
+
+.mobile-drawer-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(24, 30, 75, 0.06);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--clr-heading, #181E4B);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mobile-drawer-close:hover {
+  background: rgba(223, 105, 81, 0.1);
+  color: var(--clr-primary, #DF6951);
+}
+
+/* ── Nav Links ────────────────────────────────────────────── */
+.mobile-nav-links {
+  list-style: none;
+  padding: 12px 12px 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--clr-text, #5E6282);
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  /* Stagger entrance animation */
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.mobile-drawer.open .mobile-nav-link {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger delays for each link */
+.mobile-nav-links li:nth-child(1) .mobile-nav-link { transition-delay: 0.08s; }
+.mobile-nav-links li:nth-child(2) .mobile-nav-link { transition-delay: 0.12s; }
+.mobile-nav-links li:nth-child(3) .mobile-nav-link { transition-delay: 0.16s; }
+.mobile-nav-links li:nth-child(4) .mobile-nav-link { transition-delay: 0.20s; }
+.mobile-nav-links li:nth-child(5) .mobile-nav-link { transition-delay: 0.24s; }
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  background: rgba(223, 105, 81, 0.07);
+  color: var(--clr-primary, #DF6951);
+  transform: translateX(4px);
+}
+
+.mobile-nav-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(24, 30, 75, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: var(--clr-text, #5E6282);
+  flex-shrink: 0;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-nav-link:hover .mobile-nav-icon,
+.mobile-nav-link.active .mobile-nav-icon {
+  background: rgba(223, 105, 81, 0.12);
+  color: var(--clr-primary, #DF6951);
+}
+
+/* ── Drawer CTA Actions ───────────────────────────────────── */
+.mobile-nav-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px;
+  margin-top: auto;
+  border-top: 1px solid rgba(24, 30, 75, 0.06);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease 0.28s, transform 0.3s ease 0.28s;
+}
+
+.mobile-drawer.open .mobile-nav-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mobile-nav-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(24, 30, 75, 0.12);
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--clr-heading, #181E4B);
+  text-decoration: none;
+  transition: border-color 0.25s ease, color 0.25s ease;
+  min-height: 48px;
+}
+
+.mobile-nav-login:hover {
+  border-color: var(--clr-primary, #DF6951);
+  color: var(--clr-primary, #DF6951);
+}
+
+.mobile-nav-signup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #DF6951, #FF8E75);
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(223, 105, 81, 0.3);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  min-height: 48px;
+}
+
+.mobile-nav-signup:hover {
+  box-shadow: 0 12px 28px rgba(223, 105, 81, 0.45);
+  transform: translateY(-1px);
+}
+
+/* ── Tagline ──────────────────────────────────────────────── */
+.mobile-nav-tagline {
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--clr-text, #5E6282);
+  text-align: center;
+  padding: 10px 20px 20px;
+  letter-spacing: 0.3px;
+  opacity: 0.6;
+}
+
+/* ── Show hamburger only on mobile/tablet ─────────────────── */
+@media (min-width: 768px) {
+  .nav-hamburger {
+    display: none !important;
+  }
+  .mobile-drawer {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Show hamburger */
+  .nav-hamburger {
+    display: flex;
+  }
+
+  /* Lock body scroll when drawer is open */
+  body.drawer-open {
+    overflow: hidden;
+  }
+
+  /* ── HIDE DOCK COMPLETELY on mobile — drawer is the nav ── */
+  #dock-nav {
+    display: none !important;
+  }
+
+  /* Hide scroll-nav on mobile — drawer replaces it */
+  .scroll-nav {
+    display: none !important;
+  }
+
+  /* Nav container: simple logo-left / hamburger-right */
+  .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    gap: 0;
+  }
+
+  /* Logo: clean sizing, no scale transform */
+  .logo {
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  .logo img {
+    max-width: 120px !important;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 479px) {
+  .logo {
+    height: 40px;
+  }
+
+  .logo img {
+    max-width: 100px !important;
+  }
+
+  .nav-hamburger {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .mobile-drawer-panel {
+    width: min(290px, 90vw);
+  }
+}
+
+/* ── No-JS fallback ──────────────────────────────────────── */
+@media (max-width: 767px) {
+  .no-js .mobile-drawer {
+    display: none;
+  }
+  .no-js .dock-panel {
+    display: flex;
+  }
+}
+
+/* ── Reduced Motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-drawer-panel {
+    transition: none;
+  }
+  .mobile-nav-link {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  .mobile-nav-actions {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

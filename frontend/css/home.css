@@ -21,7 +21,7 @@
     }
     .user-hero-content h1 {
       font-family: 'Volkhov', serif;
-      font-size: 42px;
+      font-size: clamp(2rem, 3.5vw + 0.5rem, 2.625rem);
       color: #181E4B;
       margin-bottom: 15px;
       line-height: 1.2;
@@ -331,7 +331,7 @@
     }
     .stat-item h2 {
       font-family: 'Volkhov', serif;
-      font-size: 46px;
+      font-size: clamp(2rem, 4vw + 0.5rem, 2.875rem);
       margin-bottom: 5px;
       color: #DF6951;
     }
@@ -351,11 +351,13 @@
     }
     
     @media (max-width: 768px) {
-      .stats-banner { flex-direction: column; gap: 30px; padding: 30px; }
+      .stats-banner { flex-direction: column; gap: 30px; padding: 30px; margin-bottom: 60px; }
       .user-hero-content h1 { font-size: 32px; }
       .plan-card-body h3 { font-size: 18px; }
       .insight-card { flex-direction: column; align-items: center; text-align: center; }
-      .stat-item h2 { font-size: 36px; }
+      .stat-item h2 { font-size: clamp(2rem, 4vw + 0.5rem, 2.875rem); }
+      .my-plans-section { padding-bottom: 60px; }
+      .insights-section { padding-bottom: 40px; }
     }
 
     /* ── Trip Card Skeleton shimmer ── */
