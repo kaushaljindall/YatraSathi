@@ -625,6 +625,12 @@
   .budget-tiers { grid-template-columns: 1fr; }
   .weather-row { grid-template-columns: repeat(2, 1fr); }
   .tips-grid { grid-template-columns: 1fr; }
+  .city-search-pill { flex-wrap: wrap; border-radius: 20px; padding: 15px; gap: 10px; }
+  .city-search-pill input { min-width: 100%; margin-bottom: 10px; }
+}
+@media (max-width: 480px) {
+  .stats-strip { grid-template-columns: 1fr; }
+  .weather-row { grid-template-columns: 1fr; }
 }
 
 /* ── City Autocomplete Dropdown ── */

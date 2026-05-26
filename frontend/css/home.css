@@ -347,6 +347,15 @@
       .user-hero-card { flex-direction: column; padding: 30px; }
       .user-hero-image { position: relative; width: 100%; height: 200px; margin-top: 20px; }
       .user-hero-image::before { background: linear-gradient(to bottom, #fff 0%, transparent 100%); }
+      .insights-grid { grid-template-columns: 1fr; }
+    }
+    
+    @media (max-width: 768px) {
+      .stats-banner { flex-direction: column; gap: 30px; padding: 30px; }
+      .user-hero-content h1 { font-size: 32px; }
+      .plan-card-body h3 { font-size: 18px; }
+      .insight-card { flex-direction: column; align-items: center; text-align: center; }
+      .stat-item h2 { font-size: 36px; }
     }
 
     /* ── Trip Card Skeleton shimmer ── */

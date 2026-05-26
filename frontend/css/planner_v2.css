@@ -701,3 +701,24 @@
     color: #DF6951;
   }
 }
+
+@media (max-width: 768px) {
+  .result-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .result-actions {
+    flex-wrap: wrap;
+  }
+  .result-dest {
+    font-size: 32px;
+  }
+  .budget-selector {
+    flex-wrap: wrap;
+  }
+  .feature-hints {
+    flex-direction: column;
+    align-items: center;
+  }
+}

@@ -22,9 +22,9 @@ export function ChatOverlay() {
       <div className="bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col pointer-events-auto">
         
         {/* Language Controls */}
-        <div className="px-3 py-2 bg-slate-800/80 flex gap-2 justify-between items-center text-xs border-b border-slate-700">
+        <div className="px-3 py-2 bg-slate-800/80 flex flex-wrap gap-2 justify-between items-center text-xs border-b border-slate-700">
           <select 
-            className="bg-slate-900 text-white border border-slate-600 rounded px-2 py-1 outline-none"
+            className="bg-slate-900 text-white border border-slate-600 rounded px-2 py-1 outline-none flex-1 min-w-[100px]"
             value={sourceLang}
             onChange={e => setSourceLang(e.target.value)}
           >
@@ -33,9 +33,9 @@ export function ChatOverlay() {
             <option value="hi">Hindi</option>
             <option value="es">Spanish</option>
           </select>
-          <span className="text-slate-400">→</span>
+          <span className="text-slate-400 hidden sm:inline">→</span>
           <select 
-            className="bg-slate-900 text-white border border-slate-600 rounded px-2 py-1 outline-none"
+            className="bg-slate-900 text-white border border-slate-600 rounded px-2 py-1 outline-none flex-1 min-w-[100px]"
             value={targetLang}
             onChange={e => setTargetLang(e.target.value)}
           >

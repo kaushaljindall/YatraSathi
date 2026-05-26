@@ -819,3 +819,28 @@ header#site-header.header.scrolled::after {
 .budget-grid {
   animation: slide-up 0.7s 0.35s ease both;
 }
+
+@media (max-width: 768px) {
+  .budget-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .budget-stats-strip {
+    grid-template-columns: 1fr;
+  }
+  .meter-amounts {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .b-card {
+    padding: 20px;
+  }
+  .expense-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .expense-amount {
+    margin-top: 10px;
+    align-self: flex-end;
+  }
+}
